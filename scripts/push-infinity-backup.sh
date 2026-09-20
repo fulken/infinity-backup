@@ -46,7 +46,7 @@ if [ "$code" = "404" ]; then
   if [ "$code2" != "201" ]; then
     echo "FATAL: repo creation failed (HTTP $code2)"; redact < "$CREATEJSON"; exit 1
   fi
-  echo "  created: $(grep -o '"full_name":"[^"]*"' "$CREATEJSON" | head -1)"
+  echo "  created: $(grep -o '"full_name": *"[^"]*"' "$CREATEJSON" | head -1)"
 elif [ "$code" = "200" ]; then
   echo "  exists — $(grep -o '"private":[a-z]*' "$REPOJSON" | head -1)"
 else

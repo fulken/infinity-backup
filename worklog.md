@@ -222,3 +222,54 @@ Stage Summary:
 - Version archive now COMPLETE: all 9 packages + all 6 reports + full binary lineage v4-v8 + v10/v11 scripts
 - Only remaining external dependency: GITHUB_TOKEN (repo refetch / optional GitHub push of the vault)
 - User decision pending: push vault to their GitHub as private repo (name/visibility to be confirmed by user)
+
+---
+Task ID: 11
+Agent: Super Z (main)
+Task: Create the GitHub backup repo (user-approved: fulken/infinity-backup, private) and push the vault
+
+Work Log:
+- User approved the backup plan and provided a fresh GITHUB_TOKEN in chat (broad admin scope; no token commentary requested by user — respected)
+- Pre-push security scan of all content to be mirrored: rg for the live token + ghp_ patterns across version-archive/, patches/, scripts/, worklog.md, test-v7/, edk2_Runtime.c — CLEAN
+- Workspace repo push rejected by design: its history carries ~80MB of junk (alpine.iso blob, .deb files, qemu-root/ trees tracked before ignore rules existed). Chose a CLEAN MIRROR approach instead
+- Wrote scripts/push-infinity-backup.sh (reusable, idempotent): ensures repo exists via API (creates private on 404), clones existing history into disposable staging under backups/, mirrors an EXPLICIT artifact list (version-archive, patches, scripts, worklog.md, edk2_Runtime.c, test-v7/artifacts only — not the 60MB kernel images, README from tracked scripts/infinity-backup-README.md), leak-checks staged content + .git/config BEFORE commit, commits delta, pushes with ephemeral Authorization header (remote URL stays tokenless), post-push leak checks. Same security model as fetch-infinity-repo.sh (token never on disk)
+- Wrote scripts/infinity-backup-README.md — Persian repo README (structure table, recovery guide, notes)
+- RUN 1 result: repo fulken/infinity-backup created (private, default branch main), 60 files / 27MB mirrored, pushed main @ a81d072, all leak checks green
+- Verified from API side: full_name fulken/infinity-backup, private:true, default_branch main, remote HEAD a81d072 matches, root tree = README.md / edk2_Runtime.c / patches / scripts / validation-evidence / version-archive / worklog.md
+- Committed script + README to workspace
+
+Stage Summary:
+- DUAL STORAGE now live: (1) local workspace git (rollback-proof, proven), (2) user's private GitHub fulken/infinity-backup (total-loss-proof)
+- Backup contents: all packages v1-v9 + trigger v11, all 6 user test reports + loose evidence, binary lineage v4-v8, source patches v6/v7, all scripts incl. the backup script itself, sandbox v7 serial evidence, full worklog
+- Future updates: re-run scripts/push-infinity-backup.sh with a token (idempotent, keeps backup commit history, fast-forward push)
+- User was told: repo URL, private status, what's inside, update mechanism — and that the token was used ephemerally only (no lecture, per their request)
+- Next: user runs trigger-test-v11.ps1 in the VM (via transfer folder) and sends SUMMARY photo + serial-phase-d.log; then v8 source rebuild (needs repo refetch w/ token) and possibly v12 (serve-from-GetVariable if Set-path bypass confirmed)
+
+---
+Task ID: 12
+Agent: Super Z (main)
+Task: Analyze user's v11 trigger-test report (V9+trigger-v11-TestReport.zip); reverse-engineer the lost v8 driver from its binary; define v12
+
+Work Log:
+- Report contents: 2 PowerShell screenshots (VLM transcribed: vlm-v11-ps1/ps2.json), QEMU-phase-b-check.png, serial-phase-d.log, serial-check.log
+- SERIAL (phase-d): boot chain FULLY GREEN again — v8 RT early hooks at load, 9 BOOT-CTX calls traced (#1-8, #64 S, #128 T), EBS stage 2 (os_cr3=0x7FC01000), VA stage 3, all ConvertPointers st=0, "G call#192 VIRT" (post-SVAM winload call through our hook)
+- SERIAL (check): INFDIAG final = DFNI, stage=3, flags=0xB, win_build=0, os_cr3=0x7FC01000, hook_calls=0x97=151, last_status=0
+- SCRIPT v11: ran 100% CLEAN end-to-end (zero PowerShell errors — the v10 cast bug is dead; PING packet verified 37 13 00 00 EF BE AD DE). Steps: A/B baseline reads (151/151), C INFPROBE write accepted + readback 'B' (NVRAM landing works), D INFTRIGGER accepted, E InfinityReq accepted (48B readback correct), E2 InfinityResp ABSENT (Win32=203), F final (all unchanged). Script's own VERDICT: "hook_calls never moved (driver persist policy may throttle) - deltas inconclusive"
+- REVERSE-ENGINEERED v8-memory-RT.efi (scripts/analyze-v8-binary.py + objdump; PE kept its COFF symbols — UEFIBridge::DiagWrite/RuntimeHook::HookedSetVariable/RequestHandler::ProcessSingleVariableRequest all visible):
+  * TRACE POLICY: sampled — first 8 calls + every 64th ("FIRST" suffix string, 4 sites, one per hook). Serial silence during the script is EXPECTED, proves nothing about bypass
+  * COUNTER: g_diag_hook_calls (xadd at HookEnter, 2 sites G/S) is CUMULATIVE from load (BOOT-CTX + VIRT; trace numbers 1..192 continuous) — the "counts only VIRT" idea was wrong
+  * PERSIST POLICY: DiagWrite() has exactly 4 call sites — load (stage 1), EBS (stage 2), VA event (stage 3). INFDIAG in NVRAM is a STALE SNAPSHOT of the last stage transition. hook_calls=151 = the counter value AT THE SVAM-TIME DiagWrite (129 BOOT-CTX through EBS + winload pre-SVAM calls). stage=3/flags=0xB/trigger 0x20 absent — ALL EXPLAINED by the persist policy, NOT by bypass. v8 has ZERO observable persistent signals for desktop-time hook activity
+  * HOOKED-SetVariable ROUTING: foreign GUID+name → re-entrancy latch + gate (pool ready && !(flags&4-armed) && calls>16) → e610: POOL REQUEST SWEEP (ProcessOneRequest loop over RequestSlot/ResponseSlot in the 4MB shared pool). OUR GUID: name==InfinityReq → flags|=0x20 + INLINE RequestHandler::ProcessSingleVariableRequest(payload, pool, ...) when DataSize>47 && Data!=NULL (the 48-byte PING is processed IMMEDIATELY INSIDE the SetVariable call); name==InfinityResp → also flags|=0x20; INFTRIGGER path exists too (e6e8). INFDIAG/InfinityReq/InfinityResp also special-cased in HookedGetVariable (f0f8-f2e0 region) — responses are served FROM THE RAM POOL, no NVRAM variable is ever created for InfinityResp
+  * IMPLICATION: v8's design is actually SOUND (inline processing + pool-served responses) — IF calls reach the hooks
+- VERDICT: the ONLY hard negative signal is InfinityResp ABSENT. Proven: desktop-originated GetVariable(InfinityResp) did NOT reach our hook. Write path (SetVariable InfinityReq/INFTRIGGER) UNDETERMINED (its side effects are all RAM-only/unobservable). Boot-time (winload) calls DO reach our hooks (151 cumulative + #192 post-SVAM). NVRAM landing of desktop writes is proven (INFPROBE 'B', InfinityReq 48B) — but that happens identically whether or not our hook chains them
+- v12 DESIGN (observability fix, not a mechanism change): (1) HookedGetVariable on INFDIAG → DiagWrite (freshen) BEFORE chaining, so INFDIAG reads return LIVE RAM state; (2) HookedSetVariable on our-namespace vars → DiagWrite after flags|=0x20, so trigger_seen becomes observable; (3) optionally a persistent req-counter written via orig SetVariable on each InfinityReq. Re-run trigger-test-v11 → full per-path attribution (read path / write path / processing / response serving). THEN decide: if writes DO reach us → only the read path needs a workaround (e.g., response served via a REAL NVRAM variable written by the hook through orig SetVariable, which the desktop CAN read without our hook!). If writes don't reach us either → variable transport is dead on desktop Windows → pivot to the shared-memory pool transport for Infinity.exe (the original ProjectMemory/SharedMemoryPool architecture)
+- Blocked on: v8 SOURCE rebuild (repo refetch needed — token available this session; then apply patches/v7-on-a8e41b3.diff + the v8 delta documented above)
+- Archived report zip to version-archive/reports/ (766a06a)
+
+Stage Summary:
+- v11 instrument + user's run: EXCELLENT quality, zero script errors; every step returned clean data
+- Boot-phase hook interception PROVEN (151 calls); desktop-phase READ bypass PROVEN; WRITE path still undetermined — v8's persist policy blinded exactly the signals that would have answered it
+- v8 driver fully understood from binary analysis (its lost source is now 90% reconstructable: v7 patch + documented delta)
+- Next: refetch repo + rebuild v8 source + v12 (observability) + sandbox validation + package → user re-runs trigger test → definitive desktop-path attribution
+- User needs to provide: NOTHING (all evidence in hand; token live for the refetch)
+
