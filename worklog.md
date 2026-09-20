@@ -423,3 +423,21 @@ Stage Summary:
 - Local durability DONE: all v14-era evidence + reports + vars now committed; nothing at-risk left in gitignored paths
 - Vault push PENDING on user token (last vault state = v13-era; local has v14 + evidence on top)
 - Ready command once token provided: GITHUB_TOKEN='...' bash scripts/push-infinity-backup.sh
+---
+Task ID: 20
+Agent: Super Z (main)
+Task: Receive GitHub token from user (authorized on-disk storage) + execute pending vault push
+
+Work Log:
+- User provided a fine-grained PAT (github_pat_...) — 7-day expiry (until ~2026-09-28), admin permissions, explicit authorization to store it on disk for reuse during its validity ("put it somewhere at hand"). User explicitly declined cautionary commentary. Token value is NOT written into worklog (worklog is mirrored to the vault).
+- Storage: /home/z/my-project/.secrets/github-token (chmod 600, single line, pure token). Tracked in the WORKSPACE git (be8ef8a) so it survives session rollback — the workspace repo has no remote, so exposure stays local-machine-only.
+- Firewall rules around the token: (1) .secrets/ is NOT in the vault mirror list (mirror = version-archive, patches, scripts, worklog, edk2_Runtime.c, README) — never mirrored; (2) push script step [4/6] leak-check aborts any push where the token value appears in staged content; (3) post-push check verifies remote URL + .git stay tokenless; (4) redact() scrubs token from all script output.
+- push-infinity-backup.sh upgraded: token resolution now env-var-first with fallback to .secrets/github-token (future sessions can push by just running the script — no re-asking the user while the PAT lives). Header comment updated to reflect the user authorization (2026-09-21).
+- VAULT PUSH EXECUTED: fulken/infinity-backup 75f1c58..c444399, now 7 commits. Vault now carries: v14 package + binaries, v12/v13 test reports, vars-forensics-v12-v13 (raw OVMF_VARS_4M.fd + dmpstore outputs), updated README maps (v1-v14), patched push script, worklog through Task 19. 99 files, 40M. All leak checks green.
+- Workspace commits: ac5fefe (evidence archival) -> 789c11f (worklog 19) -> be8ef8a (token store + script). Status clean (0 dirty).
+
+Stage Summary:
+- Vault (fulken/infinity-backup) is CURRENT through v14 + all evidence; local workspace git mirrors the same + token store
+- Token usability window: ~2026-09-28; after expiry a new PAT from the user is needed (fetch + push both)
+- Next vault pushes: just run scripts/push-infinity-backup.sh (token auto-read)
+- Project status unchanged otherwise: v14 package ready for the user's real-machine test (GUID fix + live KUSD build); verdict full-bridge vs reads-only vs both-bypassed comes from that run
