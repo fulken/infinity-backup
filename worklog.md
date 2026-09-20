@@ -318,3 +318,22 @@ Stage Summary:
 - Script fixes committed back: build-v12.sh (OUT path, UTF-16 check), test-v12-linux.sh (B verdict = driver contract)
 - User flow: unzip -> phase-d.bat -> VM boots Windows (v12 RT, serial shows "memory.efi v12 RT") -> trigger-test-v12.ps1 elevated -> send SUMMARY photo + serial-phase-d.log
 - The 4-signal verdict matrix (README-V12-FA.md) will attribute the desktop bypass: full bridge / reads-only / writes-only / both-bypassed (-> v13 pool transport pivot)
+
+---
+Task ID: 15
+Agent: Super Z (main)
+Task: Fix v12 fresh-install blocker — phase-d.bat pre-flight aborted with "trigger-test.ps1 is NOT the v10 script"
+
+Work Log:
+- User did a clean reinstall (kept disk\ + vars\ where Windows lives), extracted v12, ran phase-d.bat -> immediate abort: pre-flight 1 still checked usb-d\trigger-test.ps1 (v10, findstr "trigger test v10", 14290 bytes) but the v12 package correctly ships usb-d\trigger-test-v12.ps1 instead. Nothing ran, VM untouched — pure packaging bug in my v12 sed pass (banners updated, guard not).
+- Full template scan for stale refs: phase-d.bat lines 26-27/56-73/84/98/134-136/149-150/207/113 + stale root README-FA.md (v9 guide). VERSION.txt regenerated (fine), refresh-files + startup.nsh + transfer readme clean/generic.
+- Wrote scripts/patch-v12-bat.py (R0-R8 anchored replacements, CRLF-preserving — first run failed on Python universal-newline \r\n translation, fixed with newline="" on read). Output: infinity-qemu-test/phase-d.bat (10015 B) = v9 template + v12 guard ("trigger test v12" via findstr on usb-d\trigger-test-v12.ps1) + v12 banners (package v12 / memory.efi v12 RT observability) + v12 on-desktop instructions (D:\trigger-test-v12.ps1, first line "trigger test v12") + v12 next-steps.
+- build-v12.sh package stage now copies the patched phase-d.bat (seds -> one refresh-files no-op left) and REMOVES the stale v9 README-FA.md from the package root (README-V12-FA.md is the only guide now).
+- Repackaged. VERIFIED against the actual zip: usb-d = exactly 4 items (EFI, memory.efi 117490B = v12 RT string-verified, startup.nsh, trigger-test-v12.ps1 16499B); guard simulation: file exists + "trigger test v12" matches 2x -> findstr errorlevel 0 -> PASSES; only remaining old-name mention = historical corruption comment (lines 9-10, intentional).
+- User's kept vars\ is FINE for the test: the v12 boot itself rewrites INFDIAG at stage 1/2/3 transitions, and the script discriminates live (stage=4, moving counts) vs stale (stage=3 frozen) — stale NVRAM is part of what v12 attributes. The Windows boot entry in their vars must NOT be wiped (it is how the VM boots Windows).
+- Committed v12.1 (git) + vault push.
+
+Stage Summary:
+- FIXED DELIVERABLE: download/infinity-qemu-test-v12.zip (3266979 B) — re-extract over the old folder (or fresh) and phase-d.bat proceeds past pre-flight
+- Binaries UNCHANGED (same sha256 as v12 build — only the .bat/readme/packaging fixed)
+- Guard semantics now: usb-d\trigger-test-v12.ps1 must exist + contain "trigger test v12"

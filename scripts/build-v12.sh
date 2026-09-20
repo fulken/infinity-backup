@@ -153,10 +153,13 @@ for d in "." "usb-d" "transfer"; do
   cp "$BASE/infinity-qemu-test/trigger-test-v12.ps1" "$PKGDIR/$d/trigger-test-v12.ps1"
 done
 cp "$BASE/infinity-qemu-test/README-V12-FA.md" "$PKGDIR/README-V12-FA.md"
-# banner/version strings in the boot scripts
-sed -i 's/INFINITY Phase D v9:/INFINITY Phase D v12:/'            "$PKGDIR/phase-d.bat"
-sed -i 's/package v9 - Windows + memory.efi v8 RT boot test/package v12 - Windows + memory.efi v12 RT boot test/' "$PKGDIR/phase-d.bat"
-sed -i 's/package v9+/package v12+/g'                             "$PKGDIR/phase-d.bat" "$PKGDIR/refresh-files.bat"
+# phase-d.bat: v12 edition (pre-flight guard checks trigger-test-v12.ps1,
+# banners + on-desktop instructions updated) — built by scripts/patch-v12-bat.py
+cp "$BASE/infinity-qemu-test/phase-d.bat" "$PKGDIR/phase-d.bat"
+# drop the stale v9 Persian readme — README-V12-FA.md is the current guide
+rm -f "$PKGDIR/README-FA.md"
+# refresh-files hint line
+sed -i 's/package v9+/package v12+/g' "$PKGDIR/refresh-files.bat"
 # VERSION.txt
 SHA_SAFE=$(sha256sum "$PKGDIR/usb/memory.efi"    | awk '{print toupper($1)}')
 SHA_RT=$(sha256sum   "$PKGDIR/usb-d/memory.efi"  | awk '{print toupper($1)}')
@@ -218,11 +221,12 @@ if want commit; then
 step "[7/7] commit (+ optional vault push)"
 git add -A patches/v12-memory-SAFE.efi patches/v12-memory-RT.efi \
           scripts/patch-v12.py scripts/verify-v12-anchors.py \
-          scripts/build-v12.sh scripts/test-v12-linux.sh \
+          scripts/build-v12.sh scripts/test-v12-linux.sh scripts/patch-v12-bat.py \
           infinity-qemu-test/trigger-test-v12.ps1 infinity-qemu-test/README-V12-FA.md \
+          infinity-qemu-test/phase-d.bat \
           download/infinity-qemu-test-v12.zip version-archive/packages/infinity-qemu-test-v12.zip \
           .gitignore 2>/dev/null || true
-git commit -q -m "v12: observability build — patcher + build pipeline + sandbox test + package (INFDIAG freshen, INFCNT, our-var serial traces, cumulative counter)" \
+git commit -q -m "v12.1: fix phase-d.bat pre-flight (guard now checks trigger-test-v12.ps1; banners/instructions v12; stale v9 README removed from package)" \
   || echo "(nothing new to commit)"
 git log --oneline -1
 if [ -n "${GITHUB_TOKEN:-}" ]; then
