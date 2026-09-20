@@ -273,3 +273,48 @@ Stage Summary:
 - Next: refetch repo + rebuild v8 source + v12 (observability) + sandbox validation + package → user re-runs trigger test → definitive desktop-path attribution
 - User needs to provide: NOTHING (all evidence in hand; token live for the refetch)
 
+
+---
+Task ID: 13
+Agent: Super Z (main)
+Task: v12 (observability build) preparation — full pipeline staged; user confirmed the analyzed report WAS from v9+trigger-v11
+
+Work Log:
+- User clarified: their test was on infinity-qemu-test-v9 with infinity-trigger-v11 — exactly the V9+trigger-v11-TestReport.zip already fully analyzed in Task 12. Re-verified the evidence chain from upload/extracted-v11-test/ (serial tail ends at "G call#192 VIRT", script A-F all show frozen hook_calls=151, INFCNT did not exist, InfinityResp 203): v11 could NOT discriminate read-path vs write-path bypass (stale-snapshot persist policy blinded hook_calls; sampled serial traces miss the 152..~210 range). Corrected the Task 12 over-statement "read bypass PROVEN": the strict conclusion is NOT(read-through AND write-through) — at least one bypasses, attribution unknown. v12 exists to answer exactly this.
+- Confirmed the v12 build blocker: source lives ONLY in private repo fulken/Infinity (branch uefi-full-migration, pin a8e41b3); clone+bundle lost in rollbacks; repo verified private (unauthenticated ls-remote prompts). Token from previous session was ephemeral by design → a fresh token is needed to run the pipeline.
+- Wrote scripts/patch-v12.py — the anchored v7→v12 source patcher, 10 edits (D1-D2 Diag.h, R1-R8 RuntimeHook.h): (1) HookEnter cumulative counter + VIRT suffix + NO DiagWrite (v8 policy); (2) INFDIAG read-freshen gated on va_done (read-path attribution + a [DIAG] serial line per freshen); (3) our-namespace SetVariable block: unbounded "S OURVAR write/delete" trace + flag 0x20 + g_diag_req_count++ + WriteReqCount + DiagWrite (write-path attribution); (4) WriteReqCount persists INFCNT through ORIGINAL SetVariable (bypass-safe, always readable from Windows); (5) INFTRIGGER added to IsOurVariable + accepted by HandleOurSetVariable; (6) v12 boot-log markers ("memory.efi v12 RT", "(v12 early)"). All attribution writes gated on g_diag_va_done to preserve boot-log purity + flash wear.
+- Wrote scripts/verify-v12-anchors.py and RAN it: reconstructs the v7 new-side text from the v7 diff and proves every anchor occurs EXACTLY ONCE — all 10 anchors OK (patcher is guaranteed to apply cleanly on the a8e41b3+v7diff tree).
+- Wrote scripts/build-v12.sh — full pipeline: reuse/refetch repo (token rules unchanged) → worktree @ a8e41b3 → v7 diff → patch-v12.py → build SAFE+RT (gnuefi-jammy 3.0.13, fallback gnuefi-local) → binary string checks (v12 marker/INFCNT/OURVAR/INFTRIGGER in RT; hook strings absent in SAFE) → sandbox validation → package → commit (+optional vault push). Stages individually runnable with --only, sandbox skippable with --skip-sandbox.
+- Wrote scripts/test-v12-linux.sh — Alpine EFI-stub sandbox test adapted from test-v7-linux.sh with explicit PASS/FAIL verdicts: RT expects v12 marker, early hooks, BOOT-CTX traces, stage 2/3 writes, (v12 early) line, all CVT st=0, kernel boot, and accepts the documented post-chain NX stop; SAFE expects stage-1 write + full Alpine boot + NO hook lines.
+- Wrote infinity-qemu-test/trigger-test-v12.ps1 (v11 + step G INFCNT read + 4-signal SUMMARY + 5-branch VERDICT matrix: full bridge / both-paths-work-processing-failed / reads-only / writes-only / both-bypassed→pool-transport pivot) and README-V12-FA.md (Persian guide: what changed, how to run, what to send, how to read the 4 signals, stage=4 is expected now).
+- .gitignore += build-v12-tree/, test-v12/, build/. All scripts syntax-checked (py_compile, bash -n).
+
+Stage Summary:
+- v12 is FULLY STAGED: patcher (anchor-verified), build pipeline, sandbox test, test script, Persian README, packaging logic. One command builds it once the repo is available:
+  GITHUB_TOKEN='...' bash scripts/build-v12.sh   (≈15 min, mostly the 2 sandbox boots)
+- v12 design (only observability, mechanism unchanged): expected signatures — both paths work: hook_calls moves + INFCNT=2 + flags 0x2B + Resp ANSWERED; reads-only: moves + INFCNT absent; writes-only: frozen counts + INFCNT=2; both bypassed: frozen + absent → v13 pivots to SharedMemoryPool transport
+- BLOCKED on: fresh GITHUB_TOKEN (repo refetch). Everything else is ready and committed.
+- User was told: their v9+v11 test was indeed the one analyzed; v12 will settle which path Windows bypasses; to paste a fresh token so the build can run.
+
+---
+Task ID: 14
+Agent: Super Z (main)
+Task: Run the staged v12 pipeline end-to-end (user supplied fresh token + asked where trigger-test-v12.ps1 is)
+
+Work Log:
+- User provided a fresh full-access token and asked why trigger-test-v12.ps1 is not downloadable. Answer: the file existed in the workspace (infinity-qemu-test/) but was never packaged — and testing v12 requires the v12 DRIVER binary (INFCNT etc. only exist in the new build), so the package IS the deliverable.
+- Token validated (fulken); repo fulken/Infinity accessible; found this session's earlier repo fetch already cached as bundle+tar.gz in backups/ — clone restored at pin a8e41b3.
+- Stage tree: v7 diff + patch-v12.py applied cleanly (all v12 markers verified in source).
+- Stage build: first run hit a runtime bug (script cp'd memory.efi from wrong dir — Makefile outputs to UEFI/build/build/) → fixed build-v12.sh with explicit OUT path. SAFE (104457 B) + RT (117490 B) built; R4 GLOB_DAT + R6 orphan .bss checks clean.
+- Stage check: initial FAIL on "INFTRIGGER" — false alarm: UEFI var names are UTF-16LE, plain strings(1) can't see them. Fixed the check to use `strings -e l` for INFTRIGGER/INFCNT/InfinityReq. All binary checks PASS (plus ASCII markers: v12 banner, v12 early, OURVAR traces).
+- Stage sandbox: harness launched in background died silently between tool calls (QEMU survived + completed on its own); re-ran in foreground. RT (boot A): FULL PASS — v12 banner, hooks at load, BOOT-CTX 1-8/64, stage2 EBS, VA fired + v12-early keep-slots, stage3 write, all CVT st=0, kernel EFI-stub boot, documented post-chain NX stop. SAFE (boot B): initial FAIL on "Welcome to Alpine" — investigated: the ARCHIVED v7 SAFE run (test-v7/artifacts/serial-lB.log) hit the IDENTICAL initramfs boot-media mount quirk (vvfat under TCG, recovery shell) and was accepted; the v12 B-verdict was stricter than the proven v7 baseline. Fixed verdict to the driver's contract (stage=1 write + Linux boots + /init runs + no hook lines); "Welcome to Alpine" demoted to NOTE either way. B re-run: PASS (4/4 + quirk NOTE, same as v7).
+- Stage package: download/infinity-qemu-test-v12.zip built from the v9 template + v12 binaries + trigger-test-v12.ps1 (root, usb-d/, transfer/ — 3 copies) + README-V12-FA.md + VERSION.txt (sha256 of both efis + script) + phase-d.bat re-badged to v12. Archived to version-archive/packages/.
+- Stage commit + vault push: workspace git commit + fulken/infinity-backup refreshed via push-infinity-backup.sh (token ephemeral, leak-checked).
+
+Stage Summary:
+- v12 IS BUILT, VALIDATED AND PACKAGED: download/infinity-qemu-test-v12.zip
+- Driver lineage: fulken/Infinity @ a8e41b3 + v7 diff + patch-v12.py; SAFE sha256 1E858C03..., RT sha256 8AC7DF0C...
+- Sandbox: RT PASS 11/11, SAFE PASS 4/4 (media-mount quirk documented, identical to archived v7)
+- Script fixes committed back: build-v12.sh (OUT path, UTF-16 check), test-v12-linux.sh (B verdict = driver contract)
+- User flow: unzip -> phase-d.bat -> VM boots Windows (v12 RT, serial shows "memory.efi v12 RT") -> trigger-test-v12.ps1 elevated -> send SUMMARY photo + serial-phase-d.log
+- The 4-signal verdict matrix (README-V12-FA.md) will attribute the desktop bypass: full bridge / reads-only / writes-only / both-bypassed (-> v13 pool transport pivot)
