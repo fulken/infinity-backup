@@ -337,3 +337,22 @@ Stage Summary:
 - FIXED DELIVERABLE: download/infinity-qemu-test-v12.zip (3266979 B) — re-extract over the old folder (or fresh) and phase-d.bat proceeds past pre-flight
 - Binaries UNCHANGED (same sha256 as v12 build — only the .bat/readme/packaging fixed)
 - Guard semantics now: usb-d\trigger-test-v12.ps1 must exist + contain "trigger test v12"
+
+---
+Task ID: 16
+Agent: Super Z (main)
+Task: Fix v12 flash-close: phase-d.bat window opens and instantly closes, no output
+
+Work Log:
+- Symptom (user, after re-extracting the v12.1 zip): double-click phase-d.bat -> cmd flashes shut, zero output, nothing runs. Different from the previous pre-flight abort (that one printed + paused).
+- Diagnosis: silent instant abort = cmd.exe batch PARSE abort. Audited every hunk of my patched phase-d.bat vs the proven v9 template: the only novel paren construct was my R2 error message "echo A stale old copy (v10/v11) cannot read the v12 signals" INSIDE the "if errorlevel 1 (" block. A mid-text ")" in echo text closes the block prematurely -> cmd aborts the whole script silently. (Template's own in-block paren line "(the VM must be running...v9+)" has the paren at argument START and is production-proven since v9; plain-echo/rem parens are outside blocks = safe.)
+- Fix: rephrased both R2 lines paren-free ("A stale old copy - v10 or v11 - cannot read the v12 / signals INFCNT and live INFDIAG - wrong verdict.").
+- Wrote scripts/audit-bat-parens.py (mechanical paren-in-block-echo audit; heuristic depth tracker). Ran it on template + patched: BOTH flag the exact same 15 later-file lines (known false positives of my heuristic — those lines are production-proven since v9 and structurally untouched), and the patched file now has ZERO paren shapes that the proven template does not also have. Final diff review: 5 paren-bearing changed lines, all safe inherited shapes (2x rem, 1x block opener syntax, 1x proven arg-start paren, 1x top-level echo).
+- Repackaged download/infinity-qemu-test-v12.zip (3266966 B). Binaries + trigger script unchanged. Committed v12.2 + vault push.
+- User also given the standard debug trick: if a .bat ever flash-closes again, open cmd first, cd to the folder, run phase-d.bat from there — the window stays and shows the real error.
+
+Stage Summary:
+- FIXED: download/infinity-qemu-test-v12.zip — phase-d.bat parses again (paren-free guard block)
+- Root cause: my error message put a ")" inside a cmd block — classic batch killer
+- No wine/cmd in sandbox; fix proven structurally (paren usage now identical to the production-proven v9 file)
+- Deliverable unchanged otherwise: same v12 driver binaries, same trigger-test-v12.ps1
