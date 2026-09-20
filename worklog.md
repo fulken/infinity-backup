@@ -356,3 +356,28 @@ Stage Summary:
 - Root cause: my error message put a ")" inside a cmd block — classic batch killer
 - No wine/cmd in sandbox; fix proven structurally (paren usage now identical to the production-proven v9 file)
 - Deliverable unchanged otherwise: same v12 driver binaries, same trigger-test-v12.ps1
+
+---
+Task ID: 17
+Agent: Super Z (main)
+Task: Analyze v12 BSOD test report; design+build+ship v13 (safe observability)
+
+Work Log:
+- Report (infinity-qemu-test-v12-TestReport.zip): 3 photos (VLM: PS transcript / BSOD KMODE_EXCEPTION_NOT_HANDLED at 21% / boot) + serial-phase-d.log (400 lines).
+- SERIAL: boot chain 100% green (v12 banner, early hooks, BOOT-CTX 1-8/64/128, EBS stage2 flags=0xB, VA event + v12-early keep-slots + stage3, ALL CVT st=0, armed stage4, G #256/#320 VIRT). LAST LINE TRUNCATED: "[INF][DIAG] write stage=4 flags=0x" = the v12 INFDIAG read-freshen DiagWrite — the desktop INFDIAG read REACHED HookedGetVariable.
+- PS transcript: banner + [ENV] Win10 19045 + privilege OK + [CLR] + step A header, then BSOD. [CLR] = 5 deletes on OUR names/GUID (INFPROBE INFTRIGGER InfinityReq InfinityResp INFCNT); serial has ZERO "S OURVAR" traces -> desktop SetVariable BYPASSES the hook.
+- ATTRIBUTION (v12 run, at the cost of one BSOD): READ path reaches hook (PROVEN); WRITE path bypasses (PROVEN). v12's design goal achieved in one run.
+- BSOD root cause: the freshen = DiagWrite -> gRT->SetVariable (busy-gated to ORIG) = an NVRAM write from INSIDE the kernel's GetVariable dispatch; KMODE_EXCEPTION mid-print (concurrent-context signature). Disassembled DiagWrite (COFF symbols survived): call [rax+0x58] then pure-IO print; print cannot fault -> fault was in the concurrent other context triggered by the orig SetVariable call. Root lesson: NEVER call orig SetVariable from inside a runtime hook on the Windows dispatch path.
+- v13 DESIGN (mechanism unchanged; observability made safe): (1) HookedGetVariable SERVES INFDIAG + INFCNT reads from LIVE RAM (GUID-checked, va_done-gated, standard buffer protocol incl. BUFFER_TOO_SMALL size query) - zero orig calls, zero NVRAM writes; (2) our-var S-hook block: "S OURVAR write/delete" trace + flag 0x20 + g_diag_req_count++ (RAM ONLY - WriteReqCount/DiagWrite removed); (3) INFTRIGGER in IsOurVariable + accepted by HandleOurSetVariable (as v12); (4) cumulative HookEnter counter (as v12); (5) v13 boot markers. HandleOurGetVariable (base repo) serves only InfinityResp/InfinityData from RAM (INFDIAG fell through to chain - explains v11's stale reads).
+- Wrote scripts/patch-v13.py (D1 D2 R1 R2 R3 R5 R6 R7 R8, anchored on the v7 tree; all applied clean). Fixed one typo (missing // on a comment line -> GCC error) via Edit.
+- Wrote scripts/build-v13.sh + scripts/test-v13-linux.sh (sed-derive) + scripts/patch-v13-bat.py (v13 phase-d.bat with dynamic script size 16303; paren-free guard echoes per the v12.2 lesson).
+- Wrote infinity-qemu-test/trigger-test-v13.ps1 (v12 base + live-RAM semantics: step G INFCNT = live count 0/2, writeOk = cnt>=1 or flag, v14-direction verdicts) + README-V13-FA.md (Persian: what BSOD was, what v13 changes, evidence ask incl. vars\OVMF_VARS_4M.fd).
+- BUILD: SAFE 104457 B, RT 118002 B; R4/R6 clean. CHECKS: all ASCII markers (v13 RT banner, INFDIAG live, INFCNT live, OURVAR, v13 early) + u16 names (INFTRIGGER INFCNT INFDIAG InfinityReq) PASS; SAFE clean.
+- SANDBOX: A (RT) PASS 11/11 (v13 banner, hooks at load, BOOT-CTX, stage2/3, v13-early, armed, CVT st=0, kernel boot, NX stop); B (SAFE) PASS 4/4 (stage1, kernel, /init, no hook lines; media-mount quirk NOTE same as archived v7).
+- PACKAGE: download/infinity-qemu-test-v13.zip (3266658 B; usb-d = 4 items, script 16303 B in root+usb-d+transfer, guard simulation passes, phase-d.bat 10025 B says package v13 + v13 banner; paren audit = same 15 template-inherited false positives as proven v9/v12.2, zero new shapes). Archived to version-archive/packages/. Committed + vault pushed.
+
+Stage Summary:
+- v12 verdict (from the crashed run): READ path REACHES our hook; WRITE path BYPASSES it; orig-SetVariable-from-inside-a-hook = BSOD class
+- v13 SHIPPED: download/infinity-qemu-test-v13.zip — same test mission, zero crash class (hooks never call orig SetVariable at runtime; INFDIAG/INFCNT answered from live RAM)
+- Expected v13 run (if v12 evidence holds): hook_calls MOVES between A/B, INFCNT=0, InfinityResp ABSENT -> VERDICT: reads-only -> v14 pivots to GetVariable-path/pool transport (ProjectMemory architecture)
+- User also asked to send vars\OVMF_VARS_4M.fd (contains the freshen's last successful write: stage=4) for confirmation
