@@ -23,6 +23,7 @@
 | v12 | 2026-09-20 | دارم | observability کامل (ماتریس ۴ سیگنالی README-V12-FA)؛ freshen INFDIAG از داخل hook خواندن دسکتاپ → **اثبات می‌رسه مسیر خواندن به hook** اما فراخوانی orig SetVariable داخل dispatch ویندوز → BSOD KMODE (درس: هرگز orig SetVariable از داخل hook روی مسیر dispatch) |
 | v13 | 2026-09-20 | دارم | observability امن: INFDIAG/INFCNT از RAM زنده جواب داده می‌شوند (صفر فراخوانی orig، صفر نوشتن NVRAM) + پچ بسته‌بندی v12.2 (پرانتز داخل بلاک bat)؛ اجرای v13 بدون BSOD |
 | v14 | 2026-09-20 | دارم | **فیکس باگ مقایسه GUID** (gnu-efi CompareGuid بازگشتی 0=مساوی، دو call-site با سماتیک EDK2-BOOLEAN استفاده شده بود → سرویس RAM و IsOurVariable هر دو dead-code!) + کپچر live بیلد ویندوز از KUSD (NtBuildNumber@+0x308، صفحه global، خواندن مستقیم volatile) + chain-after-handle دوگانه در S-hook → تست v14 = حکم واقعی full-bridge |
+| v15 | 2026-09-20 | دارم | **فیکس ریشهٔ BSOD های v12+v14** (disassembly): جدول هگز SerialTrace به‌صورت `static const char*` کامپایل می‌شد به اسلات اشاره‌گر با آدرس فیزیکی زمان لود — تبدیل‌نشده در VA event → اولین چاپ هگز در بافت ویندوز = #PF؛ v15 آن را به آرایه (rip-relative) تبدیل کرد + پروب دو-آفستهٔ بیلد (0x260+0x308 با تریس مقدار خام) چون +0x308 روی 19045 واقعی نهی بود |
 
 نام‌گذاری zip از v9 به بعد با VERSION.txt داخلی هم‌راستاست (v8 و v8.1 اسم zip یکسانی داشتن که باعث اشتباه شد).
 
@@ -47,6 +48,8 @@ v13 SAFE driver = v12 SAFE (بدون تغییر)    1e858c03ef19c2aa (فقط RT 
 v13 RT driver (118002 B)                   dcd9b6e4adee372c... (پیشوند؛ کامل: sha256sum patches/v13-memory-RT.efi)
 v14 SAFE driver (104969 B)                 6f6e1d1006da9017... (پیشوند؛ کامل: sha256sum patches/v14-memory-SAFE.efi)
 v14 RT driver (119026 B)                   51e8132b2d2496f8... (پیشوند؛ کامل: sha256sum patches/v14-memory-RT.efi)
+v15 SAFE driver (105032 B)                 3f2734369e988bc5... (پیشوند؛ کامل: sha256sum patches/v15-memory-SAFE.efi)
+v15 RT driver (120229 B)                   af1acda401999a97... (پیشوند؛ کامل: sha256sum patches/v15-memory-RT.efi)
 ```
 
 (پیشوندهای ۱۶ کاراکتری برای خوانایی؛ مقدار کامل هر هش با `sha256sum` روی فایل‌های `patches/` و `packages/` قابل بازتولید است.)
@@ -66,6 +69,7 @@ v14 RT driver (119026 B)                   51e8132b2d2496f8... (پیشوند؛ �
 | `infinity-qemu-test-V9+trigger-v11-TestReport.zip` | v9 + trigger v11 | اثبات ۴-گانه: بنر + ENV + PRIV + PARTIAL؛ حکم final: full install سبز؛ سورس فیکس‌های v12 |
 | `infinity-qemu-test-v12-TestReport.zip` | v12 phase-d | بوت زنجیره ۱۰۰٪ سبز تا G#320؛ PS step A → **BSOD KMODE_EXCEPTION_NOT_HANDLED در ۲۱٪** وسط freshen INFDIAG = خواندن دسکتاپ به hook رسید؛ [CLR] بدون S OURVAR = نوشتن بایپس؛ تحلیل کامل → طراحی v13 |
 | `infinity-qemu-test-v13-Report.zip` | v13 phase-d | اجرای بدون‌کرش؛ hook_calls=251 ثابت + INFCNT=203 + InfinityResp=203 → اولاً به‌ظاهر «هر دو مسیر بایپس»؛ شواهد عکس PS + serial-check؛ **بعداً ریشه‌یابی: باگ CompareGuid (v14) — حکم آرتیفکت بود** |
+| `infinity-qemu-test-v14-Report.zip` | v14 phase-d | بوت سبز تا دسکتاپ + فیکس GUID کار کرد (۳ تریس S OURVAR delete + اولین G INFDIAG live) → **BSOD KMODE روی step A وسط چاپ هگز**؛ ریشه‌یابی دیس‌اسمبلی: اسلات اشاره‌گر جدول هگز (v12 هم همین بود) + KUSD+0x308 نهی؛ منشأ v15 |
 | `vars-forensics-v12-v13/` | vars های v12+v13 کاربر | OVMF_VARS_4M.fd هر دو + خروجی dmpstore (Checked)؛ ۱۸ بوت تاریخ INFDIAG decode شد؛ **اثبات باینری فرود freshen v12 (stage=4 flags=0xF calls=341 در NVRAM)** + فرود همه‌ی نوشتن‌های دسکتاپ v13 (INFPROBE/INFTRIGGER/InfinityReq state 0x3F) → نوشتن‌ها به NVRAM می‌رسیدند اما hook تشخیص نمی‌داد (باگ GUID) |
 | `loose-evidence/` | اولین اجراها و عیب‌یابی هش | serial/عکس phase-a/b اولیه (v1 era) + اسکرین‌شات‌های عیب‌یابی hash-mismatch و خطای PowerShell (2026-09-20) |
 
