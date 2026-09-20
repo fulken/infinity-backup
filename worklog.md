@@ -381,3 +381,45 @@ Stage Summary:
 - v13 SHIPPED: download/infinity-qemu-test-v13.zip — same test mission, zero crash class (hooks never call orig SetVariable at runtime; INFDIAG/INFCNT answered from live RAM)
 - Expected v13 run (if v12 evidence holds): hook_calls MOVES between A/B, INFCNT=0, InfinityResp ABSENT -> VERDICT: reads-only -> v14 pivots to GetVariable-path/pool transport (ProjectMemory architecture)
 - User also asked to send vars\OVMF_VARS_4M.fd (contains the freshen's last successful write: stage=4) for confirmation
+
+
+---
+Task ID: 18
+Agent: Super Z (main)
+Task: Analyze v13 test report (logs + 3 photos + vars v12/v13) incl. build-detection check; build v14
+
+Work Log:
+- Report: infinity-qemu-test-v13-Report.zip -> serial-check.log + serial-phase-d.log + phase-b-check.png + phase-d-PowerShell-Part1/2.png + varsV12Checked.zip + varsV13Checked.rar.
+- SERIAL (phase-d): boot chain 100% green (v13 banner, early hooks, BOOT-CTX, stage 1/2/3, CVT st=0, armed, G call#256/#320 VIRT). windows build=0 at EBS (as in EVERY run since v6). Serial capture truncated at call#320 (pre-desktop) - desktop-phase serial evidence absent.
+- VLM photos: [ENV] Win build 10.0.19045.0 (script-side detection CORRECT); steps A..F all hook_calls=251 FROZEN; INFCNT 203; InfinityResp 203; INFPROBE/INFTRIGGER/InfinityReq writes Win32=0; script verdict = "both paths bypassed". phase-b-check photo == serial-check.log (INFDIAG stage=3 flags=0xB calls=251).
+- VARS FORENSICS (wrote scripts/parse-vars-v13.py; OVMF auth variable store, 60-byte AUTH headers, StartId AA55 LE): BOTH files are the SAME store continued (identical prefix to 0x229BA). Full INFDIAG run-history decoded (18 boots since v6-era): v9+v11 run = the 151-calls group; v12 runs = 276-calls groups; v13 run = final group ending stage=3 calls=251 (matches dmpstore check). VARS-v12 last INFDIAG = stage=4 flags=0xF calls=341 -> THE V12 FRESHEN WRITE LANDED IN NVRAM (binary proof). VARS-v13 appended exactly: INFDIAG s1/s2/s3 + INFPROBE='B' + INFTRIGGER + InfinityReq(1337-DEADBEEF) ALL state 0x3F VAR_ADDED -> desktop writes landed in NVRAM. Serial has ZERO "S OURVAR" traces. InfinityMem live with pool 0x7D816000 (EDK2 in-place update, no new entry; matches v13 CVT log). Windows-side bypass vs hook-side misclassification could not be distinguished from the vars evidence alone -> led to the code audit.
+- ROOT CAUSE FOUND (the headline): gnu-efi 3.0.13 CompareGuid/RtCompareGuid is memcmp-like (disassembled: component subtraction OR -> 0 iff EQUAL). Two call sites used EDK2-BOOLEAN semantics: (1) v13 serve gate "CompareGuid(...) == TRUE" -> 0==1 FALSE for MATCHING GUID -> RAM serve DEAD CODE -> reads chained to stale NVRAM (explains frozen 251 + INFCNT 203 EXACTLY); (2) BASE-REPO IsOurVariable "CompareGuid(...) != TRUE return FALSE" -> matching GUID rejected as not-ours (latent since a8e41b3) -> no S OURVAR traces, no counts, writes chained + landed (fakes "write bypass" across v9-v13). v12 freshen gate was NAME-ONLY (no GUID check) - that is why it FIRED: desktop reads PROVEN to reach the hook (still the only solid path fact). Write path now UNKNOWN (bug masked it); HookedSetVariable->orig->NVRAM chain PROVEN SAFE by the 3 accidental v13 chains.
+- BUILD DETECTION (user question): script-side correct (10.0.19045). Driver-side win_build=0 always: at EBS the CPU still runs on FIRMWARE page tables (EBS CR3 == UEFI CR3 == 0x7FC01000 in every log since v6); the KUSD VA 0xFFFFF78000000000 is not mapped there -> TranslateVA fails at PML4 -> 0. Fix: direct volatile read of NtBuildNumber at KUSD+0x308 inside hook contexts (global page, mapped in every address space, cannot fault) + ProcessFinder lazy offsets refresh (EBS-time build=0 had left FindByName fail-closed forever).
+- v14 BUILT (scripts/patch-v14.py: F1a/F1b GUID fixes, F2a/F2b live KUSD build capture at serve+write paths, F3 dual-write chain-after-handle + write-gated 0x20 flag, R5 banners, P1 finder lazy refresh; make-v14-script.py + trigger-test-v14.ps1 with win_build driver-vs-script SUMMARY line + verdict-order fix; patch-v14-bat.py from pristine patches/phase-d-v13.bat; README-V14-FA.md; build-v14.sh + test-v14-linux.sh). Build hit 2 patcher bugs (comment lines missing //) -> fixed, rebuilt.
+- VALIDATED: binary checks 11/11 PASS (v14 RT banner, guid fix + live build, INFDIAG/INFCNT live, OURVAR, live windows build, v14 early, u16 names; SAFE clean). Sandbox RT(A) PASS + SAFE(B) PASS (same documented initramfs media-mount quirk NOTE as v7/v13). Package guard simulation PASS (usb-d = 4 items, findstr "trigger test v14" matches).
+- SHIPPED: download/infinity-qemu-test-v14.zip (3269865 B; SAFE 104969 B sha256 6f6e1d10..., RT 119026 B sha256 51e8132b...). Committed 3eee5e5. No token this session -> vault push skipped (local commit is the rollback copy).
+
+Stage Summary:
+- v13 test verdict REVISED: "both bypassed" was an ARTIFACT of the GUID comparison bug; reads = PROVEN reach (v12 freshen), writes = UNKNOWN (masked by the same bug); the v13 run itself proved BSOD-free and the S-chain->NVRAM path safe
+- v13 NVRAM forensics: full 18-boot INFDIAG history decoded; v12 freshen landing proven; InfinityMem (pool 0x7D816000) live
+- v14 SHIPPED: GUID semantics fixed + live KUSD build capture (SUMMARY now shows driver-side vs script-side build) + dual-write chain; re-run the same trigger test for the REAL verdict (full bridge is now possible: PING -> RAM handling -> InfinityResp served)
+- Expected v14 outcomes: full bridge (A/B moving + INFCNT=2 + 0x2B + Resp ANSWERED) / reads-only (INFCNT=0) / genuinely both-bypassed (frozen + absent) -> v15 pool pivot decision
+- BLOCKED on: user runs the v14 package (no token needed for anything else)
+---
+Task ID: 19
+Agent: Super Z (main)
+Task: Durable backup refresh — user warned GitHub vault was stale (files at risk of session loss)
+
+Work Log:
+- User message: GitHub not updated since v13 vault push; files could be lost on session rollback. Correct — Task 18 (v14) ended with "no token this session -> vault push skipped, local commit only".
+- Gap audit found THREE at-risk evidence sets living only in upload/ (gitignored = wiped on rollback): (1) infinity-qemu-test-v12-TestReport.zip, (2) infinity-qemu-test-v13-Report.zip, (3) vars forensics evidence (varsV12Checked.zip, varsV13Checked.rar, raw OVMF_VARS_4M.fd of both sessions) — the binary proof of the v12 freshen landing + v13 desktop writes.
+- Archived all three: reports -> version-archive/reports/; vars -> version-archive/reports/vars-forensics-v12-v13/ (checked zips + raw .fd files).
+- version-archive/README.md updated: packages table now has v12/v13/v14 rows (with verdict-history notes incl. the CompareGuid artifact revision), SHA256 section extended (v12-v14 package + driver hashes; noted v13 SAFE == v12 SAFE binary-identical), reports table + vars-forensics row added, binaries/patches section now lists v12-v14 efi + patch-v{12,13,14}.py lineage, "missing" list updated to "archive complete: v1-v14".
+- scripts/infinity-backup-README.md (the vault README) updated: v1-v14 lineage, vars forensics mention, v14-ready-to-run state, restore chain (a8e41b3 -> v7 diff -> patch-v12 -> v13 -> v14).
+- Git hygiene: untracked the build-v13-tree/build-v14-tree gitlinks (always-dirty submodule entries; rebuildable from infinity-repo + patches — same policy as build-v12-tree/) and added them to .gitignore. Workspace status now 100% clean.
+- Committed ac5fefe "backup-complete: archive v12/v13 test reports + NVRAM vars forensics ...". Everything durable is now in the workspace git. Vault push (fulken/infinity-backup) still needs the ephemeral GITHUB_TOKEN from the user — script unchanged (scripts/push-infinity-backup.sh).
+
+Stage Summary:
+- Local durability DONE: all v14-era evidence + reports + vars now committed; nothing at-risk left in gitignored paths
+- Vault push PENDING on user token (last vault state = v13-era; local has v14 + evidence on top)
+- Ready command once token provided: GITHUB_TOKEN='...' bash scripts/push-infinity-backup.sh

@@ -9,11 +9,11 @@
 
 | مسیر | محتوا |
 |------|-------|
-| `version-archive/packages/` | همه پکیج‌های تحویلی: v1 تا v9 + trigger v11 |
-| `version-archive/reports/` | همه ریپورت‌های تست کاربر + شواهد پراکنده (لاگ/عکس) |
+| `version-archive/packages/` | همه پکیج‌های تحویلی: v1 تا v14 + trigger v11 |
+| `version-archive/reports/` | همه ریپورت‌های تست کاربر + شواهد پراکنده (لاگ/عکس) + **فارنزیک NVRAM vars های v12/v13** |
 | `version-archive/README.md` | نقشه کامل نسخه‌ها + هش‌های SHA256 + راهنمای بازیابی |
-| `patches/` | باینری درایور memory.efi (لاین‌بوج کامل v4 تا v8)، پچ‌های سورس v6/v7، اسکریپت v10 |
-| `scripts/` | اسکریپت‌های fetch / validate / test محیط دستیار + همین اسکریپت بکاپ |
+| `patches/` | باینری درایور memory.efi (لاین‌بوج کامل v4 تا v8 + v12 تا v14)، پچ‌های سورس v6/v7، اسکریپت v10، تمپلیت phase-d |
+| `scripts/` | اسکریپت‌های fetch / build / patch / validate / test محیط دستیار (v12 تا v14: patch-v{12,13,14}.py + build-v{12,13,14}.sh + test-v{12,13,14}-linux.sh) + همین اسکریپت بکاپ |
 | `validation-evidence/test-v7/` | لاگ‌های سریال سندباکس — اثبات زنجیره بوت v7 (EBS → VA → hook) |
 | `worklog.md` | تاریخچه کامل تحلیل‌ها و تصمیم‌ها، Task به Task |
 | `edk2_Runtime.c` | مرجع کد runtime سرویس‌های EDK2 |
@@ -22,8 +22,9 @@
 
 1. کل ریپو را clone یا zip کن
 2. پکیج‌ها از `version-archive/packages/` مستقیم قابل استفاده‌اند (هرکدام VERSION یا README مخصوص خودش را دارد)
-3. برای بازسازی محیط دستیار: ریپوی سورس `Infinity` (شاخه `uefi-full-migration`) را clone کن و پچ‌های `patches/*-on-a8e41b3.diff` را اعمال کن
+3. برای بازسازی محیط دستیار: ریپوی سورس `Infinity` (شاخه `uefi-full-migration` @ a8e41b3) را clone کن، پچ‌های `patches/*-on-a8e41b3.diff` (v7 پایه) و بعد `scripts/patch-v{12,13,14}.py` را به‌ترتیب اعمال کن
 4. راهنمای کامل نسخه‌ها: `version-archive/README.md`
+5. وضعیت فعلی تست: v14 آماده اجرا توسط کاربر (فیکس GUID + بیلد زنده KUSD؛ حکم واقعی full-bridge از تست بعدی می‌آید)
 
 ## نکته‌ها
 

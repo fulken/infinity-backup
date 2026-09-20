@@ -20,6 +20,9 @@
 | v9 | 2026-09-20 | بازگشتی از کاربر | همان درایور v8 + اسکریپت v10 + **انتقال فایل real-time** (refresh-files + transfer/ + پورت کنترل 5555) + VERSION.txt + هش‌منیفست |
 | trigger v10 | 2026-09-20 | دارم (داخل v9 + `patches/trigger-test-v10.ps1`) | اسکریپت تریگر؛ دارای باگ cast هگز منفی (`0xDEADBEEF` → Int32 منفی) |
 | trigger v11 | 2026-09-20 | دارم | فیکس باگ cast (HexLe4 رشته‌ای) + تشخیص مرحله‌ای مسیرها (A/B/C/D/E/F) — `infinity-trigger-v11.zip` |
+| v12 | 2026-09-20 | دارم | observability کامل (ماتریس ۴ سیگنالی README-V12-FA)؛ freshen INFDIAG از داخل hook خواندن دسکتاپ → **اثبات می‌رسه مسیر خواندن به hook** اما فراخوانی orig SetVariable داخل dispatch ویندوز → BSOD KMODE (درس: هرگز orig SetVariable از داخل hook روی مسیر dispatch) |
+| v13 | 2026-09-20 | دارم | observability امن: INFDIAG/INFCNT از RAM زنده جواب داده می‌شوند (صفر فراخوانی orig، صفر نوشتن NVRAM) + پچ بسته‌بندی v12.2 (پرانتز داخل بلاک bat)؛ اجرای v13 بدون BSOD |
+| v14 | 2026-09-20 | دارم | **فیکس باگ مقایسه GUID** (gnu-efi CompareGuid بازگشتی 0=مساوی، دو call-site با سماتیک EDK2-BOOLEAN استفاده شده بود → سرویس RAM و IsOurVariable هر دو dead-code!) + کپچر live بیلد ویندوز از KUSD (NtBuildNumber@+0x308، صفحه global، خواندن مستقیم volatile) + chain-after-handle دوگانه در S-hook → تست v14 = حکم واقعی full-bridge |
 
 نام‌گذاری zip از v9 به بعد با VERSION.txt داخلی هم‌راستاست (v8 و v8.1 اسم zip یکسانی داشتن که باعث اشتباه شد).
 
@@ -35,7 +38,18 @@ v5 RT driver (usb-rt, 79295 B)             7f999199f3a01926c107163215b47564675cf
 v8 RT driver (usb-d/memory.efi, 115426 B)  d8914ad2b5a4896a77c427ffd7ab585cfbb16f8930ee504753a3bddd4f038edb
 v8 SAFE driver (usb/memory.efi, 103437 B)  05d47281b15003d3688fda00f85d4db794fb9ff76f44e59480a38ddde2425585
 trigger-test.ps1 v10 (14290 B)              95ecb9477fd149d397d42e9903c89d382618a722400a2c7bea44d060629c66ac
+infinity-qemu-test-v12.zip (بسته کامل)     d4de1a88e9bf3b60 (کامل با sha256sum محلی چک شود)
+infinity-qemu-test-v13.zip (بسته کامل)     392da3970eb34cbd (کامل با sha256sum محلی چک شود)
+infinity-qemu-test-v14.zip (بسته کامل)     b5ea510a5b4d35d6 (کامل با sha256sum محلی چک شود)
+v12 SAFE driver (104457 B)                  1e858c03ef19c2aa... (پیشوند ۱۶ کاراکتری؛ کامل: sha256sum patches/v12-memory-SAFE.efi)
+v12 RT driver (117490 B)                   8ac7df0c585c7314... (پیشوند؛ کامل: sha256sum patches/v12-memory-RT.efi)
+v13 SAFE driver = v12 SAFE (بدون تغییر)    1e858c03ef19c2aa (فقط RT عوض شد)
+v13 RT driver (118002 B)                   dcd9b6e4adee372c... (پیشوند؛ کامل: sha256sum patches/v13-memory-RT.efi)
+v14 SAFE driver (104969 B)                 6f6e1d1006da9017... (پیشوند؛ کامل: sha256sum patches/v14-memory-SAFE.efi)
+v14 RT driver (119026 B)                   51e8132b2d2496f8... (پیشوند؛ کامل: sha256sum patches/v14-memory-RT.efi)
 ```
+
+(پیشوندهای ۱۶ کاراکتری برای خوانایی؛ مقدار کامل هر هش با `sha256sum` روی فایل‌های `patches/` و `packages/` قابل بازتولید است.)
 
 (مطابقت هش trigger v10 با منیفست VERSION.txt داخل v9 تأیید شد — بسته سالم و اصل است.)
 
@@ -49,18 +63,24 @@ trigger-test.ps1 v10 (14290 B)              95ecb9477fd149d397d42e9903c89d382618
 | `infinity-qemu-test-v6-Report.zip` | v6 phase-d | زنجیره ۱-۲-۳ کامل سبز؛ اسکریپت‌های v7/v8 کاربر؛ کشف ERROR 87 (ترتیب آرگومان SetFirmwareEnvironmentVariable)؛ نتیجه معماری: ویندوز از snapshot جدول gRT استفاده می‌کند → منشأ v7 |
 | `infinity-qemu-test-V7-Report.zip` | اجرای v7/v8.1 | بوت سبز + BSOD + شواهد خرابی فایل روی فلش FAT (truncate اسکریپت) → منشأ v8 فقط‌خواندنی |
 | `infinity-qemu-test-v9-Report.zip` | v9 phase-d | **hook_calls=20 + کال VIRT = ویندوز از hook های ما صدا می‌زند**؛ خطای cast اسکریپت v10 (با v11 فیکس شد) |
+| `infinity-qemu-test-V9+trigger-v11-TestReport.zip` | v9 + trigger v11 | اثبات ۴-گانه: بنر + ENV + PRIV + PARTIAL؛ حکم final: full install سبز؛ سورس فیکس‌های v12 |
+| `infinity-qemu-test-v12-TestReport.zip` | v12 phase-d | بوت زنجیره ۱۰۰٪ سبز تا G#320؛ PS step A → **BSOD KMODE_EXCEPTION_NOT_HANDLED در ۲۱٪** وسط freshen INFDIAG = خواندن دسکتاپ به hook رسید؛ [CLR] بدون S OURVAR = نوشتن بایپس؛ تحلیل کامل → طراحی v13 |
+| `infinity-qemu-test-v13-Report.zip` | v13 phase-d | اجرای بدون‌کرش؛ hook_calls=251 ثابت + INFCNT=203 + InfinityResp=203 → اولاً به‌ظاهر «هر دو مسیر بایپس»؛ شواهد عکس PS + serial-check؛ **بعداً ریشه‌یابی: باگ CompareGuid (v14) — حکم آرتیفکت بود** |
+| `vars-forensics-v12-v13/` | vars های v12+v13 کاربر | OVMF_VARS_4M.fd هر دو + خروجی dmpstore (Checked)؛ ۱۸ بوت تاریخ INFDIAG decode شد؛ **اثبات باینری فرود freshen v12 (stage=4 flags=0xF calls=341 در NVRAM)** + فرود همه‌ی نوشتن‌های دسکتاپ v13 (INFPROBE/INFTRIGGER/InfinityReq state 0x3F) → نوشتن‌ها به NVRAM می‌رسیدند اما hook تشخیص نمی‌داد (باگ GUID) |
 | `loose-evidence/` | اولین اجراها و عیب‌یابی هش | serial/عکس phase-a/b اولیه (v1 era) + اسکرین‌شات‌های عیب‌یابی hash-mismatch و خطای PowerShell (2026-09-20) |
 
 ## باینری‌ها و سورس (خارج از این پوشه، همه git-tracked)
 
 - `patches/v4-memory-SAFE.efi` ، `patches/v5-memory-{SAFE,RT}.efi` (بازگشتی از کاربر) ، `patches/v6-memory-{SAFE,RT}.efi` ، `patches/v7-memory-{SAFE,RT}.efi` ، `patches/v8-memory-{SAFE,RT}.efi` — لاین‌بوج کامل باینری از v4 تا v8
-- `patches/trigger-test-v10.ps1`
+- `patches/v12-memory-{SAFE,RT}.efi` ، `patches/v13-memory-{SAFE,RT}.efi` ، `patches/v14-memory-{SAFE,RT}.efi` — باینری‌های v12 تا v14
+- `patches/trigger-test-v10.ps1` ، `patches/phase-d-v13.bat` (تمپلیت pristine فاز-d)
 - `patches/v6-on-a8e41b3.diff` ، `patches/v7-on-a8e41b3.diff` (دلتای کامل سورس روی شاخه uefi-full-migration @ a8e41b3)
+- سورس v12: `scripts/patch-v12.py` روی درخت v7؛ v13: `scripts/patch-v13.py`؛ v14: `scripts/patch-v14.py` (فیکس GUID + KUSD live build) — همه anchored روی a8e41b3
 - سورس v8: هنوز بازسازی نشده — نیاز به clone ریپو + پچ v7 + دلتای مشتق از باینری/لاگ‌ها
 
 ## چی هنوز کمه؟ (درخواست از کاربر)
 
-1. ~~v4 و v5~~ — **دریافت شدند** (2026-09-20، بازگشتی از کاربر) — آرشیو اکنون کامل است: v1 تا v9 + trigger v11
+1. ~~v4 و v5~~ — **دریافت شدند** (2026-09-20، بازگشتی از کاربر) — آرشیو اکنون کامل است: v1 تا v14 + trigger v11 + گزارش‌های v12/v13 + vars فارنزیک
 2. (اختیاری، لازم نیست) zip های v8 و v8.1 — چون v9 همان باینری‌های معتبر v8.1 را دارد
 3. **GITHUB_TOKEN** — فقط هر وقت لازم بشه سورس ریپو دوباره fetch بشه یا آرشیو به گیت‌هاب کاربر push بشه. توکن هیچ‌وقت روی دیسک ذخیره نمی‌شود، پس بعد از هر rollback باید دوباره از کاربر گرفته شود
 

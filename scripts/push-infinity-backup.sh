@@ -4,14 +4,16 @@
 # private GitHub repo (default: fulken/infinity-backup).
 #
 # Usage:
-#   GITHUB_TOKEN='github_pat_...' \
-#   GITHUB_OWNER='fulken' \
-#   REPO_NAME='infinity-backup' \
-#   bash /home/z/my-project/scripts/push-infinity-backup.sh
+#   GITHUB_TOKEN='github_pat_...' bash scripts/push-infinity-backup.sh
+#   (or no env var: falls back to /home/z/my-project/.secrets/github-token,
+#    which the user explicitly authorized for on-disk storage on 2026-09-21,
+#    7-day fine-grained PAT, admin perms. NEVER mirror .secrets/ anywhere.)
 #
 # Design rules (same as fetch-infinity-repo.sh):
-#   - Token is passed ONLY as an ephemeral git http header / API header.
-#     It is NEVER written to .git/config, remotes, files, or commits.
+#   - Token comes from env var OR the local .secrets file; it is NEVER
+#     written to .git/config, remotes, or COMMITTED TO THE VAULT REPO
+#     (staging leak-check aborts the push if the token value appears in
+#     any mirrored file).
 #   - Idempotent: creates the repo if missing, clones its history, mirrors
 #     the CURRENT workspace artifacts on top, commits the delta, pushes.
 #   - Staging lives under backups/ (gitignored, disposable) — it is rebuilt
@@ -21,12 +23,16 @@
 # ============================================================================
 set -euo pipefail
 
-TOKEN="${GITHUB_TOKEN:?GITHUB_TOKEN is not set}"
+# Token resolution: env var wins; else the user-authorized local secrets file.
+BASE=/home/z/my-project
+if [ -z "${GITHUB_TOKEN:-}" ] && [ -f "$BASE/.secrets/github-token" ]; then
+  GITHUB_TOKEN="$(head -1 "$BASE/.secrets/github-token" | tr -d '[:space:]')"
+fi
+TOKEN="${GITHUB_TOKEN:?GITHUB_TOKEN is not set and $BASE/.secrets/github-token is missing}"
 OWNER="${GITHUB_OWNER:-fulken}"
 REPO="${REPO_NAME:-infinity-backup}"
 API="https://api.github.com"
 URL="https://github.com/$OWNER/$REPO.git"
-BASE=/home/z/my-project
 BACKUPS="$BASE/backups"
 STAGE="$BACKUPS/$REPO-staging"
 AUTH="Authorization: Basic $(printf "x-access-token:%s" "$TOKEN" | base64 -w0)"
