@@ -1,0 +1,625 @@
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "UEFI QEMU HARDDISK QM00003 " from PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x1,0xFFFF,0x0)
+BdsDxe: starting Boot0001 "UEFI QEMU HARDDISK QM00003 " from PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x1,0xFFFF,0x0)
+[2J[01;01H[01;01HUEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 (Debian distribution of EDK II, 0x00010000)
+[1m[33m[40mMapping table[0m[37m[40m
+[1m[33m[40m      FS0:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40mHD0b65535a1:;BLK1:
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x1,0xFFFF,0x0)/HD(1,MBR,0xBE1AFDFA)
+[1m[33m[40m     BLK0:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x1,0xFFFF,0x0)
+[09;01HPress [1m[37m[40mESC[0m[37m[40m in 5 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[09;01HPress [1m[37m[40mESC[0m[37m[40m in 4 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[09;01HPress [1m[37m[40mESC[0m[37m[40m in 3 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[09;01HPress [1m[37m[40mESC[0m[37m[40m in 2 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[09;01HPress [1m[37m[40mESC[0m[37m[40m in 1 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.
+[1m[33m[40mShell> [0m[37m[40mecho === INFINITY v7 linux rig: load driver then boot kernel directly ===
+=== INFINITY v7 linux rig: load driver then boot kernel directly ===
+[1m[33m[40mShell> [0m[37m[40mif exist FS0:\memory.efi then
+[1m[33m[40mShell> [0m[37m[40m  load FS0:\memory.efi
+
+[INF][MAIN] efi_main v7 boot
+[INF][MAIN] variant: RT (EARLY gRT hooks - v7)[2J[01;01H[1m[37m[44m                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+[1m[37m[40m[11;01H  INFINITY UEFI BRIDGE LOADED                              
+  Made by: fulken                                          
+  Build: v7 RT - EARLY gRT hooks (phase D2)              
+  Driver has been loaded. You can now boot to the OS.       
+
+
+[INF][MAIN] UEFI CR3 =0x000000003FC01000
+[INF][IMG] ImageBase =0x000000003FAA7000
+[INF][IMG] ImageCodeType =5
+[INF][IMG] ImageDataType =6
+[INF][MMAP] descriptors =121
+[INF][MMAP] type=6 attr=0x800000000000000F phys=0x000000003ED3F000-0x000000003EE00000 npages=193
+[INF][MMAP] type=6 attr=0x800000000000000F phys=0x000000003F8ED000-0x000000003F9ED000 npages=256
+[INF][MMAP] type=5 attr=0x800000000000000F phys=0x000000003F9ED000-0x000000003FAED000 npages=256 <OUR_IMAGE>
+[INF][MMAP] type=6 attr=0x800000000000000F phys=0x000000003FEEC000-0x000000003FF70000 npages=132
+[INF][MAIN] shared pool OK (4MB, EfiRuntimeServicesData)
+[INF][MAIN] request handler started (1ms timer)
+[INF][RT-EARLY] orig GetTime        =0x000000003FACCC1A
+[INF][RT-EARLY] orig GetVariable    =0x000000003FAD5BB7
+[INF][RT-EARLY] orig SetVariable    =0x000000003FAD7FA8
+[INF][RT-EARLY] hook GetTime        =0x000000003FAB6FA0
+[INF][RT-EARLY] hook GetVariable    =0x000000003FAB68B0
+[INF][RT-EARLY] hook SetVariable    =0x000000003FAB61E0
+[INF][RT-EARLY] gRT hooks INSTALLED at load time (pre-snapshot; Windows-visible)
+[INF][MAIN] VA graph populated
+[INF][EBS] hook installed, orig ExitBootServices =0x000000003FE8F1F0
+[INF][MAIN] VA event registration st=0x00000000
+[INF][DIAG] write stage=1 flags=0x00000009 prev_st=0x00000000 st=0x00000000  SUCCESS: Bridge ready. Returning to boot menu.
+  When you boot to Windows, Infinity.exe will detect
+  the bridge and use it automatically.
+
+[INF][MAIN] efi_main returning to shell
+[INF][HOOK] G BOOT-CTX call#1
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G BOOT-CTX call#2
+[INF][HOOK] G chained st=0x00000000Image 'FS0:\memory.efi' loaded at 3FAA7000 - Success
+
+[INF][HOOK] G BOOT-CTX call#3
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G BOOT-CTX call#4
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S BOOT-CTX call#5
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G BOOT-CTX call#6
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G BOOT-CTX call#7
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S BOOT-CTX call#8
+[INF][HOOK] S chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mendif
+[1m[33m[40mShell> [1m[37m[40mif exist FS1:\memory.efi then
+[1m[33m[40mShell> [1m[37m[40mif exist FS2:\memory.efi then
+[1m[33m[40mShell> [1m[37m[40mif exist FS3:\memory.efi then
+[1m[33m[40mShell> [1m[37m[40mif exist FS4:\memory.efi then
+[1m[33m[40mShell> [1m[37m[40mecho === driver stage done, booting kernel ===
+=== driver stage done, booting kernel ===
+[1m[33m[40mShell> [1m[37m[40mif exist FS0:\vmlinuz then
+[1m[33m[40mShell> [1m[37m[40m  FS0:\vmlinuz console=ttyS0,115200 panic=-1 efi=debug initrd=\initrd.img
+EFI stub: Loaded initrd from command line option
+
+[INF][EBS] ExitBootServices hook FIRED
+[INF][EBS] calling original ExitBootServices
+[INF][EBS] original ExitBootServices returned st=0x00000000
+[INF][EBS] os_cr3 =0x000000003FC01000
+[INF][EBS] windows build=0
+[INF][DIAG] write stage=2 flags=0x0000000B prev_st=0x00000000 st=0x00000000
+[INF][EBS] handoff complete, returning to OS loader[    0.000000] Linux version 6.12.51-0-virt (buildozer@build-3-22-x86_64) (cc (Alpine 14.2.0) 14.2.0, GNU ld (GNU Binutils) 2.44) #1-Alpine SMP PREEMPT_DYNAMIC 2025-10-07 15:12:03
+[    0.000000] Command line: FS0:\vmlinuz console=ttyS0,115200 panic=-1 efi=debug initrd=\initrd.img
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009ffff] usable
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x00000000007fffff] usable
+[    0.000000] BIOS-e820: [mem 0x0000000000800000-0x0000000000807fff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x0000000000808000-0x000000000080afff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000080b000-0x000000000080bfff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x000000000080c000-0x0000000000810fff] usable
+[    0.000000] BIOS-e820: [mem 0x0000000000811000-0x00000000008fffff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x0000000000900000-0x000000003dce4fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003dce5000-0x000000003e0e4fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000003e0e5000-0x000000003ed3efff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003ed3f000-0x000000003edfffff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000003ee00000-0x000000003f8ecfff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003f8ed000-0x000000003fb6cfff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000003fb6d000-0x000000003fb7efff] ACPI data
+[    0.000000] BIOS-e820: [mem 0x000000003fb7f000-0x000000003fbfefff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x000000003fbff000-0x000000003feb1fff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003feb2000-0x000000003feb5fff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000003feb6000-0x000000003feb7fff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x000000003feb8000-0x000000003feebfff] usable
+[    0.000000] BIOS-e820: [mem 0x000000003feec000-0x000000003ff6ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000003ff70000-0x000000003fffffff] ACPI NVS
+[    0.000000] BIOS-e820: [mem 0x00000000e0000000-0x00000000efffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000ffc00000-0x00000000ffffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] APIC: Static calls initialized
+[    0.000000] extended physical RAM map:
+[    0.000000] reserve setup_data: [mem 0x0000000000000000-0x000000000009ffff] usable
+[    0.000000] reserve setup_data: [mem 0x0000000000100000-0x00000000007fffff] usable
+[    0.000000] reserve setup_data: [mem 0x0000000000800000-0x0000000000807fff] ACPI NVS
+[    0.000000] reserve setup_data: [mem 0x0000000000808000-0x000000000080afff] usable
+[    0.000000] reserve setup_data: [mem 0x000000000080b000-0x000000000080bfff] ACPI NVS
+[    0.000000] reserve setup_data: [mem 0x000000000080c000-0x0000000000810fff] usable
+[    0.000000] reserve setup_data: [mem 0x0000000000811000-0x00000000008fffff] ACPI NVS
+[    0.000000] reserve setup_data: [mem 0x0000000000900000-0x000000003dce4fff] usable
+[    0.000000] reserve setup_data: [mem 0x000000003dce5000-0x000000003e0e4fff] reserved
+[    0.000000] reserve setup_data: [mem 0x000000003e0e5000-0x000000003e288017] usable
+[    0.000000] reserve setup_data: [mem 0x000000003e288018-0x000000003e291a57] usable
+[    0.000000] reserve setup_data: [mem 0x000000003e291a58-0x000000003ed3efff] usable
+[    0.000000] reserve setup_data: [mem 0x000000003ed3f000-0x000000003edfffff] reserved
+[    0.000000] reserve setup_data: [mem 0x000000003ee00000-0x000000003f8ecfff] usable
+[    0.000000] reserve setup_data: [mem 0x000000003f8ed000-0x000000003fb6cfff] reserved
+[    0.000000] reserve setup_data: [mem 0x000000003fb6d000-0x000000003fb7efff] ACPI data
+[    0.000000] reserve setup_data: [mem 0x000000003fb7f000-0x000000003fbfefff] ACPI NVS
+[    0.000000] reserve setup_data: [mem 0x000000003fbff000-0x000000003feb1fff] usable
+[    0.000000] reserve setup_data: [mem 0x000000003feb2000-0x000000003feb5fff] reserved
+[    0.000000] reserve setup_data: [mem 0x000000003feb6000-0x000000003feb7fff] ACPI NVS
+[    0.000000] reserve setup_data: [mem 0x000000003feb8000-0x000000003feebfff] usable
+[    0.000000] reserve setup_data: [mem 0x000000003feec000-0x000000003ff6ffff] reserved
+[    0.000000] reserve setup_data: [mem 0x000000003ff70000-0x000000003fffffff] ACPI NVS
+[    0.000000] reserve setup_data: [mem 0x00000000e0000000-0x00000000efffffff] reserved
+[    0.000000] reserve setup_data: [mem 0x00000000ffc00000-0x00000000ffffffff] reserved
+[    0.000000] reserve setup_data: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+[    0.000000] efi: EFI v2.7 by Debian distribution of EDK II
+[    0.000000] efi: SMBIOS=0x3f988000 ACPI=0x3fb7e000 ACPI 2.0=0x3fb7e014 MEMATTR=0x3e2c1118 INITRD=0x3e2bcf18 RNG=0x3fb73018 
+[    0.000000] random: crng init done
+[    0.000000] efi: Remove mem127: MMIO range=[0xffc00000-0xffffffff] (4MB) from e820 map
+[    0.000000] efi: mem00: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000000000-0x0000000000086fff] (0MB)
+[    0.000000] efi: mem01: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000087000-0x0000000000087fff] (0MB)
+[    0.000000] efi: mem02: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000088000-0x000000000009ffff] (0MB)
+[    0.000000] efi: mem03: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000100000-0x00000000007fffff] (7MB)
+[    0.000000] efi: mem04: [ACPI Mem NVS|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000800000-0x0000000000807fff] (0MB)
+[    0.000000] efi: mem05: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000808000-0x000000000080afff] (0MB)
+[    0.000000] efi: mem06: [ACPI Mem NVS|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000000080b000-0x000000000080bfff] (0MB)
+[    0.000000] efi: mem07: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000000080c000-0x0000000000810fff] (0MB)
+[    0.000000] efi: mem08: [ACPI Mem NVS|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000811000-0x00000000008fffff] (0MB)
+[    0.000000] efi: mem09: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000900000-0x000000000177ffff] (14MB)
+[    0.000000] efi: mem10: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000001780000-0x000000002fffffff] (744MB)
+[    0.000000] efi: mem11: [Loader Code |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000030000000-0x00000000325fffff] (38MB)
+[    0.000000] efi: mem12: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000032600000-0x000000003bf5bfff] (153MB)
+[    0.000000] efi: mem13: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003bf5c000-0x000000003bf7bfff] (0MB)
+[    0.000000] efi: mem14: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003bf7c000-0x000000003c63afff] (6MB)
+[    0.000000] efi: mem15: [Loader Code |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003c63b000-0x000000003d1acfff] (11MB)
+[    0.000000] efi: mem16: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003d1ad000-0x000000003d3fefff] (2MB)
+[    0.000000] efi: mem17: [Loader Data |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003d3ff000-0x000000003dce4fff] (8MB)
+[    0.000000] efi: mem18: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003dce5000-0x000000003e0e4fff] (4MB)
+[    0.000000] efi: mem19: [Loader Code |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e0e5000-0x000000003e206fff] (1MB)
+[    0.000000] efi: mem20: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e207000-0x000000003e287fff] (0MB)
+[    0.000000] efi: mem21: [Loader Data |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e288000-0x000000003e291fff] (0MB)
+[    0.000000] efi: mem22: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e292000-0x000000003e2b3fff] (0MB)
+[    0.000000] efi: mem23: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e2b4000-0x000000003e2b9fff] (0MB)
+[    0.000000] efi: mem24: [Loader Data |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e2ba000-0x000000003e2bdfff] (0MB)
+[    0.000000] efi: mem25: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e2be000-0x000000003ea03fff] (7MB)
+[    0.000000] efi: mem26: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ea04000-0x000000003eaf9fff] (0MB)
+[    0.000000] efi: mem27: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eafa000-0x000000003eb4cfff] (0MB)
+[    0.000000] efi: mem28: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb4d000-0x000000003eb57fff] (0MB)
+[    0.000000] efi: mem29: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb58000-0x000000003eb62fff] (0MB)
+[    0.000000] efi: mem30: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb63000-0x000000003eb92fff] (0MB)
+[    0.000000] efi: mem31: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb93000-0x000000003eb95fff] (0MB)
+[    0.000000] efi: mem32: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb96000-0x000000003ebb0fff] (0MB)
+[    0.000000] efi: mem33: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ebb1000-0x000000003ebeffff] (0MB)
+[    0.000000] efi: mem34: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ebf0000-0x000000003ec14fff] (0MB)
+[    0.000000] efi: mem35: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec15000-0x000000003ec23fff] (0MB)
+[    0.000000] efi: mem36: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec24000-0x000000003ec32fff] (0MB)
+[    0.000000] efi: mem37: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec33000-0x000000003ec34fff] (0MB)
+[    0.000000] efi: mem38: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec35000-0x000000003ec4afff] (0MB)
+[    0.000000] efi: mem39: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec4b000-0x000000003ec4dfff] (0MB)
+[    0.000000] efi: mem40: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec4e000-0x000000003ec68fff] (0MB)
+[    0.000000] efi: mem41: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec69000-0x000000003ec6ffff] (0MB)
+[    0.000000] efi: mem42: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec70000-0x000000003ec82fff] (0MB)
+[    0.000000] efi: mem43: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec83000-0x000000003ec85fff] (0MB)
+[    0.000000] efi: mem44: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec86000-0x000000003eca3fff] (0MB)
+[    0.000000] efi: mem45: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eca4000-0x000000003eca9fff] (0MB)
+[    0.000000] efi: mem46: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecaa000-0x000000003ecbffff] (0MB)
+[    0.000000] efi: mem47: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecc0000-0x000000003ecc1fff] (0MB)
+[    0.000000] efi: mem48: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecc2000-0x000000003eccefff] (0MB)
+[    0.000000] efi: mem49: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eccf000-0x000000003ecd1fff] (0MB)
+[    0.000000] efi: mem50: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecd2000-0x000000003ecd3fff] (0MB)
+[    0.000000] efi: mem51: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecd4000-0x000000003ecd5fff] (0MB)
+[    0.000000] efi: mem52: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecd6000-0x000000003ecdefff] (0MB)
+[    0.000000] efi: mem53: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecdf000-0x000000003ecdffff] (0MB)
+[    0.000000] efi: mem54: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ece0000-0x000000003ece0fff] (0MB)
+[    0.000000] efi: mem55: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ece1000-0x000000003ece3fff] (0MB)
+[    0.000000] efi: mem56: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ece4000-0x000000003ecf4fff] (0MB)
+[    0.000000] efi: mem57: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecf5000-0x000000003ecf5fff] (0MB)
+[    0.000000] efi: mem58: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecf6000-0x000000003ecf7fff] (0MB)
+[    0.000000] efi: mem59: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecf8000-0x000000003ecf9fff] (0MB)
+[    0.000000] efi: mem60: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecfa000-0x000000003ecfcfff] (0MB)
+[    0.000000] efi: mem61: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecfd000-0x000000003ecfdfff] (0MB)
+[    0.000000] efi: mem62: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecfe000-0x000000003ed32fff] (0MB)
+[    0.000000] efi: mem63: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed33000-0x000000003ed34fff] (0MB)
+[    0.000000] efi: mem64: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed35000-0x000000003ed35fff] (0MB)
+[    0.000000] efi: mem65: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed36000-0x000000003ed3afff] (0MB)
+[    0.000000] efi: mem66: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed3b000-0x000000003ed3cfff] (0MB)
+[    0.000000] efi: mem67: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed3d000-0x000000003ed3efff] (0MB)
+[    0.000000] efi: mem68: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed3f000-0x000000003edfffff] (0MB)
+[    0.000000] efi: mem69: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ee00000-0x000000003effffff] (2MB)
+[    0.000000] efi: mem70: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f000000-0x000000003f007fff] (0MB)
+[    0.000000] efi: mem71: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f008000-0x000000003f00ffff] (0MB)
+[    0.000000] efi: mem72: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f010000-0x000000003f019fff] (0MB)
+[    0.000000] efi: mem73: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f01a000-0x000000003f01efff] (0MB)
+[    0.000000] efi: mem74: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f01f000-0x000000003f049fff] (0MB)
+[    0.000000] efi: mem75: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f04a000-0x000000003f052fff] (0MB)
+[    0.000000] efi: mem76: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f053000-0x000000003f066fff] (0MB)
+[    0.000000] efi: mem77: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f067000-0x000000003f06bfff] (0MB)
+[    0.000000] efi: mem78: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f06c000-0x000000003f070fff] (0MB)
+[    0.000000] efi: mem79: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f071000-0x000000003f073fff] (0MB)
+[    0.000000] efi: mem80: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f074000-0x000000003f076fff] (0MB)
+[    0.000000] efi: mem81: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f077000-0x000000003f077fff] (0MB)
+[    0.000000] efi: mem82: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f078000-0x000000003f095fff] (0MB)
+[    0.000000] efi: mem83: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f096000-0x000000003f09afff] (0MB)
+[    0.000000] efi: mem84: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f09b000-0x000000003f09dfff] (0MB)
+[    0.000000] efi: mem85: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f09e000-0x000000003f09efff] (0MB)
+[    0.000000] efi: mem86: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f09f000-0x000000003f0a1fff] (0MB)
+[    0.000000] efi: mem87: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0a2000-0x000000003f0a2fff] (0MB)
+[    0.000000] efi: mem88: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0a3000-0x000000003f0a8fff] (0MB)
+[    0.000000] efi: mem89: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0a9000-0x000000003f0c2fff] (0MB)
+[    0.000000] efi: mem90: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0c3000-0x000000003f0d9fff] (0MB)
+[    0.000000] efi: mem91: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0da000-0x000000003f0dbfff] (0MB)
+[    0.000000] efi: mem92: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0dc000-0x000000003f0e0fff] (0MB)
+[    0.000000] efi: mem93: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e1000-0x000000003f0e2fff] (0MB)
+[    0.000000] efi: mem94: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e3000-0x000000003f0e3fff] (0MB)
+[    0.000000] efi: mem95: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e4000-0x000000003f0e6fff] (0MB)
+[    0.000000] efi: mem96: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e7000-0x000000003f0eafff] (0MB)
+[    0.000000] efi: mem97: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0eb000-0x000000003f0ecfff] (0MB)
+[    0.000000] efi: mem98: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0ed000-0x000000003f0eefff] (0MB)
+[    0.000000] efi: mem99: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0ef000-0x000000003f0f0fff] (0MB)
+[    0.000000] efi: mem100: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0f1000-0x000000003f0f2fff] (0MB)
+[    0.000000] efi: mem101: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0f3000-0x000000003f4f2fff] (4MB)
+[    0.000000] efi: mem102: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4f3000-0x000000003f4f6fff] (0MB)
+[    0.000000] efi: mem103: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4f7000-0x000000003f4f7fff] (0MB)
+[    0.000000] efi: mem104: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4f8000-0x000000003f4fbfff] (0MB)
+[    0.000000] efi: mem105: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4fc000-0x000000003f501fff] (0MB)
+[    0.000000] efi: mem106: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f502000-0x000000003f50dfff] (0MB)
+[    0.000000] efi: mem107: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f50e000-0x000000003f50efff] (0MB)
+[    0.000000] efi: mem108: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f50f000-0x000000003f511fff] (0MB)
+[    0.000000] efi: mem109: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f512000-0x000000003f8ecfff] (3MB)
+[    0.000000] efi: mem110: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f8ed000-0x000000003f9ecfff] (1MB)
+[    0.000000] efi: mem111: [Runtime Code|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f9ed000-0x000000003faecfff] (1MB)
+[    0.000000] efi: mem112: [Reserved    |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003faed000-0x000000003fb6cfff] (0MB)
+[    0.000000] efi: mem113: [ACPI Reclaim|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fb6d000-0x000000003fb7efff] (0MB)
+[    0.000000] efi: mem114: [ACPI Mem NVS|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fb7f000-0x000000003fbfefff] (0MB)
+[    0.000000] efi: mem115: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fbff000-0x000000003fdfffff] (2MB)
+[    0.000000] efi: mem116: [Conventional|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fe00000-0x000000003fe5efff] (0MB)
+[    0.000000] efi: mem117: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fe5f000-0x000000003fe7efff] (0MB)
+[    0.000000] efi: mem118: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fe7f000-0x000000003feb1fff] (0MB)
+[    0.000000] efi: mem119: [Reserved    |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feb2000-0x000000003feb5fff] (0MB)
+[    0.000000] efi: mem120: [ACPI Mem NVS|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feb6000-0x000000003feb7fff] (0MB)
+[    0.000000] efi: mem121: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feb8000-0x000000003feb8fff] (0MB)
+[    0.000000] efi: mem122: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feb9000-0x000000003fed1fff] (0MB)
+[    0.000000] efi: mem123: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fed2000-0x000000003feebfff] (0MB)
+[    0.000000] efi: mem124: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feec000-0x000000003ff6ffff] (0MB)
+[    0.000000] efi: mem125: [ACPI Mem NVS|   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ff70000-0x000000003fffffff] (0MB)
+[    0.000000] efi: mem126: [Reserved    |   |  |  |  |  |  |  |  |  |  |   |  |  |  |UC] range=[0x00000000e0000000-0x00000000efffffff] (256MB)
+[    0.000000] efi: mem127: [MMIO        |RUN|  |  |  |  |  |  |  |  |  |   |  |  |  |UC] range=[0x00000000ffc00000-0x00000000ffffffff] (4MB)
+[    0.000000] efi: mem128: [Reserved    |   |  |  |  |  |  |  |  |  |  |   |  |  |  |  ] range=[0x000000fd00000000-0x000000ffffffffff] (12288MB)
+[    0.000000] SMBIOS 2.8 present.
+[    0.000000] DMI: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2025.02-8+deb13u1 11/08/2025
+[    0.000000] DMI: Memory slots populated: 1/1
+[    0.000000] tsc: Fast TSC calibration using PIT
+[    0.000000] tsc: Detected 3200.199 MHz processor
+[    0.002551] last_pfn = 0x3feec max_arch_pfn = 0x400000000
+[    0.003639] MTRR map: 4 entries (2 fixed + 2 variable; max 18), built from 8 variable MTRRs
+[    0.003933] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.034628] Using GB pages for direct mapping
+[    0.042783] Secure boot disabled
+[    0.042853] RAMDISK: [mem 0x3d3ff000-0x3dce4fff]
+[    0.043240] ACPI: Early table checksum verification disabled
+[    0.043789] ACPI: RSDP 0x000000003FB7E014 000024 (v02 BOCHS )
+[    0.044225] ACPI: XSDT 0x000000003FB7D0E8 000054 (v01 BOCHS  BXPC     00000001      01000013)
+[    0.044953] ACPI: FACP 0x000000003FB79000 0000F4 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.045760] ACPI: DSDT 0x000000003FB7A000 00218F (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.045844] ACPI: FACS 0x000000003FBDD000 000040
+[    0.045919] ACPI: APIC 0x000000003FB78000 000080 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.045961] ACPI: HPET 0x000000003FB77000 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.045980] ACPI: MCFG 0x000000003FB76000 00003C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.045996] ACPI: WAET 0x000000003FB75000 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.046016] ACPI: BGRT 0x000000003FB74000 000038 (v01 INTEL  EDK2     00000002      01000013)
+[    0.046151] ACPI: Reserving FACP table memory at [mem 0x3fb79000-0x3fb790f3]
+[    0.046193] ACPI: Reserving DSDT table memory at [mem 0x3fb7a000-0x3fb7c18e]
+[    0.046200] ACPI: Reserving FACS table memory at [mem 0x3fbdd000-0x3fbdd03f]
+[    0.046206] ACPI: Reserving APIC table memory at [mem 0x3fb78000-0x3fb7807f]
+[    0.046211] ACPI: Reserving HPET table memory at [mem 0x3fb77000-0x3fb77037]
+[    0.046217] ACPI: Reserving MCFG table memory at [mem 0x3fb76000-0x3fb7603b]
+[    0.046222] ACPI: Reserving WAET table memory at [mem 0x3fb75000-0x3fb75027]
+[    0.046227] ACPI: Reserving BGRT table memory at [mem 0x3fb74000-0x3fb74037]
+[    0.051367] No NUMA configuration found
+[    0.051401] Faking a node at [mem 0x0000000000000000-0x000000003feebfff]
+[    0.052545] NODE_DATA(0) allocated [mem 0x3fe5ad80-0x3fe5efff]
+[    0.055887] Zone ranges:
+[    0.055926]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.056004]   DMA32    [mem 0x0000000001000000-0x000000003feebfff]
+[    0.056018]   Normal   empty
+[    0.056050] Movable zone start for each node
+[    0.056102] Early memory node ranges
+[    0.056151]   node   0: [mem 0x0000000000001000-0x000000000009ffff]
+[    0.056372]   node   0: [mem 0x0000000000100000-0x00000000007fffff]
+[    0.056380]   node   0: [mem 0x0000000000808000-0x000000000080afff]
+[    0.056385]   node   0: [mem 0x000000000080c000-0x0000000000810fff]
+[    0.056391]   node   0: [mem 0x0000000000900000-0x000000003dce4fff]
+[    0.056431]   node   0: [mem 0x000000003e0e5000-0x000000003ed3efff]
+[    0.056436]   node   0: [mem 0x000000003ee00000-0x000000003f8ecfff]
+[    0.056451]   node   0: [mem 0x000000003fbff000-0x000000003feb1fff]
+[    0.056457]   node   0: [mem 0x000000003feb8000-0x000000003feebfff]
+[    0.056621] Initmem setup node 0 [mem 0x0000000000001000-0x000000003feebfff]
+[    0.086752] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.087133] On node 0, zone DMA: 96 pages in unavailable ranges
+[    0.087147] On node 0, zone DMA: 8 pages in unavailable ranges
+[    0.087154] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.087292] On node 0, zone DMA: 239 pages in unavailable ranges
+[    0.107373] On node 0, zone DMA32: 1024 pages in unavailable ranges
+[    0.107598] On node 0, zone DMA32: 193 pages in unavailable ranges
+[    0.107724] On node 0, zone DMA32: 786 pages in unavailable ranges
+[    0.107735] On node 0, zone DMA32: 6 pages in unavailable ranges
+[    0.107814] On node 0, zone DMA32: 276 pages in unavailable ranges
+[    0.108932] ACPI: PM-Timer IO Port: 0x608
+[    0.109816] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.110366] IOAPIC[0]: apic_id 0, version 32, address 0xfec00000, GSI 0-23
+[    0.110565] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.111037] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+[    0.111122] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.111298] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+[    0.111311] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+[    0.111687] ACPI: Using ACPI (MADT) for SMP configuration information
+[    0.111764] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.113750] CPU topo: Max. logical packages:   1
+[    0.113765] CPU topo: Max. logical dies:       1
+[    0.113775] CPU topo: Max. dies per package:   1
+[    0.113831] CPU topo: Max. threads per core:   1
+[    0.114043] CPU topo: Num. cores per package:     2
+[    0.114063] CPU topo: Num. threads per package:   2
+[    0.114072] CPU topo: Allowing 2 present CPUs plus 0 hotplug CPUs
+[    0.115843] [mem 0x40000000-0xdfffffff] available for PCI devices
+[    0.115950] Booting paravirtualized kernel on bare hardware
+[    0.116364] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+[    0.127552] setup_percpu: NR_CPUS:256 nr_cpumask_bits:2 nr_cpu_ids:2 nr_node_ids:1
+[    0.132959] percpu: Embedded 60 pages/cpu s205656 r8192 d31912 u1048576
+[    0.135928] Kernel command line: FS0:\vmlinuz console=ttyS0,115200 panic=-1 efi=debug initrd=\initrd.img
+[    0.137605] Unknown kernel command line parameters "FS0:\vmlinuz", will be passed to user space.
+[    0.138965] Dentry cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.139524] Inode-cache hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.143285] Fallback order for Node 0: 0 
+[    0.143699] Built 1 zonelists, mobility grouping on.  Total pages: 259514
+[    0.143719] Policy zone: DMA32
+[    0.145877] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+[    0.215319] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+[    0.229947] Dynamic Preempt: none
+[    0.235671] rcu: Preemptible hierarchical RCU implementation.
+[    0.235731] rcu: 	RCU restricting CPUs from NR_CPUS=256 to nr_cpu_ids=2.
+[    0.236040] 	Trampoline variant of Tasks RCU enabled.
+[    0.236056] 	Tracing variant of Tasks RCU enabled.
+[    0.236202] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.236243] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
+[    0.237999] RCU Tasks: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.238034] RCU Tasks Trace: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.330372] NR_IRQS: 16640, nr_irqs: 440, preallocated irqs: 16
+[    0.343596] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.349756] kfence: initialized - using 2097152 bytes for 255 objects at 0x(____ptrval____)-0x(____ptrval____)
+[    0.354939] Console: colour dummy device 80x25
+[    0.386051] printk: legacy console [ttyS0] enabled
+[    0.439977] ACPI: Core revision 20240827
+[    0.447538] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+[    0.454633] APIC: Switch to symmetric I/O mode setup
+[    0.456489] x2apic: IRQ remapping doesn't support X2APIC mode
+[    0.490381] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.496740] clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0x2e2106440a9, max_idle_ns: 440795362133 ns
+[    0.497786] Calibrating delay loop (skipped), value calculated using timer frequency.. 6400.39 BogoMIPS (lpj=3200199)
+[    0.501181] x86/cpu: User Mode Instruction Prevention (UMIP) activated
+[    0.508021] Last level iTLB entries: 4KB 0, 2MB 0, 4MB 0
+[    0.508389] Last level dTLB entries: 4KB 0, 2MB 0, 4MB 0, 1GB 0
+[    0.511009] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.511975] Spectre V2 : Mitigation: Retpolines
+[    0.512169] Spectre V2 : Spectre v2 / SpectreRSB: Filling RSB on context switch and VMEXIT
+[    0.512646] Speculative Store Bypass: Vulnerable
+[    0.520066] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+[    0.522847] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+[    0.523052] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+[    0.523479] x86/fpu: Supporting XSAVE feature 0x008: 'MPX bounds registers'
+[    0.523659] x86/fpu: Supporting XSAVE feature 0x010: 'MPX CSR'
+[    0.524125] x86/fpu: xstate_offset[2]:  576, xstate_sizes[2]:  256
+[    0.524659] x86/fpu: xstate_offset[3]:  960, xstate_sizes[3]:   64
+[    0.524813] x86/fpu: xstate_offset[4]: 1024, xstate_sizes[4]:   64
+[    0.524990] x86/fpu: Enabled xstate features 0x1f, context size is 1088 bytes, using 'standard' format.
+[    0.680573] Freeing SMP alternatives memory: 36K
+[    0.681921] pid_max: default: 32768 minimum: 301
+[    0.697562] efi: EFI runtime memory map:
+[    0.698497] efi: mem00: [MMIO        |RUN|  |  |  |  |  |  |  |  |  |   |  |  |  |UC] range=[0x00000000ffc00000-0x00000000ffffffff] (4MB)
+[    0.698781] efi: mem01: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feec000-0x000000003ff6ffff] (0MB)
+[    0.699019] efi: mem02: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fed2000-0x000000003feebfff] (0MB)
+[    0.699227] efi: mem03: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feb9000-0x000000003fed1fff] (0MB)
+[    0.699471] efi: mem04: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003feb8000-0x000000003feb8fff] (0MB)
+[    0.699692] efi: mem05: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fe7f000-0x000000003feb1fff] (0MB)
+[    0.699893] efi: mem06: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fe5f000-0x000000003fe7efff] (0MB)
+[    0.700110] efi: mem07: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003fbff000-0x000000003fdfffff] (2MB)
+[    0.700338] efi: mem08: [Runtime Code|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f9ed000-0x000000003faecfff] (1MB)
+[    0.700474] efi: mem09: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f8ed000-0x000000003f9ecfff] (1MB)
+[    0.700713] efi: mem10: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f512000-0x000000003f8ecfff] (3MB)
+[    0.700971] efi: mem11: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f50f000-0x000000003f511fff] (0MB)
+[    0.701466] efi: mem12: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f50e000-0x000000003f50efff] (0MB)
+[    0.701700] efi: mem13: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f502000-0x000000003f50dfff] (0MB)
+[    0.701941] efi: mem14: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4fc000-0x000000003f501fff] (0MB)
+[    0.702214] efi: mem15: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4f8000-0x000000003f4fbfff] (0MB)
+[    0.702469] efi: mem16: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4f7000-0x000000003f4f7fff] (0MB)
+[    0.702714] efi: mem17: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f4f3000-0x000000003f4f6fff] (0MB)
+[    0.702945] efi: mem18: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0f3000-0x000000003f4f2fff] (4MB)
+[    0.703197] efi: mem19: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0f1000-0x000000003f0f2fff] (0MB)
+[    0.703465] efi: mem20: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0ef000-0x000000003f0f0fff] (0MB)
+[    0.703695] efi: mem21: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0ed000-0x000000003f0eefff] (0MB)
+[    0.703960] efi: mem22: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0eb000-0x000000003f0ecfff] (0MB)
+[    0.704178] efi: mem23: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e7000-0x000000003f0eafff] (0MB)
+[    0.704465] efi: mem24: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e4000-0x000000003f0e6fff] (0MB)
+[    0.704730] efi: mem25: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e3000-0x000000003f0e3fff] (0MB)
+[    0.704967] efi: mem26: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0e1000-0x000000003f0e2fff] (0MB)
+[    0.705222] efi: mem27: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0dc000-0x000000003f0e0fff] (0MB)
+[    0.705465] efi: mem28: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0da000-0x000000003f0dbfff] (0MB)
+[    0.705723] efi: mem29: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0c3000-0x000000003f0d9fff] (0MB)
+[    0.705965] efi: mem30: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0a9000-0x000000003f0c2fff] (0MB)
+[    0.706169] efi: mem31: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0a3000-0x000000003f0a8fff] (0MB)
+[    0.706465] efi: mem32: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f0a2000-0x000000003f0a2fff] (0MB)
+[    0.706728] efi: mem33: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f09f000-0x000000003f0a1fff] (0MB)
+[    0.706981] efi: mem34: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f09e000-0x000000003f09efff] (0MB)
+[    0.707231] efi: mem35: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f09b000-0x000000003f09dfff] (0MB)
+[    0.707465] efi: mem36: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f096000-0x000000003f09afff] (0MB)
+[    0.707736] efi: mem37: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f078000-0x000000003f095fff] (0MB)
+[    0.707966] efi: mem38: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f077000-0x000000003f077fff] (0MB)
+[    0.708170] efi: mem39: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f074000-0x000000003f076fff] (0MB)
+[    0.708465] efi: mem40: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f071000-0x000000003f073fff] (0MB)
+[    0.708684] efi: mem41: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f06c000-0x000000003f070fff] (0MB)
+[    0.708889] efi: mem42: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f067000-0x000000003f06bfff] (0MB)
+[    0.709144] efi: mem43: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f053000-0x000000003f066fff] (0MB)
+[    0.709374] efi: mem44: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f04a000-0x000000003f052fff] (0MB)
+[    0.709706] efi: mem45: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f01f000-0x000000003f049fff] (0MB)
+[    0.709927] efi: mem46: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f01a000-0x000000003f01efff] (0MB)
+[    0.710166] efi: mem47: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f010000-0x000000003f019fff] (0MB)
+[    0.710416] efi: mem48: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f008000-0x000000003f00ffff] (0MB)
+[    0.710469] efi: mem49: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003f000000-0x000000003f007fff] (0MB)
+[    0.710680] efi: mem50: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ee00000-0x000000003effffff] (2MB)
+[    0.710889] efi: mem51: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed3f000-0x000000003edfffff] (0MB)
+[    0.711093] efi: mem52: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed3d000-0x000000003ed3efff] (0MB)
+[    0.711466] efi: mem53: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed3b000-0x000000003ed3cfff] (0MB)
+[    0.711688] efi: mem54: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed36000-0x000000003ed3afff] (0MB)
+[    0.711913] efi: mem55: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed35000-0x000000003ed35fff] (0MB)
+[    0.712117] efi: mem56: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ed33000-0x000000003ed34fff] (0MB)
+[    0.712350] efi: mem57: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecfe000-0x000000003ed32fff] (0MB)
+[    0.712466] efi: mem58: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecfd000-0x000000003ecfdfff] (0MB)
+[    0.712700] efi: mem59: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecfa000-0x000000003ecfcfff] (0MB)
+[    0.712915] efi: mem60: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecf8000-0x000000003ecf9fff] (0MB)
+[    0.713155] efi: mem61: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecf6000-0x000000003ecf7fff] (0MB)
+[    0.713468] efi: mem62: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecf5000-0x000000003ecf5fff] (0MB)
+[    0.713700] efi: mem63: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ece4000-0x000000003ecf4fff] (0MB)
+[    0.713905] efi: mem64: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ece1000-0x000000003ece3fff] (0MB)
+[    0.714129] efi: mem65: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ece0000-0x000000003ece0fff] (0MB)
+[    0.714466] efi: mem66: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecdf000-0x000000003ecdffff] (0MB)
+[    0.714705] efi: mem67: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecd6000-0x000000003ecdefff] (0MB)
+[    0.714934] efi: mem68: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecd4000-0x000000003ecd5fff] (0MB)
+[    0.715147] efi: mem69: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecd2000-0x000000003ecd3fff] (0MB)
+[    0.715465] efi: mem70: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eccf000-0x000000003ecd1fff] (0MB)
+[    0.715691] efi: mem71: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecc2000-0x000000003eccefff] (0MB)
+[    0.715940] efi: mem72: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecc0000-0x000000003ecc1fff] (0MB)
+[    0.716148] efi: mem73: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ecaa000-0x000000003ecbffff] (0MB)
+[    0.716361] efi: mem74: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eca4000-0x000000003eca9fff] (0MB)
+[    0.716465] efi: mem75: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec86000-0x000000003eca3fff] (0MB)
+[    0.716694] efi: mem76: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec83000-0x000000003ec85fff] (0MB)
+[    0.716907] efi: mem77: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec70000-0x000000003ec82fff] (0MB)
+[    0.717119] efi: mem78: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec69000-0x000000003ec6ffff] (0MB)
+[    0.717464] efi: mem79: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec4e000-0x000000003ec68fff] (0MB)
+[    0.717692] efi: mem80: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec4b000-0x000000003ec4dfff] (0MB)
+[    0.717905] efi: mem81: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec35000-0x000000003ec4afff] (0MB)
+[    0.718129] efi: mem82: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec33000-0x000000003ec34fff] (0MB)
+[    0.718355] efi: mem83: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec24000-0x000000003ec32fff] (0MB)
+[    0.718465] efi: mem84: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ec15000-0x000000003ec23fff] (0MB)
+[    0.718658] efi: mem85: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ebf0000-0x000000003ec14fff] (0MB)
+[    0.718908] efi: mem86: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ebb1000-0x000000003ebeffff] (0MB)
+[    0.719133] efi: mem87: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb96000-0x000000003ebb0fff] (0MB)
+[    0.719464] efi: mem88: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb93000-0x000000003eb95fff] (0MB)
+[    0.719721] efi: mem89: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb63000-0x000000003eb92fff] (0MB)
+[    0.719922] efi: mem90: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb58000-0x000000003eb62fff] (0MB)
+[    0.720132] efi: mem91: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eb4d000-0x000000003eb57fff] (0MB)
+[    0.720485] efi: mem92: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003eafa000-0x000000003eb4cfff] (0MB)
+[    0.720737] efi: mem93: [Boot Code   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003ea04000-0x000000003eaf9fff] (0MB)
+[    0.720944] efi: mem94: [Boot Data   |RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e2be000-0x000000003ea03fff] (7MB)
+[    0.721161] efi: mem95: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003e292000-0x000000003e2b3fff] (0MB)
+[    0.721386] efi: mem96: [Runtime Data|RUN|  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003dce5000-0x000000003e0e4fff] (4MB)
+[    0.721469] efi: mem97: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x000000003bf5c000-0x000000003bf7bfff] (0MB)
+[    0.721716] efi: mem98: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000900000-0x000000000177ffff] (14MB)
+[    0.721940] efi: mem99: [Boot Data   |   |  |  |  |  |  |  |  |  |  |   |WB|WT|WC|UC] range=[0x0000000000087000-0x0000000000087fff] (0MB)
+
+[INF][VA] SetVirtualAddressMap event FIRED
+[INF][RT-VA] hooks already installed at load (v7 early) - keeping slots
+[INF][DIAG] write stage=3 flags=0x0000000B prev_st=0x00000000 st=0x00000000
+[INF][VA] ConvertPointers: begin
+[INF][CVT] RT.handler_ 0x000000003FAC19E0 -> 0xFFFFFFFEFF6C19E0 st=0x00000000
+[INF][CVT] RT.orig_get_time_ 0x000000003FACCC1A -> 0xFFFFFFFEFF6CCC1A st=0x00000000
+[INF][CVT] RT.orig_get_variable_ 0x000000003FAD5BB7 -> 0xFFFFFFFEFF6D5BB7 st=0x00000000
+[INF][CVT] RT.orig_set_variable_ 0x000000003FAD7FA8 -> 0xFFFFFFFEFF6D7FA8 st=0x00000000
+[INF][CVT] RT.orig_get_next_ 0x000000003FAD65E2 -> 0xFFFFFFFEFF6D65E2 st=0x00000000
+[INF][CVT] RT.orig_set_wakeup_ 0x000000003FACCC7E -> 0xFFFFFFFEFF6CCC7E st=0x00000000
+[INF][CVT] RH.pool_ 0x000000003FAC1AB0 -> 0xFFFFFFFEFF6C1AB0 st=0x00000000
+[INF][CVT] RH.mem_ 0x000000003FAC1AA0 -> 0xFFFFFFFEFF6C1AA0 st=0x00000000
+[INF][CVT] RH.finder_ 0x000000003FAC1A60 -> 0xFFFFFFFEFF6C1A60 st=0x00000000
+[INF][CVT] PF.phys_ 0x000000003FAC1AD0 -> 0xFFFFFFFEFF6C1AD0 st=0x00000000
+[INF][CVT] PM.phys_ 0x000000003FAC1AD0 -> 0xFFFFFFFEFF6C1AD0 st=0x00000000
+[INF][CVT] SMP.header_ 0x000000003DCE5000 -> 0xFFFFFFFEFD8E5000 st=0x00000000
+[INF][CVT] SMP.base_addr_ 0x000000003DCE5000 -> 0xFFFFFFFEFD8E5000 st=0x00000000
+[INF][CVT] RuntimeHook::instance_ 0x000000003FAC0940 -> 0xFFFFFFFEFF6C0940 st=0x00000000
+[INF][CVT] RT 0x000000003F9ECB98 -> 0xFFFFFFFEFF5ECB98 st=0x00000000
+[INF][CVT] ST 0x000000003F9EC018 -> 0xFFFFFFFEFF5EC018 st=0x00000000
+[INF][VA] ConvertPointers: done
+[INF][VA] virtual mode armed - OS runtime hook calls now count (stage 4)
+[INF][VA] SetVirtualAddressMap event handler done[    0.724567] efi: memattr: Processing EFI Memory Attributes table:
+[    0.725063] efi: memattr:  0x00003dce5000-0x00003e0e4fff [Runtime Data|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.726073] efi: memattr:  0x00003ed3f000-0x00003edfffff [Runtime Data|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.726672] efi: memattr:  0x00003f8ed000-0x00003f9ecfff [Runtime Data|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.727528] efi: memattr:  0x00003f9ed000-0x00003fac4fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |RO|   |  |  |  |  ]
+[    0.727950] efi: memattr:  0x00003fac5000-0x00003fac5fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.728182] efi: memattr:  0x00003fac6000-0x00003fac6fff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.728410] efi: memattr:  0x00003fac7000-0x00003fac8fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.728718] efi: memattr:  0x00003fac9000-0x00003fac9fff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.728953] efi: memattr:  0x00003faca000-0x00003facbfff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.729166] efi: memattr:  0x00003facc000-0x00003facdfff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.729391] efi: memattr:  0x00003face000-0x00003facffff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.729722] efi: memattr:  0x00003fad0000-0x00003fad0fff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.729943] efi: memattr:  0x00003fad1000-0x00003fad2fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.730169] efi: memattr:  0x00003fad3000-0x00003fad9fff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.730402] efi: memattr:  0x00003fada000-0x00003fadcfff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.730706] efi: memattr:  0x00003fadd000-0x00003faddfff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.730932] efi: memattr:  0x00003fade000-0x00003fae0fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.731156] efi: memattr:  0x00003fae1000-0x00003fae1fff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.731375] efi: memattr:  0x00003fae2000-0x00003fae4fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.731519] efi: memattr:  0x00003fae5000-0x00003fae5fff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.731770] efi: memattr:  0x00003fae6000-0x00003fae8fff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.732011] efi: memattr:  0x00003fae9000-0x00003faeafff [Runtime Code|RUN|  |  |  |  |  |  |  |  |RO|   |  |  |  |  ]
+[    0.732245] efi: memattr:  0x00003faeb000-0x00003faecfff [Runtime Code|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.732727] efi: memattr:  0x00003feec000-0x00003ff6ffff [Runtime Data|RUN|  |  |  |  |  |XP|  |  |  |   |  |  |  |  ]
+[    0.733448] kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
+[    0.733448] BUG: unable to handle page fault for address: fffffffeff6b61e0
+[    0.733448] #PF: supervisor instruction fetch in kernel mode
+[    0.733448] #PF: error_code(0x0011) - permissions violation
+[    0.733448] PGD 1c1d067 P4D 1c1d067 PUD 1c20063 PMD 1c25063 PTE 800000003fab6021
+[    0.733448] Oops: Oops: 0011 [#1] PREEMPT SMP NOPTI
+[    0.733448] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.12.51-0-virt #1-Alpine
+[    0.733448] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 2025.02-8+deb13u1 11/08/2025
+[    0.733448] RIP: 0010:0xfffffffeff6b61e0
+[    0.733448] Code: 00 ba f8 03 00 00 0f 1f 40 00 48 83 c1 01 ee 0f b6 01 84 c0 75 f4 85 ff 74 08 8d 47 30 ee c3 0f 1f 00 b8 30 00 00 00 ee c3 90 <41> 57 49 89 cf 41 56 41 55 41 54 45 89 c4 55 4c 89 cd 57 56 53 48
+[    0.733448] RSP: 0000:ffffffffa9803de8 EFLAGS: 00010286
+[    0.733448] RAX: 0000000000000246 RBX: ffffffffa8e0d9c8 RCX: ffffffffa8e0d9c8
+[    0.733448] RDX: ffffffffa9803e80 RSI: ffffffffa8e0d9c8 RDI: fffffffeff6b61e0
+[    0.733448] RBP: ffffffffa9803e28 R08: 0000000000000007 R09: 0000000000000000
+[    0.733448] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000007
+[    0.733448] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[    0.733448] FS:  0000000000000000(0000) GS:ffff93a1be600000(0000) knlGS:0000000000000000
+[    0.733448] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.733448] CR2: fffffffeff6b61e0 CR3: 0000000001c58000 CR4: 0000000000350eb0
+[    0.733448] Call Trace:
+[    0.733448]  <TASK>
+[    0.733448]  ? __efi_call+0x2c/0x40
+[    0.733448]  ? switch_mm_irqs_off+0x43b/0x520
+[    0.733448]  virt_efi_set_variable_nb+0x79/0xd0
+[    0.733448]  efi_delete_dummy_variable+0x5d/0x90
+[    0.733448]  efi_enter_virtual_mode+0x73a/0x7e0
+[    0.733448]  start_kernel+0x6d4/0x750
+[    0.733448]  x86_64_start_reservations+0x24/0x30
+[    0.733448]  x86_64_start_kernel+0x75/0x80
+[    0.733448]  common_startup_64+0x13b/0x148
+[    0.733448]  </TASK>
+[    0.733448] Modules linked in:
+[    0.733448] CR2: fffffffeff6b61e0
+[    0.733448] ---[ end trace 0000000000000000 ]---
+[    0.733448] RIP: 0010:0xfffffffeff6b61e0
+[    0.733448] Code: 00 ba f8 03 00 00 0f 1f 40 00 48 83 c1 01 ee 0f b6 01 84 c0 75 f4 85 ff 74 08 8d 47 30 ee c3 0f 1f 00 b8 30 00 00 00 ee c3 90 <41> 57 49 89 cf 41 56 41 55 41 54 45 89 c4 55 4c 89 cd 57 56 53 48
+[    0.733448] RSP: 0000:ffffffffa9803de8 EFLAGS: 00010286
+[    0.733448] RAX: 0000000000000246 RBX: ffffffffa8e0d9c8 RCX: ffffffffa8e0d9c8
+[    0.733448] RDX: ffffffffa9803e80 RSI: ffffffffa8e0d9c8 RDI: fffffffeff6b61e0
+[    0.733448] RBP: ffffffffa9803e28 R08: 0000000000000007 R09: 0000000000000000
+[    0.733448] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000007
+[    0.733448] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[    0.733448] FS:  0000000000000000(0000) GS:ffff93a1be600000(0000) knlGS:0000000000000000
+[    0.733448] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    0.733448] CR2: fffffffeff6b61e0 CR3: 0000000001c58000 CR4: 0000000000350eb0
+[    0.733448] Kernel panic - not syncing: Attempted to kill the idle task!

@@ -1,0 +1,1635 @@
+diff --git a/UEFI/build/Makefile b/UEFI/build/Makefile
+index fc25093..fc86a8e 100644
+--- a/UEFI/build/Makefile
++++ b/UEFI/build/Makefile
+@@ -1,16 +1,24 @@
+ # =================================================================
+-# Makefile for memory.efi (UEFI side of Infinity bridge)
++# Makefile for memory.efi (UEFI side of Infinity bridge)  —  v6
+ # =================================================================
+ # Requirements:
+-#   - Ubuntu (or any Linux with GNU-EFI)
+-#   - gnu-efi package:  sudo apt install gnu-efi build-essential
++#   - Ubuntu (or any Linux with GNU-EFI) — CI uses ubuntu-22.04 with
++#     the distro gnu-efi 3.0.13 package.
+ #
+ # Usage:
+-#   make              # builds memory.efi
+-#   make clean        # remove build artifacts
+-#   make dump         # show strings/PE info (debugging)
+-#   make debug        # show resolved paths
++#   make              # SAFE build of memory.efi (no gRT hooks)
++#   make RT=1         # RT build (gRT hooks from SetVirtualAddressMap)
++#   make clean
+ #
++# Overrides used by our sandbox build (local gnu-efi 3.0.13 tree):
++#   make EFI_LIB_DIR=/path/gnuefi-jammy/usr/lib \
++#        EFI_INC_DIR=/path/gnuefi-jammy/usr/include/efi
++#
++# v6 changes vs baseline:
++#   - R4: -fvisibility=hidden (kills C++ vague-linkage GLOB_DAT
++#     relocations that gnu-efi's _relocate never applies).
++#   - R6: vendored linker script gnuefi-x86_64.ld (.bss* wildcards).
++#   - RT=1 defines INFINITY_ENABLE_RUNTIME_HOOKS (phase D build).
+ # =================================================================
+ 
+ # Allow overriding the EFI include directory.
+@@ -19,6 +27,9 @@ EFI_LIB_DIR  ?= /usr/lib
+ EFI_INC_DIR  ?= /usr/include/efi
+ EFI_CRT0     ?= $(EFI_LIB_DIR)/crt0-efi-$(EFI_ARCH).o
+ 
++# RT=1 -> phase D build (runtime hooks enabled). Default SAFE.
++RT           ?= 0
++
+ CC           ?= gcc
+ CXX          ?= g++
+ LD           ?= ld
+@@ -31,12 +42,22 @@ ifeq ($(wildcard $(EFI_INC_DIR)/efi.h),)
+   endif
+ endif
+ 
++# Build-variant defines.
++ifeq ($(RT),1)
++  VARIANT_DEFS = -DINFINITY_ENABLE_RUNTIME_HOOKS
++  VARIANT_NAME = rt
++else
++  VARIANT_DEFS =
++  VARIANT_NAME = safe
++endif
++
+ CFLAGS       ?= -I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(EFI_ARCH) \
+-                -I../include -I../../Memory/include \
+-                -fno-stack-protector -fno-stack-check \
+-                -fpic -fshort-wchar -mno-red-zone -Wno-unused \
+-                -DGNU_EFI_USE_MS_ABI -DEFI_FUNCTION_WRAPPER \
+-                -Wall -Wextra -O2 -std=c11
++	        -I../include -I../../Memory/include \
++	        -fno-stack-protector -fno-stack-check \
++	        -fpic -fshort-wchar -mno-red-zone -Wno-unused \
++	        -DGNU_EFI_USE_MS_ABI -DEFI_FUNCTION_WRAPPER \
++	        -Wall -Wextra -O2 -std=c11 \
++	        -fvisibility=hidden
+ 
+ # Use C++ compiler for the .c file because we use C++ features
+ # (templates, std::atomic, classes, namespaces). gnu-efi works fine
+@@ -45,21 +66,22 @@ CFLAGS       ?= -I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(EFI_ARCH) \
+ # -fno-exceptions -fno-rtti: no C++ exception/RTTI support in UEFI.
+ # -fno-threadsafe-statics: don't emit __cxa_guard_acquire for static
+ #   locals (which requires __dso_handle).
+-# -fno-use-cxa-atexit: don't emit __cxa_atexit calls for static dtors
+-#   (which requires __dso_handle).
+-# -fno-cxa-atexit: same as above (older flag name).
++# -fno-use-cxa-atexit / -fno-cxa-atexit: no __cxa_atexit dtor calls.
+ CXXFLAGS     ?= -I$(EFI_INC_DIR) -I$(EFI_INC_DIR)/$(EFI_ARCH) \
+-                -I../include -I../../Memory/include \
+-                -fno-stack-protector -fno-stack-check \
+-                -fpic -fshort-wchar -mno-red-zone -Wno-unused \
+-                -DGNU_EFI_USE_MS_ABI -DEFI_FUNCTION_WRAPPER \
+-                -Wall -Wextra -O2 -std=c++17 -fno-exceptions -fno-rtti \
+-                -fno-threadsafe-statics -fno-use-cxa-atexit \
+-                -fcheck-new
+-
+-LDFLAGS      ?= -nostdlib -znocombreloc -T $(EFI_LIB_DIR)/elf_$(EFI_ARCH)_efi.lds \
+-                -shared -Bsymbolic -L$(EFI_LIB_DIR) \
+-                --defsym __dso_handle=0
++	        -I../include -I../../Memory/include \
++	        -fno-stack-protector -fno-stack-check \
++	        -fpic -fshort-wchar -mno-red-zone -Wno-unused \
++	        -DGNU_EFI_USE_MS_ABI -DEFI_FUNCTION_WRAPPER \
++	        -Wall -Wextra -O2 -std=c++17 -fno-exceptions -fno-rtti \
++	        -fno-threadsafe-statics -fno-use-cxa-atexit \
++	        -fcheck-new \
++	        -fvisibility=hidden \
++	        $(VARIANT_DEFS)
++
++# R6: vendored linker script (see gnuefi-x86_64.ld header comment).
++LDFLAGS      ?= -nostdlib -znocombreloc -T gnuefi-x86_64.ld \
++	        -shared -Bsymbolic -L$(EFI_LIB_DIR) \
++	        --defsym __dso_handle=0
+ 
+ LIBS         ?= -lgnuefi -lefi
+ 
+@@ -72,10 +94,13 @@ OBJS         = $(OUT_DIR)/main.o
+ # Optional: extra object file providing __dso_handle as a fallback.
+ DSO_HANDLE_O = $(OUT_DIR)/dso_handle.o
+ 
+-.PHONY: all clean dump debug
++.PHONY: all clean dump debug variant
+ 
+ all: $(TARGET)
+ 
++variant:
++	@echo "variant: $(VARIANT_NAME) (RT=$(RT))"
++
+ $(OUT_DIR):
+ 	mkdir -p $(OUT_DIR)
+ 
+@@ -84,12 +109,16 @@ $(OUT_DIR):
+ $(DSO_HANDLE_O): | $(OUT_DIR)
+ 	@echo 'extern "C" { void* __dso_handle = 0; }' | $(CXX) $(CXXFLAGS) -x c++ -c - -o $@
+ 
+-$(TARGET): $(OBJS) $(DSO_HANDLE_O) | $(OUT_DIR)
++$(TARGET): $(OBJS) $(DSO_HANDLE_O) gnuefi-x86_64.ld | $(OUT_DIR)
+ 	$(LD) $(LDFLAGS) $(EFI_CRT0) $(OBJS) $(DSO_HANDLE_O) -o $(OUT_DIR)/memory.so $(LIBS)
+ 	$(OBJCOPY) --target=efi-rtdrv-x86_64 -j .text -j .sdata -j .data -j .dynamic -j .dynsym \
+ 	-j .rel -j .rela -j .reloc -j .eh_frame \
+ 	$(OUT_DIR)/memory.so $(TARGET)
+-	rm -f $(OUT_DIR)/memory.so
++	@echo "=== built memory.efi (variant: $(VARIANT_NAME)) ==="
++	@echo "=== R4 GLOB_DAT check (must be 0) ==="
++	@readelf -r $(OUT_DIR)/memory.so 2>/dev/null | grep GLOB_DAT || echo "(none - clean)"
++	@echo "=== R6 orphan .bss check (must be empty) ==="
++	@objdump -h $(OUT_DIR)/memory.so 2>/dev/null | grep -E "^ [0-9]+ \.bss " || echo "(no orphan .bss - clean)"
+ 
+ $(OUT_DIR)/main.o: $(SRCS) | $(OUT_DIR)
+ 	$(CXX) $(CXXFLAGS) -c $< -o $@
+@@ -102,8 +131,14 @@ dump: $(TARGET)
+ 	@echo "=== File info ==="
+ 	file $(TARGET)
+ 	@echo ""
+-	@echo "=== Strings (filtered) ==="
+-	strings -n 8 $(TARGET) | grep -E "INFINITY|Infinity|Memory|UEFI|BOOTKIT|fulken"
++	@echo "=== Build markers ==="
++	strings -n 8 $(TARGET) | grep -E "v6 SAFE|v6 RT|INFINITY|fulken" || true
++	@echo ""
++	@echo "=== GLOB_DAT relocation check (R4: must be 0) ==="
++	readelf -r $(OUT_DIR)/memory.so 2>/dev/null | grep GLOB_DAT || echo "(none - clean)"
++	@echo ""
++	@echo "=== Orphan .bss check (R6: must be empty) ==="
++	objdump -h $(OUT_DIR)/memory.so 2>/dev/null | grep -E "^\s+[0-9]+ \.bss" || echo "(no orphan .bss - clean)"
+ 
+ # Diagnostic target — shows where gnu-efi was found.
+ debug:
+@@ -111,6 +146,7 @@ debug:
+ 	@echo "EFI_LIB_DIR: $(EFI_LIB_DIR)"
+ 	@echo "EFI_INC_DIR: $(EFI_INC_DIR)"
+ 	@echo "EFI_CRT0:    $(EFI_CRT0)"
++	@echo "Variant:     $(VARIANT_NAME) (RT=$(RT))"
+ 	@echo ""
+ 	@echo "Checking efi.h:"
+ 	@ls -la $(EFI_INC_DIR)/efi.h 2>/dev/null || echo "  Not found at $(EFI_INC_DIR)/efi.h"
+diff --git a/UEFI/include/CR3Capture.h b/UEFI/include/CR3Capture.h
+index 5308eee..815a491 100644
+--- a/UEFI/include/CR3Capture.h
++++ b/UEFI/include/CR3Capture.h
+@@ -1,23 +1,41 @@
+ /**
+- * CR3Capture.h  (UEFI side)
++ * CR3Capture.h  (UEFI side)  —  v6
+  * =================================================================
+- * Hook ExitBootServices to capture the OS's CR3.
++ * Hook gBS->ExitBootServices to capture the OS CR3 and the Windows
++ * build number, and to record milestone stage 2 in INFDIAG.
+  *
+- * CRITICAL: After the original ExitBootServices returns success,
+- * gBS (Boot Services Table) is NO LONGER VALID. We must NOT call
+- * any gBS functions. The previous code had a bug where it called
+- * `gBS->ExitBootServices = orig_exit_bs_` AFTER ExitBootServices
+- * had already returned, which is undefined behavior.
+- *
+- * Fix: We unhook BEFORE calling the original ExitBootServices.
++ * v6 changes vs baseline (a8e41b3):
++ *   - Full serial tracing of the hook path. v5 showed INFDIAG stuck at
++ *     stage 3 (VA event ran) with stage 2 never recorded; the serial
++ *     traces now tell us whether this hook fires at all and, if it
++ *     does, the exact status of the INFDIAG SetVariable.
++ *   - The EBS hook NO LONGER installs the gRT hooks. In the RT build
++ *     they are installed earlier, from the SetVirtualAddressMap event
++ *     (RuntimeHook::InstallVirtual); in the SAFE build they are never
++ *     installed. (The old EBS-time install wrote unconverted physical
++ *     pointers into an already-virtual gRT table — that is what hung
++ *     the Linux test VM.)
++ *   - CR3Capture internals are deliberately NOT pointer-converted:
++ *     this hook only ever runs in the loader's identity-mapped context
++ *     (the gBS table lives in boot-services memory and is never
++ *     converted, so the firmware calls us at our physical address).
+  * =================================================================
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include <cstdint>
++
++#include "SerialTrace.h"
++#include "Diag.h"
+ #include "PhysicalMemory.h"
+ #include "WindowsOffsets.h"
+ #include "ProcessFinder.h"
+@@ -45,6 +63,8 @@ namespace UEFIBridge {
+             gBS->Hdr.CRC32 = 0;
+             gBS->Hdr.CRC32 = ComputeCrc32(gBS, gBS->Hdr.HeaderSize);
+ 
++            SerialTrace::KV("EBS", "hook installed, orig ExitBootServices ",
++                            (UINT64)orig_exit_bs_);
+             return EFI_SUCCESS;
+         }
+ 
+@@ -53,50 +73,66 @@ namespace UEFIBridge {
+         static EFI_STATUS EFIAPI HookedExitBootServices(
+             EFI_HANDLE image_handle, UINTN map_key) {
+ 
++            // FIRST thing: pure port-I/O proof that the hook fired.
++            // This line alone answers the v5 question "did EBS run?".
++            SerialTrace::Line("EBS", "ExitBootServices hook FIRED");
++            if (!instance_) {
++                SerialTrace::Line("EBS", "instance_ null — bailing out");
++                return EFI_NOT_FOUND;
++            }
++
+             // UNHOOK BEFORE calling original ExitBootServices.
+-            // This prevents use-after-EBS of gBS.
+-            // Note: CRC update is not needed here because after
+-            // ExitBootServices succeeds, gBS is invalid anyway.
+             gBS->ExitBootServices = orig_exit_bs_;
+-            // Update CRC after restoring (table is still valid at this point).
+             gBS->Hdr.CRC32 = 0;
+             gBS->Hdr.CRC32 = ComputeCrc32(gBS, gBS->Hdr.HeaderSize);
+ 
+             // Call the original ExitBootServices.
+             // After this returns success, gBS is invalid.
++            SerialTrace::Line("EBS", "calling original ExitBootServices");
+             EFI_STATUS s = orig_exit_bs_(image_handle, map_key);
++            SerialTrace::Status("EBS", "original ExitBootServices returned", (UINT64)s);
+ 
+             if (EFI_ERROR(s)) {
+-                // OS will retry. Re-install our hook.
++                // OS will retry (stale map key). Re-install our hook.
++                SerialTrace::Line("EBS", "retry expected — re-installing hook");
+                 gBS->ExitBootServices = &CR3Capture::HookedExitBootServices;
+-                // Update CRC after re-hooking (table must stay consistent).
+                 gBS->Hdr.CRC32 = 0;
+                 gBS->Hdr.CRC32 = ComputeCrc32(gBS, gBS->Hdr.HeaderSize);
+                 return s;
+             }
+ 
+-            // We're now in UEFI runtime code, but with OS page tables.
+-            // gBS is INVALID from this point on.
+-            // We can only use gRT (Runtime Services) and our own code.
+-
++            // We are now in runtime context with the OS loader's page
++            // tables: identity mapping for firmware memory is still
++            // active, so physical pointers still work HERE (but nowhere
++            // after this callback). gBS is invalid; gRT is virtual.
+             instance_->os_cr3_ = UEFIBridge::ReadCr3();
++            SerialTrace::KV("EBS", "os_cr3 ", instance_->os_cr3_);
+ 
+             UINT32 build = DetectWindowsBuildNumber(instance_->phys_,
+-                                                      instance_->os_cr3_);
++                                                    instance_->os_cr3_);
+             instance_->win_build_ = build;
++            SerialTrace::KVD("EBS", "windows build", build);
+ 
+             instance_->finder_->SetOSCR3(instance_->os_cr3_, build);
+ 
+-            // Install the RuntimeHook with the handler.
+-            // This modifies gRT (Runtime Services Table), which IS valid.
+-            if (instance_->runtime_hook_) {
+-                instance_->runtime_hook_->Install(instance_->handler_);
+-            }
++            // NOTE (v6): the gRT hooks are NOT installed here.
++            //   RT build : installed at the SetVirtualAddressMap event.
++            //   SAFE build: never installed.
++
++            // Record milestone 2 in INFDIAG. If this write fails, the
++            // serial trace above still tells the whole story.
++            g_diag_os_cr3    = instance_->os_cr3_;
++            g_diag_win_build = build;
++            DiagSetStage(kDiagStageEbsFired);
++            DiagSetFlag(kDiagFlagEbsFired);
++            DiagWrite();
+ 
++            SerialTrace::Line("EBS", "handoff complete, returning to OS loader");
+             return s;
+         }
+ 
+-        // Static instance pointer.
++        // Static instance pointer (used only inside the EBS callback —
++        // kept PHYSICAL on purpose, see file header).
+         static CR3Capture* instance_;
+         static EFI_EXIT_BOOT_SERVICES orig_exit_bs_;
+ 
+@@ -104,7 +140,7 @@ namespace UEFIBridge {
+         PhysicalMemory* phys_         = nullptr;
+         ProcessFinder*  finder_       = nullptr;
+         RuntimeHook*    runtime_hook_ = nullptr;
+-        RequestHandler*  handler_      = nullptr;
++        RequestHandler* handler_      = nullptr;
+         UINT64          os_cr3_       = 0;
+         UINT32          win_build_    = 0;
+     };
+diff --git a/UEFI/include/ConvertPtr.h b/UEFI/include/ConvertPtr.h
+new file mode 100644
+index 0000000..8e00ebe
+--- /dev/null
++++ b/UEFI/include/ConvertPtr.h
+@@ -0,0 +1,99 @@
++/**
++ * ConvertPtr.h  (UEFI side)  —  v6 pointer graph conversion
++ * =================================================================
++ * Converts every RUNTIME-ASSIGNED pointer in the driver to the OS
++ * virtual address space, from inside the
++ * EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE event (which the OS fires by
++ * calling SetVirtualAddressMap, BEFORE the firmware rewrites the gRT
++ * function slots — verified empirically in the sandbox forensics,
++ * "order B").
++ *
++ * Why this is needed:
++ *   - Our image is a runtime driver: the firmware re-applies its ELF
++ *     relocations at SetVirtualAddressMap, which fixes LINK-TIME
++ *     pointers only.
++ *   - Pointers assigned at RUNTIME (instance_ = &obj, handler_->pool_,
++ *     saved original gRT services, gnu-efi's ST/RT variables...) are
++ *     NOT relocations. If left physical they dereference garbage once
++ *     the OS page tables take over → #PF inside a kernel-called hook.
++ *
++ * Ordering rule (CRITICAL):
++ *   All conversions go through the CURRENT (physical) value of
++ *   gRT->ConvertPointer captured ONCE at entry. The RT/ST variables
++ *   themselves are converted LAST, and nothing may dereference gRT /
++ *   gST inside this file after that point (during the event the new
++ *   virtual addresses are not mapped yet — they only become valid
++ *   when the OS loader switches page tables AFTER SetVirtualAddressMap
++ *   returns).
++ * =================================================================
++ */
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++#include <efi.h>
++#include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
++
++#include "SerialTrace.h"
++#include "Diag.h"
++#include "PhysicalMemory.h"
++#include "ProcessMemory.h"
++#include "ProcessFinder.h"
++#include "SharedMemoryPool.h"
++#include "RequestHandler.h"
++#include "RuntimeHook.h"
++#include "CR3Capture.h"
++
++namespace UEFIBridge {
++
++// Everything the VA event handler needs a handle on.
++// (CvtOne lives in Diag.h to avoid a circular include.)
++struct ConvertGraph {
++    PhysicalMemory*   pm;
++    SharedMemoryPool* pool;
++    ProcessMemory*    pmem;
++    ProcessFinder*    finder;
++    RequestHandler*   handler;
++    RuntimeHook*      rthook;
++    CR3Capture*       cr3;
++};
++
++// Convert the whole runtime-assigned pointer graph.
++// Called ONLY from the VA-change event handler.
++inline VOID ConvertPointersAll(ConvertGraph* g) {
++    SerialTrace::Line("VA", "ConvertPointers: begin");
++
++    // Physical ConvertPointer — still valid during the event (order B).
++    EFI_CONVERT_POINTER cvt = gRT->ConvertPointer;
++
++    if (g) {
++        if (g->rthook)  g->rthook->ConvertSelf(cvt);
++        if (g->handler) g->handler->ConvertSelf(cvt);
++        if (g->finder)  g->finder->ConvertSelf(cvt);
++        if (g->pmem)    g->pmem->ConvertSelf(cvt);
++        if (g->pool)    g->pool->ConvertSelf(cvt);
++        // PhysicalMemory: uefi_cr3_ / os_cr3_ are CR3 *values* — they
++        // must stay physical (the CR3 register takes physical roots).
++
++        // Static instance pointers used by post-boot hooks.
++        CvtOne(cvt, (VOID**)&RuntimeHook::instance_, "RuntimeHook::instance_");
++
++        // CR3Capture internals are only used inside the EBS callback,
++        // which still runs on the loader's identity-mapped tables —
++        // deliberately NOT converted.
++    }
++
++    // LAST: gnu-efi's table pointer variables (ST/RT live inside our
++    // image, extern "C", see efilib.h). BS is dead after EBS — skip.
++    CvtOne(cvt, (VOID**)&RT, "RT");
++    CvtOne(cvt, (VOID**)&ST, "ST");
++
++    DiagSetFlag(kDiagFlagVirtual);
++    SerialTrace::Line("VA", "ConvertPointers: done");
++}
++
++} // namespace UEFIBridge
+diff --git a/UEFI/include/Diag.h b/UEFI/include/Diag.h
+new file mode 100644
+index 0000000..0aa276b
+--- /dev/null
++++ b/UEFI/include/Diag.h
+@@ -0,0 +1,156 @@
++/**
++ * Diag.h  (UEFI side)  —  INFDIAG v6
++ * =================================================================
++ * The INFDIAG non-volatile variable under our vendor GUID
++ * {A1B2C3D4-E5F6-4789-9ABC-DEF012345678}. Size is EXACTLY 32 bytes
++ * (dmpstore shows DataSize = 0x20).
++ *
++ * Stage ladder (same semantics as v5):
++ *   1 = driver loaded OK (pool + request handler + EBS hook installed)
++ *   2 = ExitBootServices FIRED  (os_cr3 + win_build captured)
++ *   3 = RT build: gRT hooks installed at SetVirtualAddressMap event
++ *   4 = RT build: Windows CALLED a hooked service (full chain)
++ *
++ * Field layout (little endian):
++ *   0x00 u32 magic       'DFNI' bytes 44 46 4E 49  (0x494E4644)
++ *   0x04 u32 stage       see ladder above
++ *   0x08 u32 flags       bit0=loaded bit1=EBS fired bit2=virtual mode
++ *   0x0C u32 win_build   NtBuildNumber from KUSER_SHARED_DATA, 0=unknown
++ *   0x10 u64 os_cr3      CR3 captured at ExitBootServices
++ *   0x18 u32 hook_calls  how many hooked-service calls we serviced
++ *   0x1C u32 last_status EFI_STATUS of the last INFDIAG SetVariable
++ *
++ * v6 addition: last_status. v5 proved that post-virtual NVRAM writes
++ * can silently fail (stage 3 was the last successful write); with
++ * last_status + the serial traces we can see the exact error code.
++ * =================================================================
++ */
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++#include <efi.h>
++#include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
++
++#include <cstdint>
++
++#include "SerialTrace.h"
++
++namespace UEFIBridge {
++
++// Defined in main.c (inside this namespace — R3 fix).
++extern EFI_GUID gInfinityMemVarGuid;
++
++#pragma pack(push, 1)
++struct InfinityDiag {
++    UINT32 magic;
++    UINT32 stage;
++    UINT32 flags;
++    UINT32 win_build;
++    UINT64 os_cr3;
++    UINT32 hook_calls;
++    UINT32 last_status;
++};
++#pragma pack(pop)
++
++static_assert(sizeof(InfinityDiag) == 32, "INFDIAG must remain exactly 32 bytes");
++
++enum : UINT32 {
++    kDiagStageLoaded         = 1,
++    kDiagStageEbsFired       = 2,
++    kDiagStageHooksInstalled = 3,
++    kDiagStageHookCalled     = 4,
++};
++
++enum : UINT32 {
++    kDiagFlagLoaded   = 0x1,
++    kDiagFlagEbsFired = 0x2,
++    kDiagFlagVirtual  = 0x4,
++};
++
++// Runtime-updated mirror of the variable. Written from any mode; the
++// serial trace on every write is what makes failures visible.
++inline UINT32 g_diag_stage       = 0;
++inline UINT32 g_diag_flags       = 0;
++inline UINT32 g_diag_win_build   = 0;
++inline UINT64 g_diag_os_cr3      = 0;
++inline UINT32 g_diag_hook_calls  = 0;
++inline UINT32 g_diag_last_status = 0;
++
++// Re-entrancy guard: in the RT build, gRT->SetVariable IS our hook,
++// so DiagWrite() would re-enter HookedSetVariable. The hook checks
++// this flag and services diag writes through the original only.
++inline UINT32 g_diag_busy = 0;
++
++// Write the current snapshot to INFDIAG. Safe at load time (physical
++// gRT), inside the VA event (gRT slots still physical — v5 proved
++// this works), at EBS (RT mapped both ways) and from the gRT hooks
++// post-boot (gRT converted by ConvertPointers).
++//
++// NOTE: in the RT build the SetVariable slot may already point at our
++// own HookedSetVariable; the call then round-trips through our hook
++// and chains to the original. That is intentional and is itself a
++// live test of the hook chain.
++inline VOID DiagWrite() {
++    InfinityDiag d;
++    d.magic       = 0x494E4644;
++    d.stage       = g_diag_stage;
++    d.flags       = g_diag_flags;
++    d.win_build   = g_diag_win_build;
++    d.os_cr3      = g_diag_os_cr3;
++    d.hook_calls  = g_diag_hook_calls;
++    d.last_status = g_diag_last_status; // previous write's status
++
++    UINT32 prev_status = g_diag_last_status;
++
++    g_diag_busy = 1;
++    EFI_STATUS s = gRT->SetVariable(
++        (CHAR16*)L"INFDIAG", &gInfinityMemVarGuid,
++        EFI_VARIABLE_NON_VOLATILE | EFI_VARIABLE_BOOTSERVICE_ACCESS |
++            EFI_VARIABLE_RUNTIME_ACCESS,
++        sizeof(d), &d);
++    g_diag_busy = 0;
++
++    g_diag_last_status = (UINT32)s;
++
++    SerialTrace::Begin("DIAG");
++    SerialTrace::Puts("write stage=");
++    SerialTrace::Dec(g_diag_stage);
++    SerialTrace::Puts(" flags=0x");
++    SerialTrace::Hex32(g_diag_flags);
++    SerialTrace::Puts(" prev_st=0x");
++    SerialTrace::Hex32(prev_status);
++    SerialTrace::Puts(" st=0x");
++    SerialTrace::Hex32((UINT32)s);
++}
++
++inline VOID DiagSetStage(UINT32 stage) { g_diag_stage = stage; }
++inline VOID DiagSetFlag(UINT32 flag)   { g_diag_flags |= flag; }
++
++// Convert one runtime-assigned pointer via the ConvertPointer service.
++// Defined here (not in ConvertPtr.h) so RuntimeHook::ConvertSelf can
++// use it without a circular include.
++inline VOID CvtOne(EFI_CONVERT_POINTER cvt, VOID** pp, const char* tag) {
++    if (!pp || !*pp) {
++        SerialTrace::Begin("CVT");
++        SerialTrace::Puts(tag);
++        SerialTrace::Puts(" (null, skip)");
++        return;
++    }
++    UINT64 before = (UINT64)*pp;
++    EFI_STATUS s = cvt(0, pp);
++    SerialTrace::Begin("CVT");
++    SerialTrace::Puts(tag);
++    SerialTrace::Puts(" 0x");
++    SerialTrace::Hex64(before);
++    SerialTrace::Puts(" -> 0x");
++    SerialTrace::Hex64((UINT64)*pp);
++    SerialTrace::Puts(" st=0x");
++    SerialTrace::Hex32((UINT32)s);
++}
++
++} // namespace UEFIBridge
+diff --git a/UEFI/include/PhysicalMemory.h b/UEFI/include/PhysicalMemory.h
+index 88e1dd8..eac7b1c 100644
+--- a/UEFI/include/PhysicalMemory.h
++++ b/UEFI/include/PhysicalMemory.h
+@@ -15,8 +15,14 @@
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include <cstdint>
+ 
+diff --git a/UEFI/include/ProcessFinder.h b/UEFI/include/ProcessFinder.h
+index d33c165..e5679f8 100644
+--- a/UEFI/include/ProcessFinder.h
++++ b/UEFI/include/ProcessFinder.h
+@@ -28,12 +28,19 @@
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include <cstdint>
+ #include "PhysicalMemory.h"
+ #include "WindowsOffsets.h"
++#include "Diag.h"
+ 
+ namespace UEFIBridge {
+ 
+@@ -52,6 +59,13 @@ namespace UEFIBridge {
+             phys_ = pm;
+         }
+ 
++        // v6: convert runtime-assigned pointers to virtual addresses
++        // (called from the SetVirtualAddressMap event handler).
++        // os_cr3_ is a CR3 VALUE and stays physical.
++        void ConvertSelf(EFI_CONVERT_POINTER cvt) {
++            CvtOne(cvt, (VOID**)&phys_, "PF.phys_");
++        }
++
+         // =========================================================
+         // Set the OS CR3 (Windows kernel page table root).
+         // Must be called after ExitBootServices capture.
+diff --git a/UEFI/include/ProcessMemory.h b/UEFI/include/ProcessMemory.h
+index 58a7e2e..b6cd613 100644
+--- a/UEFI/include/ProcessMemory.h
++++ b/UEFI/include/ProcessMemory.h
+@@ -10,11 +10,18 @@
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include <cstdint>
+ #include "PhysicalMemory.h"
++#include "Diag.h"
+ 
+ namespace UEFIBridge {
+ 
+@@ -27,6 +34,13 @@ namespace UEFIBridge {
+             phys_ = pm;
+         }
+ 
++        // v6: convert runtime-assigned pointers to virtual addresses
++        // (called from the SetVirtualAddressMap event handler).
++        // target_cr3_ is a CR3 VALUE and stays physical.
++        void ConvertSelf(EFI_CONVERT_POINTER cvt) {
++            CvtOne(cvt, (VOID**)&phys_, "PM.phys_");
++        }
++
+         // Set the target process's CR3.
+         void SetTargetCR3(UINT64 cr3) { target_cr3_ = cr3; }
+         void ClearTargetCR3() { target_cr3_ = 0; }
+diff --git a/UEFI/include/RequestHandler.h b/UEFI/include/RequestHandler.h
+index 540e2d8..460e6d1 100644
+--- a/UEFI/include/RequestHandler.h
++++ b/UEFI/include/RequestHandler.h
+@@ -8,8 +8,14 @@
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include <atomic>
+ #include <cstdint>
+@@ -18,6 +24,7 @@
+ #include "SharedMemoryProtocol.h"
+ #include "ProcessMemory.h"
+ #include "ProcessFinder.h"
++#include "Diag.h"
+ 
+ namespace UEFIBridge {
+ 
+@@ -59,6 +66,16 @@ namespace UEFIBridge {
+             running_ = false;
+         }
+ 
++        // v6: convert runtime-assigned pointers to virtual addresses
++        // (called from the SetVirtualAddressMap event handler).
++        void ConvertSelf(EFI_CONVERT_POINTER cvt) {
++            CvtOne(cvt, (VOID**)&pool_,   "RH.pool_");
++            CvtOne(cvt, (VOID**)&mem_,    "RH.mem_");
++            CvtOne(cvt, (VOID**)&finder_, "RH.finder_");
++            // timer_event_ is a boot-services handle — invalid after
++            // ExitBootServices, deliberately not converted.
++        }
++
+         // Public getter for timer event (needed by main.c for WaitForEvent).
+         EFI_EVENT GetTimerEvent() const { return timer_event_; }
+ 
+diff --git a/UEFI/include/RuntimeHook.h b/UEFI/include/RuntimeHook.h
+index 47eb454..b129a91 100644
+--- a/UEFI/include/RuntimeHook.h
++++ b/UEFI/include/RuntimeHook.h
+@@ -1,17 +1,43 @@
+ /**
+- * RuntimeHook.h  (UEFI side)
++ * RuntimeHook.h  (UEFI side)  —  v6
+  * =================================================================
+- * Hook for EFI_RUNTIME_SERVICES->GetTime (and other runtime services)
+- * to keep the polling loop alive after ExitBootServices.
++ * Hook EFI_RUNTIME_SERVICES->GetTime / GetVariable / SetVariable to
++ * keep the polling loop alive after ExitBootServices, and to give
++ * Windows a driver-less way to talk to the bridge (InfinityReq /
++ * InfinityResp / InfinityData variables are serviced here).
+  *
++ * v6 changes vs baseline (a8e41b3):
++ *   - Hooks are installed from the EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE
++ *     event (InstallVirtual), NOT at ExitBootServices time. The old
++ *     EBS-time install is what hung the Linux test VM: it wrote raw
++ *     physical hook addresses into gRT AFTER the firmware had already
++ *     converted the table, so the slots were never converted.
++ *     Installing DURING the event (before the firmware converts the
++ *     slots — "order B") lets the firmware convert our hook addresses
++ *     for us; the sandbox forensics verified the final table state.
++ *   - The saved original service pointers are converted to virtual
++ *     via ConvertPointer (ConvertSelf), so chaining works post-boot.
++ *   - Every hook entry serial-traces (first calls) and updates the
++ *     INFDIAG stage-4 / hook_calls counters.
++ *   - INFINITY_ENABLE_RUNTIME_HOOKS gates ALL hook installation.
++ *     Without it (SAFE build) this class never touches gRT.
+  * =================================================================
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include <cstdint>
++
++#include "SerialTrace.h"
++#include "Diag.h"
+ #include "RequestHandler.h"
+ 
+ namespace UEFIBridge {
+@@ -28,7 +54,7 @@ namespace UEFIBridge {
+         return ~crc;
+     }
+ 
+-    // GUID for SetVirtualAddressMap event
++    // EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE GUID
+     static EFI_GUID gEfiEventVirtualAddressChangeGuid = {
+         0x13fa7698, 0xc831, 0x49c7,
+         { 0x87, 0xea, 0x8f, 0x43, 0xfc, 0xc2, 0x51, 0x96 }
+@@ -38,45 +64,69 @@ namespace UEFIBridge {
+     public:
+         RuntimeHook() = default;
+ 
+-        void Install(RequestHandler* handler) {
+-            handler_    = handler;
+-            instance_   = this;
+-
+-            // Save originals BEFORE replacing.
+-            orig_get_time_        = gRT->GetTime;
+-            orig_get_variable_    = gRT->GetVariable;
+-            orig_set_variable_    = gRT->SetVariable;
+-            orig_get_next_variable_ = gRT->GetNextVariableName;
+-            orig_set_wakeup_      = gRT->SetWakeupTime;
++#ifdef INFINITY_ENABLE_RUNTIME_HOOKS
+ 
+-            // Install hooks (only for services that we know are called
+-            // frequently by Windows).
+-            gRT->GetTime        = &HookedGetTime;
+-            gRT->GetVariable    = &HookedGetVariable;
+-            gRT->SetVariable    = &HookedSetVariable;
++        // Called from the VA-change event handler, while the gRT slots
++        // still hold PHYSICAL addresses (order B). The firmware will
++        // convert whatever we leave in the slots right after the event.
++        void InstallVirtual() {
++            instance_ = this; // handler_ was set via SetHandler at load time
+ 
+-            // Update the Runtime Services Table CRC32 after modifying it.
+-            // UEFI spec requires the CRC to be valid after changes.
++            // Save originals BEFORE replacing (physical values).
++            orig_get_time_          = gRT->GetTime;
++            orig_get_variable_      = gRT->GetVariable;
++            orig_set_variable_      = gRT->SetVariable;
++            orig_get_next_variable_ = gRT->GetNextVariableName;
++            orig_set_wakeup_        = gRT->SetWakeupTime;
++
++            SerialTrace::KV("RT", "orig GetTime        ", (UINT64)orig_get_time_);
++            SerialTrace::KV("RT", "orig GetVariable    ", (UINT64)orig_get_variable_);
++            SerialTrace::KV("RT", "orig SetVariable    ", (UINT64)orig_set_variable_);
++
++            // Install hooks. Only services we know the production
++            // client can trigger (user-mode firmware variable APIs
++            // reach GetVariable/SetVariable; the kernel time init may
++            // reach GetTime).
++            gRT->GetTime     = &RuntimeHook::HookedGetTime;
++            gRT->GetVariable = &RuntimeHook::HookedGetVariable;
++            gRT->SetVariable = &RuntimeHook::HookedSetVariable;
++
++            SerialTrace::KV("RT", "hook GetTime        ", (UINT64)gRT->GetTime);
++            SerialTrace::KV("RT", "hook GetVariable    ", (UINT64)gRT->GetVariable);
++            SerialTrace::KV("RT", "hook SetVariable    ", (UINT64)gRT->SetVariable);
++
++            // The table header CRC only covers the header, but keep the
++            // refresh for parity with the checked-in baseline.
+             gRT->Hdr.CRC32 = 0;
+             gRT->Hdr.CRC32 = ComputeCrc32(gRT, gRT->Hdr.HeaderSize);
+ 
+-            // NOTE: SetVirtualAddressMap event must be registered
+-            // during Boot Services (in main.c), NOT here, because
+-            // Install() is called after ExitBootServices when gBS
+-            // is no longer valid.
+             installed_ = TRUE;
++            SerialTrace::Line("RT", "gRT hooks INSTALLED (physical; firmware converts slots next)");
+         }
++#endif // INFINITY_ENABLE_RUNTIME_HOOKS
+ 
+         void SetHandler(RequestHandler* handler) {
+             handler_ = handler;
+         }
+ 
++        // Convert runtime-assigned pointers to virtual. Called from
++        // ConvertPointersAll() after InstallVirtual().
++        void ConvertSelf(EFI_CONVERT_POINTER cvt) {
++            CvtOne(cvt, (VOID**)&handler_,                "RT.handler_");
++#ifdef INFINITY_ENABLE_RUNTIME_HOOKS
++            CvtOne(cvt, (VOID**)&orig_get_time_,          "RT.orig_get_time_");
++            CvtOne(cvt, (VOID**)&orig_get_variable_,      "RT.orig_get_variable_");
++            CvtOne(cvt, (VOID**)&orig_set_variable_,      "RT.orig_set_variable_");
++            CvtOne(cvt, (VOID**)&orig_get_next_variable_, "RT.orig_get_next_");
++            CvtOne(cvt, (VOID**)&orig_set_wakeup_,        "RT.orig_set_wakeup_");
++#endif
++        }
++
+         void Uninstall() {
+             if (!installed_) return;
+-            gRT->GetTime        = orig_get_time_;
+-            gRT->GetVariable    = orig_get_variable_;
+-            gRT->SetVariable    = orig_set_variable_;
+-            // Update CRC after restoring originals.
++            gRT->GetTime     = orig_get_time_;
++            gRT->GetVariable = orig_get_variable_;
++            gRT->SetVariable = orig_set_variable_;
+             gRT->Hdr.CRC32 = 0;
+             gRT->Hdr.CRC32 = ComputeCrc32(gRT, gRT->Hdr.HeaderSize);
+             installed_ = FALSE;
+@@ -85,8 +135,8 @@ namespace UEFIBridge {
+         void ProcessPending() {
+             if (!handler_) return;
+             // Re-entry guard: don't process if we're already inside
+-            // ProcessPendingRequests. This prevents infinite recursion
+-            // when a hooked runtime service calls another hooked service.
++            // ProcessPendingRequests (a hooked service calling another
++            // hooked service must not recurse).
+             if (in_process_) return;
+             in_process_ = TRUE;
+             handler_->ProcessPendingRequests();
+@@ -94,18 +144,24 @@ namespace UEFIBridge {
+         }
+ 
+         // =========================================================
+-        // GetTime hook — NULL-safe (don't dereference if no instance).
++        // Hooked runtime services.
++        // These run at their VIRTUAL addresses in Windows kernel
++        // context: only port I/O, our converted pointers, and the
++        // converted original services may be used.
+         // =================================================================
+         static EFI_STATUS EFIAPI HookedGetTime(
+             EFI_TIME* time, EFI_TIME_CAPABILITIES* caps) {
++
++            HookEnter('T');
+             if (instance_) {
+                 instance_->ProcessPending();
+-                // Validate original pointer before calling.
+                 if (instance_->orig_get_time_) {
+-                    return instance_->orig_get_time_(time, caps);
++                    EFI_STATUS s = instance_->orig_get_time_(time, caps);
++                    HookChainResult('T', s);
++                    return s;
+                 }
+             }
+-            // Fallback: we should never get here if Install was called.
++            HookChainResult('T', (UINT64)EFI_UNSUPPORTED);
+             return EFI_UNSUPPORTED;
+         }
+ 
+@@ -113,18 +169,24 @@ namespace UEFIBridge {
+             CHAR16* var_name, EFI_GUID* vendor_guid,
+             UINT32* attrs, UINTN* data_size, VOID* data) {
+ 
++            HookEnter('G');
+             if (instance_ && instance_->IsOurVariable(var_name, vendor_guid)) {
+-                return instance_->HandleOurGetVariable(
++                EFI_STATUS s = instance_->HandleOurGetVariable(
+                     var_name, attrs, data_size, data);
++                HookChainResult('G', s);
++                return s;
+             }
+ 
+             if (instance_) {
+                 instance_->ProcessPending();
+                 if (instance_->orig_get_variable_) {
+-                    return instance_->orig_get_variable_(
++                    EFI_STATUS s = instance_->orig_get_variable_(
+                         var_name, vendor_guid, attrs, data_size, data);
++                    HookChainResult('G', s);
++                    return s;
+                 }
+             }
++            HookChainResult('G', (UINT64)EFI_UNSUPPORTED);
+             return EFI_UNSUPPORTED;
+         }
+ 
+@@ -132,36 +194,81 @@ namespace UEFIBridge {
+             CHAR16* var_name, EFI_GUID* vendor_guid,
+             UINT32 attrs, UINTN data_size, VOID* data) {
+ 
++            // Re-entrancy guard: our own DiagWrite() arrives here (it
++            // calls gRT->SetVariable). Service it through the ORIGINAL
++            // only — no bookkeeping, no stage bump, no recursion.
++            if (g_diag_busy) {
++                if (instance_ && instance_->orig_set_variable_) {
++                    return instance_->orig_set_variable_(
++                        var_name, vendor_guid, attrs, data_size, data);
++                }
++                return EFI_UNSUPPORTED;
++            }
++
++            HookEnter('S');
+             if (instance_ && instance_->IsOurVariable(var_name, vendor_guid)) {
+-                return instance_->HandleOurSetVariable(
++                EFI_STATUS s = instance_->HandleOurSetVariable(
+                     var_name, attrs, data_size, data);
++                HookChainResult('S', s);
++                return s;
+             }
+ 
+             if (instance_) {
+                 instance_->ProcessPending();
+                 if (instance_->orig_set_variable_) {
+-                    return instance_->orig_set_variable_(
++                    EFI_STATUS s = instance_->orig_set_variable_(
+                         var_name, vendor_guid, attrs, data_size, data);
++                    HookChainResult('S', s);
++                    return s;
+                 }
+             }
++            HookChainResult('S', (UINT64)EFI_UNSUPPORTED);
+             return EFI_UNSUPPORTED;
+         }
+ 
+     private:
++        // Serial trace on hook entry. Bounded: the first 8 calls of a
++        // boot are traced in full, after that only every 64th call, so
++        // a busy production session can not flood the serial log.
++        static void HookEnter(char service) {
++            UINT32 n = ++g_diag_hook_calls;
++            bool first = (g_diag_stage != kDiagStageHookCalled);
++            if (first) {
++                g_diag_stage = kDiagStageHookCalled;
++            }
++            if (n <= 8 || (n & 63) == 0) {
++                SerialTrace::Begin("HOOK");
++                SerialTrace::Putc(service);
++                SerialTrace::Puts(" call#");
++                SerialTrace::Dec(n);
++                if (first) SerialTrace::Puts(" FIRST");
++            }
++            // Persist the milestone. Flash wear is bounded the same way
++            // as the traces; last write carries the final counter.
++            if (n <= 4 || first || (n & 63) == 0) {
++                DiagWrite();
++            }
++        }
++
++        static void HookChainResult(char service, UINT64 status) {
++            // Chained-status traces are rare (only very early calls).
++            if (g_diag_hook_calls <= 8) {
++                SerialTrace::Begin("HOOK");
++                SerialTrace::Putc(service);
++                SerialTrace::Puts(" chained st=0x");
++                SerialTrace::Hex32((UINT32)status);
++            }
++        }
++
+         BOOLEAN IsOurVariable(CHAR16* name, EFI_GUID* guid) {
+             if (!name) return FALSE;
+-            // Check that the GUID matches our GUID.
+-            // Our GUID: {A1B2C3D4-E5F6-4789-9ABC-DEF012345678}
+-            // Note: not const because gnu-efi's CompareGuid takes non-const pointers.
+             static EFI_GUID kOurGuid = {
+                 0xA1B2C3D4, 0xE5F6, 0x4789,
+                 { 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78 }
+             };
+             if (guid) {
+-                // Compare GUID byte-by-byte.
+                 if (CompareGuid(guid, &kOurGuid) != TRUE) return FALSE;
+             }
+-            // Check variable name.
+             if (StrCmp(name, (CHAR16*)L"InfinityReq")  == 0) return TRUE;
+             if (StrCmp(name, (CHAR16*)L"InfinityResp") == 0) return TRUE;
+             if (StrCmp(name, (CHAR16*)L"InfinityData") == 0) return TRUE;
+@@ -172,7 +279,6 @@ namespace UEFIBridge {
+             CHAR16* var_name, UINT32* attrs,
+             UINTN* data_size, VOID* data) {
+ 
+-            // #80: validate data_size is non-null before dereferencing
+             if (!data_size) return EFI_INVALID_PARAMETER;
+ 
+             if (StrCmp(var_name, (CHAR16*)L"InfinityResp") == 0) {
+@@ -180,7 +286,6 @@ namespace UEFIBridge {
+                     *data_size = last_resp_size_;
+                     return EFI_BUFFER_TOO_SMALL;
+                 }
+-                // #81: validate data pointer when nonzero output is required
+                 if (data == nullptr && last_resp_size_ > 0) {
+                     return EFI_INVALID_PARAMETER;
+                 }
+@@ -196,7 +301,6 @@ namespace UEFIBridge {
+                     *data_size = last_data_size_;
+                     return EFI_BUFFER_TOO_SMALL;
+                 }
+-                // #81: validate data pointer when nonzero output is required
+                 if (data == nullptr && last_data_size_ > 0) {
+                     return EFI_INVALID_PARAMETER;
+                 }
+@@ -214,7 +318,6 @@ namespace UEFIBridge {
+             CHAR16* var_name, UINT32 attrs,
+             UINTN data_size, VOID* data) {
+ 
+-            // R16 fix: return proper EFI status codes, not always EFI_SUCCESS.
+             if (StrCmp(var_name, (CHAR16*)L"InfinityReq") == 0) {
+                 if (!data || data_size < sizeof(EfiVarReq)) {
+                     return EFI_INVALID_PARAMETER;
+@@ -237,7 +340,6 @@ namespace UEFIBridge {
+                 last_data_size_ = data_size;
+                 return EFI_SUCCESS;
+             }
+-            // Unknown variable name — not ours, return not found.
+             return EFI_NOT_FOUND;
+         }
+ 
+diff --git a/UEFI/include/SerialTrace.h b/UEFI/include/SerialTrace.h
+new file mode 100644
+index 0000000..371fdbb
+--- /dev/null
++++ b/UEFI/include/SerialTrace.h
+@@ -0,0 +1,90 @@
++/**
++ * SerialTrace.h  (UEFI side)  —  v6 diagnostic infrastructure
++ * =================================================================
++ * Raw serial-port (COM1 / 0x3F8) output that works in EVERY CPU and
++ * firmware mode: Boot Services, inside the SetVirtualAddressMap
++ * event, after ExitBootServices, and from gRT hooks called by the
++ * Windows kernel. It is pure port I/O — no firmware services, no
++ * pointers to convert, no locks, no TPL/IRQL requirements.
++ *
++ * Why this exists (v5 lesson): INFDIAG told us the VA event ran
++ * (stage 3) but nothing after it. NVRAM writes can silently fail
++ * after the firmware switches to virtual addressing, so a variable
++ * alone can not distinguish "hook never ran" from "hook ran but its
++ * write failed". The serial port cannot silently fail — every trace
++ * line that appears in serial-phase-d.log is ground truth.
++ *
++ * QEMU maps the 16550 UART to the -serial file, so these lines land
++ * in the same serial-phase-d.log the user already sends back.
++ * =================================================================
++ */
++#pragma once
++
++#include <cstdint>
++
++namespace UEFIBridge {
++
++class SerialTrace {
++public:
++    static constexpr uint16_t kCom1Base = 0x3F8;
++
++    static inline void OutB(uint16_t port, uint8_t val) {
++        __asm__ __volatile__("outb %0, %1" : : "a"(val), "Nd"(port));
++    }
++
++    static void Putc(char c) { OutB(kCom1Base, (uint8_t)c); }
++
++    static void Puts(const char* s) {
++        if (!s) return;
++        while (*s) Putc(*s++);
++    }
++
++    // Every trace line starts with \r\n[INF] so it is easy to grep and
++    // clearly separated from the firmware console output.
++    static void Begin(const char* tag) {
++        Putc('\r'); Putc('\n');
++        Puts("[INF]");
++        if (tag) { Putc('['); Puts(tag); Putc(']'); }
++        Putc(' ');
++    }
++
++    static void Line(const char* tag, const char* msg) {
++        Begin(tag); Puts(msg);
++    }
++
++    static void Hex64(uint64_t v) {
++        static const char* k = "0123456789ABCDEF";
++        for (int nib = 60; nib >= 0; nib -= 4) Putc(k[(v >> nib) & 0xF]);
++    }
++
++    static void Hex32(uint32_t v) {
++        static const char* k = "0123456789ABCDEF";
++        for (int nib = 28; nib >= 0; nib -= 4) Putc(k[(v >> nib) & 0xF]);
++    }
++
++    static void Dec(uint64_t v) {
++        char buf[21];
++        int i = 20;
++        buf[20] = 0;
++        if (v == 0) { Putc('0'); return; }
++        while (v && i > 0) { buf[--i] = (char)('0' + (v % 10)); v /= 10; }
++        Puts(&buf[i]);
++    }
++
++    // Convenience: "[INF][tag] label=0x........  (64-bit hex)"
++    static void KV(const char* tag, const char* label, uint64_t v) {
++        Begin(tag); Puts(label); Puts("=0x"); Hex64(v);
++    }
++
++    // Convenience: "[INF][tag] label=<decimal>"
++    static void KVD(const char* tag, const char* label, uint64_t v) {
++        Begin(tag); Puts(label); Putc('='); Dec(v);
++    }
++
++    // Convenience: "[INF][tag] msg st=0x........" for EFI_STATUS values.
++    static void Status(const char* tag, const char* msg, uint64_t st) {
++        Begin(tag); Puts(msg); Puts(" st=0x"); Hex32((uint32_t)st);
++    }
++};
++
++} // namespace UEFIBridge
+diff --git a/UEFI/include/SharedMemoryPool.h b/UEFI/include/SharedMemoryPool.h
+index a7bb6ef..06ba6df 100644
+--- a/UEFI/include/SharedMemoryPool.h
++++ b/UEFI/include/SharedMemoryPool.h
+@@ -17,8 +17,14 @@
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
+ #include "SharedMemoryProtocol.h"
+ #include <cstdint>
+@@ -132,6 +138,16 @@ namespace UEFIBridge {
+             return (UINT8*)base_addr_ + OFFSET_DATA_POOL;
+         }
+ 
++        // v6: convert runtime-assigned pointers to virtual addresses
++        // (called from the SetVirtualAddressMap event handler).
++        VOID ConvertSelf(EFI_CONVERT_POINTER cvt) {
++            CvtOne(cvt, (VOID**)&header_, "SMP.header_");
++            // base_addr_ is dereferenced as the ring/data base pointer
++            // (Requests()/Responses()/DataPool()), so it must go virtual
++            // too — it is not just a physical address number.
++            CvtOne(cvt, (VOID**)&base_addr_, "SMP.base_addr_");
++        }
++
+     private:
+         EFI_STATUS PublishVariable() {
+             struct EfiVarInfo {
+diff --git a/UEFI/include/WindowsOffsets.h b/UEFI/include/WindowsOffsets.h
+index 04248b3..504eb09 100644
+--- a/UEFI/include/WindowsOffsets.h
++++ b/UEFI/include/WindowsOffsets.h
+@@ -15,7 +15,14 @@
+  */
+ #pragma once
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
++#include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ #include <cstdint>
+ 
+ namespace UEFIBridge {
+diff --git a/UEFI/src/main.c b/UEFI/src/main.c
+index c9b9050..2a6c7d5 100644
+--- a/UEFI/src/main.c
++++ b/UEFI/src/main.c
+@@ -1,19 +1,41 @@
+ /**
+- * main.c  (UEFI side — memory.efi)
++ * main.c  (UEFI side — memory.efi)  —  v6
+  * =================================================================
+- * Entry point of the UEFI bootkit module.
++ * Entry point of the UEFI bridge module.
+  *
+- * Compatible with Ubuntu's gnu-efi package (uses efi.h, not Uefi.h).
+- *
+- * All wide strings are cast to CHAR16* because gnu-efi defines
+- * CHAR16 as uint16_t, but C++ uses wchar_t as int (4 bytes).
+- * Without the cast, GCC complains about wchar_t -> CHAR16 conversion.
++ * Build variants (see Makefile):
++ *   make          -> SAFE build (INFINITY_ENABLE_RUNTIME_HOOKS off).
++ *                    Loads, installs the ExitBootServices hook only.
++ *   make RT=1     -> RT build. Additionally installs gRT hooks from
++ *                    the SetVirtualAddressMap event (phase D).
+  *
++ * Startup-fix notes carried from the QEMU bring-up (R1-R6, without
++ * which the module #GP-crashes on first load — the CI never executed
++ * its own binary):
++ *   R1  gnu-efi 3.0.13 headers have no C++ linkage guards -> every
++ *       efi.h/efilib.h include site is wrapped in extern "C".
++ *   R2/R5  gnu-efi's crt0 calls `efi_main` as a PLAIN SysV function
++ *       (rdi/rsi) and never calls InitializeLib — so the entry is a
++ *       plain-SysV efi_main that calls InitializeLib itself.
++ *   R3  gInfinityMemVarGuid is declared inside namespace UEFIBridge
++ *       by SharedMemoryPool.h, so the definition lives in the
++ *       namespace too.
++ *   R4  -fvisibility=hidden (C++ vague-linkage GOT relocation fix).
++ *   R6  Vendored linker script with .bss* wildcards (C++ named .bss
++ *       sections were orphaned outside the PE).
+  * =================================================================
+  */
++#ifdef __cplusplus
++extern "C" {
++#endif
+ #include <efi.h>
+ #include <efilib.h>
++#ifdef __cplusplus
++}
++#endif
+ 
++#include "SerialTrace.h"
++#include "Diag.h"
+ #include "SharedMemoryPool.h"
+ #include "PhysicalMemory.h"
+ #include "ProcessMemory.h"
+@@ -21,17 +43,20 @@
+ #include "CR3Capture.h"
+ #include "RequestHandler.h"
+ #include "RuntimeHook.h"
++#include "ConvertPtr.h"
+ #include "SharedMemoryProtocol.h"
+ 
+-// GUID for our runtime variable {A1B2C3D4-E5F6-4789-9ABC-DEF012345678}
+-EFI_GUID gInfinityMemVarGuid = {
+-    0xA1B2C3D4, 0xE5F6, 0x4789,
+-    { 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78 }
+-};
+-
+ namespace UEFIBridge {
+ 
+-    // Globals — owned by EfiMain, lifetime = entire boot.
++    // R3: definition inside the namespace to match the extern
++    // declaration in SharedMemoryPool.h / Diag.h.
++    // {A1B2C3D4-E5F6-4789-9ABC-DEF012345678}
++    EFI_GUID gInfinityMemVarGuid = {
++        0xA1B2C3D4, 0xE5F6, 0x4789,
++        { 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78 }
++    };
++
++    // Globals — owned by efi_main, lifetime = entire boot.
+     static PhysicalMemory   g_phys_mem;
+     static SharedMemoryPool g_pool;
+     static ProcessMemory    g_proc_mem;
+@@ -40,6 +65,67 @@ namespace UEFIBridge {
+     static RequestHandler   g_handler;
+     static RuntimeHook      g_runtime_hook;
+ 
++    // Pointer graph handed to the VA-change event handler.
++    static ConvertGraph g_va_graph;
++
++#ifdef INFINITY_ENABLE_RUNTIME_HOOKS
++    static const char kBuildLine[] = "  Build: v6 RT - runtime hooks ENABLED (phase D)";
++#else
++    static const char kBuildLine[] = "  Build: v6 SAFE (phase C)";
++#endif
++
++    // v6 diagnostic: print our image's LoadedImage memory types and
++    // every EFI memory-map descriptor that overlaps [lo, hi). Answers
++    // "did the firmware load our .text as EfiRuntimeServicesCode (5)?"
++    // — the OS maps RT code executable; anything else becomes NX and
++    // kernel-called gRT hooks would fault on instruction fetch.
++    static VOID DumpImageMemoryInfo(EFI_HANDLE image_handle, UINT64 lo, UINT64 hi) {
++        EFI_LOADED_IMAGE* li = nullptr;
++        EFI_GUID lipGuid = gEfiLoadedImageProtocolGuid;
++        EFI_STATUS s = gBS->HandleProtocol(image_handle, &lipGuid, (VOID**)&li);
++        if (!EFI_ERROR(s) && li) {
++            SerialTrace::KV("IMG", "ImageBase ", (UINT64)li->ImageBase);
++            SerialTrace::KVD("IMG", "ImageCodeType ", (UINT64)li->ImageCodeType);
++            SerialTrace::KVD("IMG", "ImageDataType ", (UINT64)li->ImageDataType);
++            lo = (UINT64)li->ImageBase;
++            hi = lo + 0x20000;
++        } else {
++            SerialTrace::Status("IMG", "LoadedImage query failed", (UINT64)s);
++        }
++
++        static EFI_MEMORY_DESCRIPTOR map[512];
++        UINTN mapSize = sizeof(map), mapKey = 0, descSize = 0;
++        UINT32 descVer = 0;
++        s = gBS->GetMemoryMap(&mapSize, map, &mapKey, &descSize, &descVer);
++        if (EFI_ERROR(s)) {
++            SerialTrace::Status("MMAP", "GetMemoryMap failed", (UINT64)s);
++            return;
++        }
++        SerialTrace::KVD("MMAP", "descriptors ", (mapSize / (descSize ? descSize : 1)));
++        for (UINTN off = 0; off + descSize <= mapSize; off += descSize) {
++            EFI_MEMORY_DESCRIPTOR* d = (EFI_MEMORY_DESCRIPTOR*)((UINT8*)map + off);
++            UINT64 start = d->PhysicalStart;
++            UINT64 end = start + ((UINT64)d->NumberOfPages << 12);
++            // v6.1: dump EVERY runtime-services descriptor (type 5/6) so we
++            // can compare our region against the firmware's own RT regions.
++            bool is_rt = (d->Type == 5 || d->Type == 6);
++            bool overlaps = (end > lo && start < hi);
++            if (!is_rt && !overlaps) continue;
++            SerialTrace::Begin("MMAP");
++            SerialTrace::Puts("type=");
++            SerialTrace::Dec(d->Type);
++            SerialTrace::Puts(" attr=0x");
++            SerialTrace::Hex64(d->Attribute);
++            SerialTrace::Puts(" phys=0x");
++            SerialTrace::Hex64(start);
++            SerialTrace::Puts("-0x");
++            SerialTrace::Hex64(end);
++            SerialTrace::Puts(" npages=");
++            SerialTrace::Dec(d->NumberOfPages);
++            if (overlaps) SerialTrace::Puts(" <OUR_IMAGE>");
++        }
++    }
++
+     static VOID PrintBanner() {
+         gST->ConOut->ClearScreen(gST->ConOut);
+         gST->ConOut->SetAttribute(gST->ConOut,
+@@ -51,116 +137,157 @@ namespace UEFIBridge {
+         gST->ConOut->SetCursorPosition(gST->ConOut, 0, 10);
+         Print((CHAR16*)L"  INFINITY UEFI BRIDGE LOADED                              \r\n");
+         Print((CHAR16*)L"  Made by: fulken                                          \r\n");
++#ifdef INFINITY_ENABLE_RUNTIME_HOOKS
++        Print((CHAR16*)L"  Build: v6 RT - runtime hooks ENABLED (phase D)           \r\n");
++#else
++        Print((CHAR16*)L"  Build: v6 SAFE (phase C)                                 \r\n");
++#endif
+         Print((CHAR16*)L"  Driver has been loaded. You can now boot to the OS.       \r\n");
+         Print((CHAR16*)L"\r\n");
+     }
+ 
++    // =================================================================
++    // SetVirtualAddressMap event handler.
++    //
++    // Fired by the firmware while processing the OS loader's
++    // SetVirtualAddressMap call, BEFORE the firmware rewrites the gRT
++    // function slots ("order B", verified in sandbox forensics).
++    //
++    // RT build sequence:
++    //   1. InstallVirtual: save originals, drop our (physical) hook
++    //      addresses into the gRT slots — the firmware converts the
++    //      slots right after this event returns.
++    //   2. DiagWrite(stage 3) while gRT is still physical (proven path
++    //      in v5).
++    //   3. ConvertPointersAll: convert every runtime-assigned pointer
++    //      (graph + saved originals + RT/ST themselves) to virtual.
++    //
++    // SAFE build: only step 3 runs.
++    // =================================================================
++    static VOID EFIAPI VaChangeHandler(EFI_EVENT /*event*/, VOID* /*context*/) {
++        SerialTrace::Line("VA", "SetVirtualAddressMap event FIRED");
++
++#ifdef INFINITY_ENABLE_RUNTIME_HOOKS
++        g_va_graph.rthook->InstallVirtual();
++        DiagSetStage(kDiagStageHooksInstalled);
++        DiagWrite();
++#else
++        SerialTrace::Line("VA", "SAFE build: no gRT hooks installed");
++#endif
++
++        ConvertPointersAll(&g_va_graph);
++        SerialTrace::Line("VA", "SetVirtualAddressMap event handler done");
++    }
++
+ } // namespace UEFIBridge
+ 
+-// SetVirtualAddressMap event handler.
+-// Per UEFI spec, runtime components must convert internal pointers
+-// when the OS calls SetVirtualAddressMap().
+-//
+-// In this codebase, the following pointers exist:
+-// - RuntimeHook::instance_ → points to our own global (same image)
+-// - RuntimeHook::handler_ → points to RequestHandler global (same image)
+-// - orig_get_time_ etc. → copied from gRT (firmware updates gRT)
+-//
+-// For gnu-efi runtime drivers built with -fpic:
+-// - Our code/data stays at the same virtual address (not relocated)
+-// - gRT function pointers are updated by the firmware automatically
+-// - Our global variable pointers stay valid at the same address
+-//
+-// Therefore, ConvertPointer() is not needed for any of our pointers.
+-// This handler exists for UEFI spec compliance.
+-static VOID EFIAPI VaChangeHandler(EFI_EVENT /*event*/, VOID* /*context*/) {
+-    // No pointer conversion needed.
+-    // If future versions allocate runtime memory dynamically,
+-    // add ConvertPointer() calls here for those pointers.
+-}
++// =====================================================================
++// Entry point — plain SysV ABI (gnu-efi crt0 calls efi_main(rdi, rsi)
++// and does NOT call InitializeLib; doing both wrong was startup bug R5).
++// =====================================================================
++extern "C" EFI_STATUS
++efi_main(IN EFI_HANDLE image_handle, IN EFI_SYSTEM_TABLE* sys_table) {
++    using namespace UEFIBridge;
+ 
+-extern "C" {
++    InitializeLib(image_handle, sys_table);
+ 
+-    EFI_STATUS
+-    EFIAPI
+-    EfiMain(IN EFI_HANDLE /*image_handle*/, IN EFI_SYSTEM_TABLE* /*sys_table*/) {
+-        using namespace UEFIBridge;
+-        // image_handle available if needed later.
++    SerialTrace::Line("MAIN", "efi_main v6 boot");
++#ifdef INFINITY_ENABLE_RUNTIME_HOOKS
++    SerialTrace::Line("MAIN", "variant: RT (runtime hooks enabled)");
++#else
++    SerialTrace::Line("MAIN", "variant: SAFE (no runtime hooks)");
++#endif
+ 
+-        PrintBanner();
++    PrintBanner();
+ 
+-        g_phys_mem.Initialize();
++    g_phys_mem.Initialize();
++    SerialTrace::KV("MAIN", "UEFI CR3 ", ReadCr3());
+ 
+-        EFI_STATUS s = g_pool.Initialize();
+-        if (EFI_ERROR(s)) {
+-            Print((CHAR16*)L"  Failed to allocate shared memory pool: 0x%lx\r\n", s);
+-            return s;
+-        }
++    // Diagnostic: our image's memory typing (decides OS exec permission).
++    DumpImageMemoryInfo(image_handle, 0, 0);
+ 
+-        g_proc_mem.Initialize(&g_phys_mem);
+-        g_proc_mem.SetTargetCR3(0);
++    EFI_STATUS s = g_pool.Initialize();
++    if (EFI_ERROR(s)) {
++        Print((CHAR16*)L"  Failed to allocate shared memory pool: 0x%lx\r\n", s);
++        SerialTrace::Status("MAIN", "pool init FAILED", (UINT64)s);
++        return s;
++    }
++    SerialTrace::Line("MAIN", "shared pool OK (4MB, EfiRuntimeServicesData)");
+ 
+-        g_finder.Initialize(&g_phys_mem);
++    g_proc_mem.Initialize(&g_phys_mem);
++    g_proc_mem.SetTargetCR3(0);
+ 
+-        CR3Capture::instance_ = &g_cr3_capture;
+-        RuntimeHook::instance_ = &g_runtime_hook;
+-        // Start the request handler BEFORE installing the ExitBootServices hook.
+-        // This ensures the handler is fully ready when ExitBootServices fires.
+-        s = g_handler.Start(&g_pool, &g_proc_mem, &g_finder);
+-        if (EFI_ERROR(s)) {
+-            Print((CHAR16*)L"  Failed to start request handler: 0x%lx\r\n", s);
+-            g_pool.Cleanup();
+-            return s;
+-        }
++    g_finder.Initialize(&g_phys_mem);
+ 
+-        // Install the ExitBootServices hook with the handler passed.
+-        // CR3Capture will install RuntimeHook with this handler when
+-        // ExitBootServices is called by Windows.
+-        s = g_cr3_capture.Install(&g_phys_mem, &g_finder, &g_runtime_hook, &g_handler);
+-        if (EFI_ERROR(s)) {
+-            Print((CHAR16*)L"  Failed to install ExitBootServices hook: 0x%lx\r\n", s);
+-            g_handler.Stop();
+-            g_pool.Cleanup();
+-            return s;
+-        }
++    CR3Capture::instance_ = &g_cr3_capture;
++    RuntimeHook::instance_ = &g_runtime_hook;
+ 
+-        // The handler is passed to CR3Capture::Install above, so when
+-        // ExitBootServices fires, the RuntimeHook will be installed with
+-        // this handler. We don't need to call SetHandler here because
+-        // EfiMain returns before ExitBootServices is called by the OS.
+-        // The CR3Capture hook sets the handler correctly.
+-
+-        Print((CHAR16*)L"  SUCCESS: Bridge ready. Returning to boot menu.\r\n");
+-        Print((CHAR16*)L"  When you boot to Windows, Infinity.exe will detect\r\n");
+-        Print((CHAR16*)L"  the bridge and use it automatically.\r\n");
+-        
+-        // Register for SetVirtualAddressMap notification during Boot Services.
+-        // This must be done BEFORE ExitBootServices (gBS is valid now).
+-        // The handler is a no-op for gnu-efi (code stays at same address).
+-        {
+-            static EFI_GUID va_change_guid = {
+-                0x13fa7698, 0xc831, 0x49c7,
+-                { 0x87, 0xea, 0x8f, 0x43, 0xfc, 0xc2, 0x51, 0x96 }
+-            };
+-            EFI_EVENT va_evt = nullptr;
+-            EFI_STATUS va_st = gBS->CreateEventEx(
+-                EVT_NOTIFY_SIGNAL, TPL_NOTIFY,
+-                &VaChangeHandler,
+-                nullptr, &va_change_guid, &va_evt);
+-            if (EFI_ERROR(va_st)) {
+-                Print((CHAR16*)L"  WARNING: VA-change event registration failed: 0x%lx\r\n", va_st);
+-                // Continue anyway — not critical for PoC.
+-            }
+-        }
++    // The request handler must be fully ready before the EBS hook is
++    // installed (it fires later, when the OS boots).
++    s = g_handler.Start(&g_pool, &g_proc_mem, &g_finder);
++    if (EFI_ERROR(s)) {
++        Print((CHAR16*)L"  Failed to start request handler: 0x%lx\r\n", s);
++        SerialTrace::Status("MAIN", "handler start FAILED", (UINT64)s);
++        g_pool.Cleanup();
++        return s;
++    }
++    SerialTrace::Line("MAIN", "request handler started (1ms timer)");
++
++    // RuntimeHook's handler pointer (used by the VA event / hooks).
++    g_runtime_hook.SetHandler(&g_handler);
++
++    // Pointer graph for the VA-change event handler (must be filled
++    // BEFORE we return — the event fires when the OS boots).
++    g_va_graph.pm      = &g_phys_mem;
++    g_va_graph.pool    = &g_pool;
++    g_va_graph.pmem    = &g_proc_mem;
++    g_va_graph.finder  = &g_finder;
++    g_va_graph.handler = &g_handler;
++    g_va_graph.rthook  = &g_runtime_hook;
++    g_va_graph.cr3     = &g_cr3_capture;
++    SerialTrace::Line("MAIN", "VA graph populated");
+ 
+-        // Show blue screen for 5 seconds, then return to EFI Shell.
+-        // This image is built as a UEFI Runtime Driver (not Application).
+-        // Runtime Drivers stay loaded after EfiMain returns — the UEFI
+-        // loader does NOT reclaim their code/data. Our hooks
+-        // (ExitBootServices, GetTime, GetVariable, SetVariable)
+-        // remain valid because the image stays resident in memory.
+-        gBS->Stall(5 * 1000000);  // 5 seconds
+-        return EFI_SUCCESS;
++    s = g_cr3_capture.Install(&g_phys_mem, &g_finder, &g_runtime_hook, &g_handler);
++    if (EFI_ERROR(s)) {
++        Print((CHAR16*)L"  Failed to install ExitBootServices hook: 0x%lx\r\n", s);
++        SerialTrace::Status("MAIN", "EBS hook install FAILED", (UINT64)s);
++        g_handler.Stop();
++        g_pool.Cleanup();
++        return s;
+     }
+ 
+-}  // extern "C"
++    // Register for the SetVirtualAddressMap notification. Must happen
++    // during Boot Services; the event fires when the OS loader calls
++    // SetVirtualAddressMap (before ExitBootServices).
++    {
++        EFI_EVENT va_evt = nullptr;
++        EFI_STATUS va_st = gBS->CreateEventEx(
++            EVT_NOTIFY_SIGNAL, TPL_NOTIFY,
++            &VaChangeHandler,
++            nullptr, &gEfiEventVirtualAddressChangeGuid, &va_evt);
++        SerialTrace::Status("MAIN", "VA event registration", (UINT64)va_st);
++        if (EFI_ERROR(va_st)) {
++            Print((CHAR16*)L"  WARNING: VA-change event registration failed: 0x%lx\r\n", va_st);
++            // Continue anyway: in the SAFE build nothing depends on it;
++            // in the RT build the hooks simply never get installed.
++        }
++    }
++
++    // Milestone 1: everything installed, variable published.
++    DiagSetStage(kDiagStageLoaded);
++    DiagSetFlag(kDiagFlagLoaded);
++    g_diag_hook_calls = 0;
++    DiagWrite();
++
++    Print((CHAR16*)L"  SUCCESS: Bridge ready. Returning to boot menu.\r\n");
++    Print((CHAR16*)L"  When you boot to Windows, Infinity.exe will detect\r\n");
++    Print((CHAR16*)L"  the bridge and use it automatically.\r\n");
++
++    // Show the blue banner briefly, then return to the EFI Shell.
++    // This image is a UEFI Runtime Driver: it stays resident after
++    // efi_main returns, so the EBS hook and (RT build) the gRT hooks
++    // remain armed for the OS boot.
++    gBS->Stall(3 * 1000000);  // 3 seconds
++    SerialTrace::Line("MAIN", "efi_main returning to shell");
++    return EFI_SUCCESS;
++}
