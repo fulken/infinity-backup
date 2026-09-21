@@ -1,0 +1,7 @@
+INFINITY clipboard add-on (SPICE copy-paste for host <-> Windows VM)
+Date: 2026-09-21
+Works next to any package version (v9+); original phase-d.bat untouched.
+
+0aa851ee6e92a5c32471fb1fee81d1baa2fa43d1f69ca593b0a9c8bbc3c35dc2  phase-d-spice.bat
+431b18473f7c2f74eb99fd50535d8960d54697a4804eba0409d06dcc1b7953cc  spice-connect.bat
+0fb01513e18013c98da54572c26f17e9b0b2ba693e3a869f37ec47ea6d77f181  README-SPICE-FA.md

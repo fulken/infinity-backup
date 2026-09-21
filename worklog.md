@@ -464,3 +464,99 @@ Stage Summary:
 - v15 SHIPPED: download/infinity-qemu-test-v15.zip — crash class dead (arrays), KUSD offset settled empirically next run (raw values of BOTH candidates traced on serial)
 - Expected v15 run: A/B moving + INFCNT=2 + flags 0x2B + InfinityResp ANSWERED + SUMMARY line "win_build driver-live=19045 script-side=19045" -> FULL BRIDGE
 - BLOCKED on: user runs the v15 package (extract over old folder -> phase-d.bat must say "package v15" -> trigger-test-v15.ps1 elevated -> photos + serial-phase-d.log)
+
+---
+Task ID: 22
+Agent: Super Z (main)
+Task: v15 report analysis (BEST RESULT OF PROJECT) + workspace-rollback recovery re-archive + SPICE clipboard add-on
+
+Work Log:
+- Rollback discovered: workspace git at v12.2 (83d1ba2, 2026-09-20 18:21); no
+  v13/v14/v15 sources, no Task 17-21 worklog entries, no .secrets token, no
+  reflog/dangling/stash survivors, no env token. upload/ survived with ALL user
+  evidence (v12/v13/v14/v15 reports + v13 forensics). During the analysis the
+  real Tasks 17-21 were not yet available - provisional reconstruction entries
+  17-R..21-R were written locally (superseded later the same day by the real
+  vault entries; the reconstruction's only substantive misses: the v12 BSOD
+  orig-call theory, and not knowing v15 was already vault-pushed)
+- Extracted upload/infinity-qemu-test-v15-Report.zip (6 files: boot + PS Part1/
+  Part2 photos + phase-b-check photo + 2 serial logs). VLM-transcribed both PS
+  photos (upload/vlm-v15-ps1.json, upload/vlm-v15-ps2.json)
+- ANALYSIS (full record: version-archive/reports/ANALYSIS-V15.md):
+  * v15 verdict matrix: [1] GetVariable path via hook PROVEN (hook_calls live
+    121->122->125->129->132->134, stage=4, flags=0x0F); [2] SetVariable path
+    via hook PROVEN (INFCNT=2 = INFTRIGGER+InfinityReq, flags 0x0F->0x2F);
+    [3] foreign/NVRAM path intact (INFPROBE 'B' readback, chained st=0 all over
+    boot); [5] InfinityResp = 32 bytes returned, seq 0x1337 echoed CORRECTLY,
+    but status=1 bytes=0 addr=0 -> request processing is the ONLY remaining
+    defect. NO BSOD, script completed, clean phase-b-check after
+  * KUSD live read WORKS: raw +0x260=0x4A65 (=19045, Win10 22H2 exactly
+    matches script-side), +0x308=0; v15 picks 0x260 - Task 21's offset
+    prediction confirmed empirically
+  * Script cosmetic bugs found: byte-truncating display of win_build (19045->
+    "101"), hook_calls (377->"121"), resp seq (0x1337->"0x37"); raw data is
+    CORRECT. Step [4] "InfinityReq landed" expectation stale for RAM-consume
+    design (ABSENT readback is correct v13+ behavior)
+  * NVRAM INFDIAG after test = frozen stage-3 snapshot, hook_calls=251 =
+    EXACTLY v13's value -> boot path deterministic/unchanged
+- Re-archived (rollback recovery, before the vault was available): v12/v13/v14/
+  v15 report zips + extracted-v14/ + extracted-v15/ (+VLM jsons) ->
+  version-archive/reports/; ANALYSIS-V15.md written as the durable record
+- SPICE clipboard add-on (user request #2, zero-disruption design):
+  infinity-qemu-test/clipboard-addon/ = phase-d-spice.bat (same QEMU chain as
+  phase-d + virtio-serial-pci + spicevmc vdagent port + -spice
+  addr=127.0.0.1,port=5930,disable-ticketing=on; NO trigger-version guard on
+  purpose so it works next to any package version; spicevmc pre-flight probe;
+  WHPX 1/2 + TCG fallback; usb-d pristine gates kept) + spice-connect.bat
+  (remote-viewer lookup: where + ProgramFiles VirtViewer* x2 + LocalAppData)
+  + README-SPICE-FA.md (Persian: guest=spice-guest-tools which user already
+  has, host=virt-viewer MSI from virt-manager.org, usage + troubleshooting)
+  + VERSION-CLIPBOARD.txt (sha256s). CRLF-converted; paren-audited (mechanical
+  balance 0/0, audit WARN confirmed as the known heuristic false positive);
+  packaged -> download/infinity-clipboard-addon.zip (14090 B). Display adapter
+  deliberately kept at default std VGA (no qxl) = minimal hardware delta
+- User re-pasted the PAT (same 7-day validity ~2026-09-28); stored again at
+  .secrets/github-token chmod 600; .gitignore confirmed
+
+Stage Summary:
+- PROJECT STATE: the bridge WORKS - both desktop paths intercept+answer through
+  the hook, stable, with live build detection. ONE defect left: request
+  processing returns status=1. v16 = fix processing + dword-correct script +
+  auto-tee output to transfer stick + stale banner cosmetics
+- DELIVERED: download/infinity-clipboard-addon.zip (SPICE copy-paste, no
+  project disruption, original phase-d.bat untouched)
+
+---
+Task ID: 23
+Agent: Super Z (main)
+Task: Vault recovery executed (PAT received) - restore v13/v14/v15 from vault + re-push + status=1 source diagnosis
+
+Work Log:
+- PAT re-pasted by user; validated (login fulken); stored .secrets/github-token
+  (600). Vault state: private, HEAD 4f1d537 (pushed 2026-09-20 22:46, = Task
+  21's fa8f460+1). The lost v15 session HAD pushed everything - no user
+  round-trip needed for the v15 package after all
+- Cloned vault -> backups/vault-restore; real worklog Tasks 17-21 recovered
+  (key facts vs the reconstruction: v12+v14 BSODs = the SAME SerialTrace
+  hex-table .data.rel.ro pointer-slot bug, disassembly-proven in Task 21;
+  orig-SetVariable chaining is field-proven SAFE 8x; KUSD +0x260 is the
+  correct x64 offset, +0x308 was a wrong base-repo comment; Tasks 1-16
+  byte-identical between local and vault)
+- Restored to workspace: patches/v13+v14+v15 efi pairs + phase-d-v13.bat;
+  scripts build/patch/test v13+v14+v15 toolchain + make-v14/15-script.py +
+  parse-vars-v13.py + token-fallback push script; packages v13/v14/v15 (archive
+  + download/); reports/vars-forensics-v12-v13/; version-archive/README.md
+  (v15-era); scripts/infinity-backup-README.md. Removed the duplicate
+  v13-report-extracted/ (superseded by the vault's canonical vars-forensics
+  dir + v13 report zip). Worklog reconciled: vault base (Tasks 1-21 real) +
+  Task 22 above
+- push-infinity-backup.sh: added clipboard-addon to the mirror list
+  (addons/clipboard-addon) next to the inherited token-file fallback
+- VAULT PUSH: synced today's v15 analysis + report + ANALYSIS-V15.md +
+  clipboard addon + restored consistency
+- status=1 DIAGNOSIS (source-level, from the refetched tree): [filled below]
+
+Stage Summary:
+- Workspace = vault = post-v15-verdict state; single source of truth restored
+- v16 scope locked: request-processing status=1 fix + script dword parsing +
+  auto-tee output + banner cosmetics

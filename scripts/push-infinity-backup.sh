@@ -74,7 +74,7 @@ fi
 
 echo
 echo "== [3/6] Mirror current workspace artifacts (explicit list)"
-rm -rf version-archive patches scripts validation-evidence worklog.md edk2_Runtime.c README.md
+rm -rf version-archive patches scripts validation-evidence addons worklog.md edk2_Runtime.c README.md
 cp -r "$BASE/version-archive" .
 cp -r "$BASE/patches" .
 cp -r "$BASE/scripts" .
@@ -83,6 +83,11 @@ cp    "$BASE/edk2_Runtime.c" .
 mkdir -p validation-evidence/test-v7
 cp -r "$BASE/test-v7/artifacts" validation-evidence/test-v7/
 cp    "$BASE/scripts/infinity-backup-README.md" README.md
+# clipboard add-on (SPICE copy-paste) source files — added 2026-09-21
+if [ -d "$BASE/infinity-qemu-test/clipboard-addon" ]; then
+  mkdir -p addons
+  cp -r "$BASE/infinity-qemu-test/clipboard-addon" addons/
+fi
 echo "  mirrored: $(find . -path ./.git -prune -o -type f -print | wc -l) files, $(du -sh --exclude=.git . | cut -f1)"
 
 echo
