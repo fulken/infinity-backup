@@ -520,9 +520,10 @@ Work Log:
 
 Stage Summary:
 - PROJECT STATE: the bridge WORKS - both desktop paths intercept+answer through
-  the hook, stable, with live build detection. ONE defect left: request
-  processing returns status=1. v16 = fix processing + dword-correct script +
-  auto-tee output to transfer stick + stale banner cosmetics
+  the hook, stable, with live build detection. At analysis time the one open
+  question was response status=1 (resolved in Task 23: it IS Success - the
+  bridge is COMPLETE; script expectations were the only defect). v16 = script
+  dword parsing + expectation fixes + auto-tee output + banner cosmetics
 - DELIVERED: download/infinity-clipboard-addon.zip (SPICE copy-paste, no
   project disruption, original phase-d.bat untouched)
 
@@ -554,9 +555,32 @@ Work Log:
   (addons/clipboard-addon) next to the inherited token-file fallback
 - VAULT PUSH: synced today's v15 analysis + report + ANALYSIS-V15.md +
   clipboard addon + restored consistency
-- status=1 DIAGNOSIS (source-level, from the refetched tree): [filled below]
+- status=1 DIAGNOSIS (source-level, definitive): refetched fulken/Infinity
+  (fetch-infinity-repo.sh, bundle+tarball re-cached in backups/) + rebuilt the
+  v15 tree (build-v15.sh --only tree at build-v15-tree/). READ THE CODE:
+  * SharedMemoryProtocol.h enum SlotStatus: Pending=0, **Success=1**,
+    ErrGeneric=2, ErrTimeout=3, ErrAccess=4, ... -> the v15 response
+    {seq=0x1337, status=1, bytes=0, addr=0} is a PERFECT PONG
+  * ReqOp enum: ReqOp_Ping = 0xDEADBEEF exactly (the script's op matched)
+  * RequestHandler.h ProcessSingleVariableRequest: case ReqOp_Ping ->
+    resp->status = SlotStatus_Success (inline path)
+  * RuntimeHook.h: InfinityReq write (>=48B) -> CaptureLiveWindowsBuild() +
+    handler_->ProcessSingleVariableRequest(req, last_resp_, ...) +
+    last_resp_size_=32 -> return EFI_SUCCESS (RAM-consumed); InfinityResp read
+    -> served from last_resp_ with full size protocol (BUFFER_TOO_SMALL etc.)
+  => CONCLUSION: the v15 run achieved the FULL BRIDGE end-to-end. The script's
+  "WRONG-CONTENT status=1" + "request processing failed" verdict was a FALSE
+  NEGATIVE written against a wrong status=0 expectation (the enum has always
+  been 1=Success since the base repo). ANALYSIS-V15.md corrected with a
+  post-analysis correction section; v16 is script-side only (E2 expectation,
+  dword parsing, [4] relabel, auto-tee) + optional driver cosmetics (v7 RT
+  banner string, 0x=0x prefix, EBS-time offset). v17 direction: data-bearing
+  round trips (ReqOp_Read of KUSD build dword through the bridge)
+- Vault re-pushed after the correction (see below)
 
 Stage Summary:
 - Workspace = vault = post-v15-verdict state; single source of truth restored
-- v16 scope locked: request-processing status=1 fix + script dword parsing +
-  auto-tee output + banner cosmetics
+- **HEADLINE: the Infinity UEFI bridge is COMPLETE and field-proven — desktop
+  Windows SetVariable(GetVariable) round-trips through the hooked runtime
+  services with a correct PONG, zero crashes, live build detection**
+- v16 scope (script-only + cosmetics) locked; v17 direction = data path

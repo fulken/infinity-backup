@@ -8,11 +8,19 @@
 ## VERDICT — best result of the whole project
 
 **BOTH hook paths are now PROVEN from the Windows desktop, the v14 BSOD is fixed,
-the live KUSD build read works, and the machine survived the entire trigger script.
-The only remaining defect is the request→response processing: InfinityResp comes
-back with a well-formed header (seq echoed) but `status=1`, `bytes_transferred=0`.**
+the live KUSD build read works, and the machine survived the entire trigger script.**
 
-Script SUMMARY (verbatim from Part2 photo):
+**POST-ANALYSIS CORRECTION (same day, source-level): the PING round-trip SUCCEEDED.
+The script's "WRONG-CONTENT status=1" line was a FALSE NEGATIVE — `status=1` is
+`SlotStatus_Success` (SharedMemoryProtocol.h: Pending=0, Success=1, ErrGeneric=2, …).
+The response {seq=0x1337 echoed, status=1, bytes=0, addr=0} is a PERFECT PONG.
+The v15 run achieved the FULL BRIDGE end-to-end: desktop SetVariable(InfinityReq
+PING) → hook inline ProcessSingleVariableRequest → ReqOp_Ping (=0xDEADBEEF) match →
+response written to last_resp_ → desktop GetVariable(InfinityResp) served from RAM.
+All remaining v15 defects are SCRIPT-SIDE only (expectation + display bugs, below).**
+
+Script SUMMARY (verbatim from Part2 photo — note: its [5] line and VERDICT text
+were written against a wrong status=0 expectation and are superseded):
 
 ```
 hook_calls  A=121 B=122 C=125 D=129 E=132 F=134     (LIVE and moving)
@@ -94,18 +102,27 @@ Also: step [4] "InfinityReq landed, op ok: NO" tests an NVRAM-landing expectatio
 inherited from v11-era scripts; under the v13+ RAM-consume design, ABSENT is the
 expected result and should be re-labelled.
 
-## Open items → v16
+## Open items → v16 (REVISED after the source-level status resolution)
 
-1. **Request processing**: InfinityResp = {seq=0x1337 ✓, status=1 ✗, bytes=0, addr=0}.
-   Candidates: (a) op-code/layout mismatch between the script's PING (48 B:
-   seq=0x1337, op=0xDEADBEEF) and the v15 handler's parser; (b) v15 handler
-   stubbed to ack-only while the lost session focused on the crash fix;
-   (c) response slot treated as uninitialized. Needs the v15 SOURCE
-   (vault `05ba4a2` or newer) — or binary RE of the user's v15 memory.efi.
-2. Script: dword-correct parsing + re-labelled expectations + auto-tee output
-   to the transfer stick (so future tests need neither photos nor clipboard).
-3. Cosmetic: boot banner still says "Build: v7 RT" (serial line 62); [BLD]
-   double "0x=0x" prefix; EBS-time build capture reads 0.
+The v15 DRIVER needs no functional change — the bridge is complete. v16 is
+script-side work + optional driver cosmetics:
+
+1. **trigger-test-v16.ps1** (via a v16 make-script, from make-v15-script.py):
+   - step E2 expectation: ANSWERED = (bytes==32 && seq echoed && status==1);
+     decode status names from the SlotStatus enum (Pending/Success/ErrGeneric/…)
+   - dword-correct parsing of win_build / hook_calls / response sequence
+     (currently byte-truncated: 19045→"101", 377→"121", 0x1337→"0x37")
+   - step [4] relabel: InfinityReq is RAM-consumed by design → NVRAM read-back
+     ABSENT is the EXPECTED result, not a failure
+   - auto-tee all output to the transfer stick (no more photos needed)
+2. **Optional driver cosmetics** (any future rebuild): stale "Build: v7 RT"
+   banner string; "0x=0x" double prefix in [BLD] lines; EBS-time build capture
+   still reads the wrong offset (live trigger-time probe is correct).
+3. **Next milestone** (v17 direction): data-bearing round trips — ReqOp_Read of
+   a known-safe address (e.g. the KUSD build dword at 0xFFFFF78000000260)
+   through the bridge, proving the DATA path (response payload + crc), which is
+   what the real client (Infinity.exe) uses. ReqOp_Attach/finder paths stay
+   untested until then by design.
 
 ## Workspace rollback (2026-09-21) — recovery state
 
