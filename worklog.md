@@ -676,3 +676,136 @@ Stage Summary:
 - v17 direction (locked): data-bearing round trips - ReqOp_Read of a
   known-safe dword (e.g. KUSD build) through the bridge, proving the DATA
   path (payload + crc) that the real client (Infinity.exe) uses
+---
+Task ID: 25
+Agent: Super Z (main)
+Task: Analyze the v16 field report (verdict confirmation) + design/build/ship v17 (the data-path proof)
+
+Work Log:
+- USER PROBLEM REPORT (Persian): the run went exactly as predicted and
+  the report was sent, BUT the auto-tee .txt could not be saved - the
+  user's D: drive is READ-ONLY, so they photographed the PowerShell
+  window in 2 parts + sent the reports (upload/infinity-qemu-test-v16-
+  Report.zip, 861505 B)
+- v16 REPORT ANALYSIS: extracted to upload/extracted-v16 (4 PNGs +
+  serial-phase-d.log 20624 B + serial-check.log); VLM OCR of both
+  PowerShell parts (vlm-v16-ps1/2.json) + boot/check shots
+  (vlm-v16-boot-check.json). VERDICT = ">>> FULL BRIDGE PROVEN - PHASE
+  D COMPLETE <<<" - the script's own verdict, exactly as predicted:
+  * A/B live reads: STAGE=4 flags=0xF win_build=19045 calls 381->382
+    (B=A+1 = read path PROVEN; FIRST field observation of stage 4)
+  * C INFPROBE raw NVRAM write+readback OK; D flags 0xF->0x2F =
+    TRIGGER-SEEN(0x20) SET; E PING req verified pre-send
+  * E2 InfinityResp: 37 13 00 00 01 00 00 00 ... = seq=0x1337 echoed
+    + status=1(Success) + bytes=0 -> PONG PERFECT (the E2 fix works;
+    v15's false-negative is dead and buried)
+  * F: InfinityReq read-back ABSENT (Win32=203) = expected RAM-consume;
+    G: INFCNT=2 (both counted writes reached the hook)
+  * SUMMARY all green: hook_calls 381/382/385/389/392/394 monotonic,
+    win driver-live=19045=script-side
+  * serial-phase-d.log correlates PERFECTLY: 6x "G INFDIAG live" =
+    steps A-F, "S call#384 VIRT" = INFPROBE write, kusd BLD lines
+    (0x4A65/0x0/19045 - the clean labels work), log ends at "G INFCNT
+    live" = step G firing; NVRAM check = frozen stage-3 snapshot
+    (os_cr3=0x7FC01000, hook_calls=0x114) - exactly the v13+ design
+- THE D: MYSTERY SOLVED: phase-d.bat (since v9) attaches usb-d as
+  readonly=on ON PURPOSE (2026-09-20 FAT-corruption lesson) - the
+  script lives on that stick, so "save transcript beside the script"
+  could NEVER work. v17 must probe writability and fall back
+- ANALYSIS-V16.md written (version-archive/reports/), report zip +
+  extracted evidence + VLM jsons archived there too
+- v17 DESIGN (source-read driven): RequestHandler.h variable path
+  ReqOp_Read uses ProcessMemory::ReadVA which needs target_cr3_
+  (set ONLY by ReqOp_Attach - no emulator in the clean VM). The
+  field-proven KUSD read (CaptureLiveWindowsBuild) is a DIRECT
+  dereference (VA-gated) - but that has a #PF path for bad VAs. THE
+  SOLUTION: kernel-target reads via the CURRENT CR3 + the EXISTING
+  page-walk: phys_->ReadVA(va, ReadCr3(), ...) - TranslateVA checks
+  canonical+present BEFORE any dereference, all data reads are
+  physical via the UEFI identity map (CR3-switch dance) => a bad VA
+  returns ErrAccess, there is NO #PF/#GP path at all. This is also
+  the EXACT mechanism the real client uses for process reads - proving
+  it proves the product core. ReadCr3() inside the gRT hook = the
+  calling Windows thread's kernel CR3, which maps KUSD
+- scripts/patch-v17.py (11 anchors, all count==1 verified dry-run
+  first): F1 SharedMemoryProtocol.h KERNEL_TARGET_PID=0xFFFFFFFF
+  (inline constexpr, ABI-neutral, protocol v2 unchanged); F2
+  ProcessMemory.h ReadKernelVA (current-CR3 walk, no kernel fallback
+  for writes); F3 RequestHandler.h variable-path ReqOp_Read kernel
+  branch + SerialTrace KV/KVD("RD","kern va"/"kern read ok") literals
+  (rip-relative LEAs - NOT pointer slots, the v12/v14 BSOD rule);
+  C1-C8 cosmetics (serial lines, screen banners padded to the exact
+  v16 58-char width, efi_main/variant/RT-EARLY/RT-VA -> v17)
+- BUILD: v17-memory-SAFE.efi 105032 B (identical size to v16 - SAFE
+  links out the handler kernel branch) + v17-memory-RT.efi 120678 B
+  (+449 = the kernel-read code). R4 GLOB_DAT 0, R6 orphan .bss clean
+- CHECKS: all v17 strings present (incl. "kern va"/"kern read ok"),
+  no double-prefix KV label, u16 names + banners, VA-safety
+  disassembly: 141 rip-relative LEA hex sites (v16 had 140), 0
+  pointer-slot loads, .data.rel.ro did not grow vs v16
+- SANDBOX: A (RT) 13/13 PASS (full green chain + v17 banners +
+  documented NX stop); B (SAFE) PASS (stage 1, kernel, /init, no hook
+  lines, same known initramfs quirk note). NOTE: the [RD] kern lines
+  cannot fire in the Linux sandbox (they need a Windows-side
+  InfinityReq kernel read) - binary string checks cover them
+- SCRIPT: scripts/make-v17-script.py -> trigger-test-v17.ps1 (30240
+  B, 9 anchored edits from the v16 script): transcript writability
+  probe (beside script -> Desktop -> TEMP) + end-of-run file
+  verification + copy-out instructions (transfer stick +
+  refresh-files.bat); NEW steps H..N: H InfinityData 32B pattern
+  round trip (byte-exact), I ReqOp_Attach decode (expect
+  ErrNotFound(7) on clean VM), J kernel read KUSD+0x260 x4
+  (pid=FFFFFFFF; expect data 65 4A 00 00 = 19045 = script-side), K
+  +0x308 (expect 0), L x8 chunk consistency with J, M non-canonical
+  0xDEADBEEF00000000 (expect ErrAccess(4), no crash), N final INFCNT
+  (expect 8 = 2 baseline + 6 new); SUMMARY [6][7][8][9] + INFCNT
+  accounting; verdict branch ">>> DATA PATH PROVEN - FULL PROTOCOL
+  COMPLETE <<<" above the v16 branches (stale-driver case degrades
+  honestly to the v16 verdict)
+- AUDIT (scripts/audit-v17-script.py): braces/parens/brackets
+  balanced (herestring-aware), no bare exit, 5 __Finish sites, guard
+  marker present, H..N headers exactly once, hex-literal safety
+  (64-bit values via [Convert]::ToUInt64 - the v10 rule; KERNEL_PID
+  via [Convert]::ToUInt32), verdict ordering; 4 audit-script false
+  positives fixed (herestring opener at line end, comment dashes
+  substring, hex inside display strings, header-comment verdict
+  match). $I/$i case-insensitivity checked: zero uses of $i after
+  step I -> safe
+- BAT: scripts/patch-v17-bat.py (18 anchored subs from the v16 bat,
+  idempotent re-run guard added) -> phase-d.bat v17: guard
+  "trigger test v17", size line 30240 B, banner expectation "kernel
+  data path: current-CR3 reads", the auto-save block REWRITTEN
+  (first WRITABLE drive - the boot stick is read-only by design),
+  [INF][RD] milestone lines, stale-warning v10..v16. Paren audit:
+  the same 16 field-proven shapes as v16 (verified against the v16
+  package bat), ZERO new risky lines
+- README-V17-FA.md (Persian): the v16 verdict news, the D: read-only
+  explanation, the H..N table, expected output, the transfer-stick
+  file-out flow, v18 direction
+- PACKAGE: download/infinity-qemu-test-v17.zip (3283127 B) - verified:
+  usb-d exactly 4 items, 3 identical script copies (md5), VERSION.txt
+  hashes match, bat says package v17 + size line, guard simulation
+  PASS. Archived to version-archive/packages/
+- version-archive/README.md: v17 row (packages table), v17 file
+  hashes, v16 REPORT row (the field-confirmed FULL BRIDGE verdict)
+- COMMIT 0a3540e + VAULT PUSHED (fulken/infinity-backup main HEAD
+  29ea325, 14 commits)
+
+Stage Summary:
+- v16 FIELD RESULT OFFICIALLY CONFIRMED: the Infinity bridge is
+  COMPLETE and twice field-proven. Project milestone reached.
+- v17 SHIPPED: download/infinity-qemu-test-v17.zip - kernel-target
+  reads (pid=0xFFFFFFFF -> current-CR3 page-walk -> physical reads
+  only, no fault path), script steps H..N replicate the real
+  Infinity.exe data flow, J must return 19045 through the bridge,
+  transcript read-only fix included
+- Expected v17 run: ">>> DATA PATH PROVEN - FULL PROTOCOL COMPLETE
+  <<<" + "[J] data: 4 bytes: 65 4A 00 00" + MATCH line + serial
+  [INF][RD] kern va/kern read ok lines
+- BLOCKED on: user runs the v17 package (extract over old folder ->
+  phase-d.bat must say "package v17" -> trigger-test-v17.ps1 elevated
+  -> send the trigger-test-v17-output-*.txt - now saved on a writable
+  drive with copy-out instructions - + serial-phase-d.log)
+- v18 direction (locked): attach to a real emulator process inside
+  the VM (e.g. run an Android emulator) and read PROCESS memory
+  through the bridge - the production integration step

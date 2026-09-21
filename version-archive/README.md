@@ -25,6 +25,7 @@
 | v14 | 2026-09-20 | دارم | **فیکس باگ مقایسه GUID** (gnu-efi CompareGuid بازگشتی 0=مساوی، دو call-site با سماتیک EDK2-BOOLEAN استفاده شده بود → سرویس RAM و IsOurVariable هر دو dead-code!) + کپچر live بیلد ویندوز از KUSD (NtBuildNumber@+0x308، صفحه global، خواندن مستقیم volatile) + chain-after-handle دوگانه در S-hook → تست v14 = حکم واقعی full-bridge |
 | v15 | 2026-09-20 | دارم | **فیکس ریشهٔ BSOD های v12+v14** (disassembly): جدول هگز SerialTrace به‌صورت `static const char*` کامپایل می‌شد به اسلات اشاره‌گر با آدرس فیزیکی زمان لود — تبدیل‌نشده در VA event → اولین چاپ هگز در بافت ویندوز = #PF؛ v15 آن را به آرایه (rip-relative) تبدیل کرد + پروب دو-آفستهٔ بیلد (0x260+0x308 با تریس مقدار خام) چون +0x308 روی 19045 واقعی نهی بود |
 | v16 | 2026-09-21 | دارم | **حقیقت اسکریپت + کازمتیک درایور**: اجرای v15 پل کامل را اثبات کرد (تحلیل سورس: status=1 = SlotStatus_Success است؛ حکم «WRONG-CONTENT» اسکریپت فالس-نگاتیو بود). v16 فقط اسکریپت را درست می‌کند (پارس کامل dword — نمایش بایت‌بریدهٔ v15 مثل 19045→«101»، دیکد نام SlotStatus، ریلبیل [4] برای طراحی RAM-consume، auto-tee خروجی به فایل بدون نیاز به عکس) + کازمتیک صفر-ریسک درایور (بنر صفحهٔ v7→v16، دابل‌پریفیکس `0x=0x` سریال، نوت EBS، کامنت 0x308) — منطق درایور دست‌نخورده |
+| v17 | 2026-09-21 | دارم | **اثبات مسیر داده**: پل کامل v16 در فیلد تأیید شد (PONG PERFECT، win 19045=19045، INFCNT=2، stage=4، پرچم 0x20)؛ تنها باگ = ترنسکریپت روی درایو بوت فقط‌خواندنی. v17 یک افزودن جراحیکی به درایور دارد: خواندن هسته‌ای با pid=0xFFFFFFFF (KERNEL_TARGET_PID) → ReadKernelVA صفحه‌بندی CR3 جاریِ ویندوز را walk می‌کند، همهٔ خواندن‌ها فیزیکی از identity map — آدرس خراب ErrAccess تمیز برمی‌گرداند، هیچ مسیر کرشی وجود ندارد؛ اسکریپت قدم‌های H..N (رفت‌وبرگشت بافر InfinityData، دیکد Attach، خواندن بیلد 19045 از KUSD+0x260 از طریق پل، چانک ۸ بایتی، تست منفی، حسابداری INFCNT=8) + فیکس ترنسکریپت (پروب نوشتنی → Desktop → TEMP + تأیید فایل آخر کار) |
 
 نام‌گذاری zip از v9 به بعد با VERSION.txt داخلی هم‌راستاست (v8 و v8.1 اسم zip یکسانی داشتن که باعث اشتباه شد).
 
@@ -56,6 +57,10 @@ infinity-qemu-test-v16.zip (بسته کامل)     3273344 B — sha256 با sha
 v16 SAFE driver (105032 B)                 020d69c76e30f156... (پیشوند؛ کامل: sha256sum patches/v16-memory-SAFE.efi)
 v16 RT driver (120229 B)                   b9ca2c6b5ce113c0... (پیشوند؛ کامل: sha256sum patches/v16-memory-RT.efi)
 trigger-test-v16.ps1 (19894 B)             sha256 کامل در VERSION.txt داخل بستهٔ v16
+v17 SAFE driver (105032 B)                 sha256 کامل: sha256sum patches/v17-memory-SAFE.efi
+v17 RT driver (120678 B)                   sha256 کامل: sha256sum patches/v17-memory-RT.efi
+infinity-qemu-test-v17.zip (بسته کامل)     3283127 B — sha256 با sha256sum packages/infinity-qemu-test-v17.zip
+trigger-test-v17.ps1 (30240 B)             sha256 کامل در VERSION.txt داخل بستهٔ v17
 ```
 
 (پیشوندهای ۱۶ کاراکتری برای خوانایی؛ مقدار کامل هر هش با `sha256sum` روی فایل‌های `patches/` و `packages/` قابل بازتولید است.)
@@ -101,3 +106,4 @@ trigger-test-v16.ps1 (19894 B)             sha256 کامل در VERSION.txt دا
 - باینری درایور: `patches/v{6,7,8}-memory-{SAFE,RT}.efi`
 - سورس کامل: `GITHUB_TOKEN='...' scripts/fetch-infinity-repo.sh` بعد از اجرای پچ‌های `patches/*-on-a8e41b3.diff`
 - تاریخچه تحلیل‌ها: `worklog.md` (Task به Task)
+| `infinity-qemu-test-v16-Report.zip` | v16 phase-d | **حکم کامل سبز — «FULL BRIDGE PROVEN - PHASE D COMPLETE»**: PONG PERFECT (seq=0x1337 اکو، status=1(Success) دیکد شد)، win_build درایور=19045=اسکریپت، INFCNT=2، پرچم TRIGGER-SEEN ست، stage=4 (اولین مشاهدهٔ فیلدی)، hook_calls 381→394 مونوتون؛ فیکس‌های dword/دیکد status همه تأیید شدند؛ NVRAM منجمد stage-3 سازگار؛ تنها نقص = auto-tee روی درایو فقط‌خواندنی (عکس ۲ پارتی جایگزین شد) → منشأ فیکس v17. تحلیل کامل: `reports/ANALYSIS-V16.md` |
