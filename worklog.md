@@ -417,3 +417,25 @@ Stage Summary:
 - v13-v17 binaries: recoverable from backup history @ e1242b6 (not lost, just not in HEAD tree)
 - Standing rules recorded in durable memory; token survives rollbacks at .github-token
 - Next: user runs trigger-test-v18.ps1 on stick (phase D), sends output txt + serial-phase-d.log
+
+---
+Task ID: v19
+Agent: Super Z (main)
+Task: Analyze user's v18 test report; build and deliver v19 (script-only)
+
+Work Log:
+- Received infinity-qemu-test-v17-with-trigger-v18-Report.zip (v17 driver stick + v18 script run; 3 files: output txt + serial-phase-d.log + phase-d-Boot.png)
+- v18 VERDICT: A..H ALL GREEN AGAIN (read/write/NVRAM/trigger/PING/INFCNT=2/payload byte-exact). Steps I..M threw 'request byte build failed (header mismatch)' - second consecutive script-side abort. Serial: no [RD] lines (expected - no request was ever sent); request handler confirmed running; [BLD] live build=19045 again
+- FALSE ALARM unmasked: summary said 'BRIDGE REGRESSION' + 'WRONG-CONTENT seq=0x37' but the RAW PONG bytes were 37 13 00 00 01 00 00 00 = seq 0x1337 status 1 Success = BYTE-PERFECT. Driver exonerated a third time
+- ROOT CAUSE #3 (PS 5.1 trap family): -shl keeps the LEFT operand's type, so U32's ([byte] -shl 8) truncated to 8 bits -> every dword collapsed to its LOW BYTE. Triple-verified from the report itself: win_build shown 101 (0x65 = low byte of 0x4A65=19045), hook_calls shown 59 (0x3B = low byte of 0x13B=315), seq shown 0x37 (low byte of 0x1337). U64 was always correct (explicit [uint64] accumulator). New-Req's header round-trip assert then compared truncated 0x55 vs real 0x1555 -> 'header mismatch' abort for every I..M call (E passed only because E builds its PING packet manually with literal byte checks)
+- Built trigger-test-v19.ps1 (798 lines, script-only, driver untouched): (1) U32 rewritten with explicit [uint32] accumulator (the proven U64 pattern); (2) PARSER SELF-TEST before touching the driver - U32/U64/HexLe4/New-Req verified on known patterns (0x1337/19045/0xFFFFFFFF/os_cr3/DEADBEEF/full 48B packet incl. addr 0000800000000000 -> 00 00 00 00 00 80 00 00), loud [SELFTEST][ABORT] on any mismatch; (3) summary win_build line now COMPUTES EQUAL/MISMATCH (v18 hardcoded '(equal...)' while showing 101 vs 19045); version strings updated; header comment documents both trap stories
+- Audits: audit-v19-ps1.py (adapted from v18) - balance OK, spot checks ALL OK, all $pid/$null flags verified comment/string/discard-only (no code usage); scripts/verify-v19-bytes.py - 18/18 byte-math checks PASS (self-test expectations + v18 truncation evidence + proof the self-test would have caught the v18 bug)
+- Packaged download/infinity-trigger-v19.zip (trigger-test-v19.ps1 36576 B sha256 974410c0..., README-V19-FA.md, VERSION.txt; zip sha256 9bfa69c5...); copied to version-archive/packages/; v18 report archived to version-archive/reports/
+- User also offered to send any missing files: answered nothing is missing (see below)
+
+Stage Summary:
+- v18 result: bridge/payload/driver-side kernel read PROVEN (3rd time); kernel data path via requests STILL untested - two consecutive script-side PS 5.1 traps ($pid readonly -> byte -shl truncation), driver never at fault
+- DELIVERABLE: download/infinity-trigger-v19.zip - user replaces ONLY the test script (v17 driver stick untouched), runs phase D, sends trigger-test-v19-output-*.txt + serial-phase-d.log
+- v19 success criteria: [SELFTEST] all passed; win_build=19045 EQUAL; E2 PONG PERFECT; step J '19045 found at offset X' (PHASE E COMPLETE); step M status=4; serial [RD] lines for the first time
+- Open risk (unchanged from v18): request packet field layout (pid@8/len@12/addr@16, response data location) designed in a LOST session - v19's raw+dword dumps make the layout self-evident even if the guess is wrong
+- Nothing missing from the user: v13-v17 driver binaries recoverable from GitHub vault history @ e1242b6; sources lost but the field-proven v17 binary on the stick is the phase-E driver and is never rebuilt

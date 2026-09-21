@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Audit trigger-test-v18.ps1 for the v17-class bugs:
+"""Audit trigger-test-v19.ps1 for the v18-class bugs:
 1. automatic/read-only PowerShell variable usage ($pid, $args, $input, ...)
 2. brace/paren/bracket balance and quote pairing (outside comments/strings)
 3. quick stats"""
 import re, sys
 
-PATH = '/home/z/my-project/infinity-qemu-test/trigger-test-v18.ps1'
+PATH = '/home/z/my-project/infinity-qemu-test/trigger-test-v19.ps1'
 src = open(PATH, encoding='utf-8').read()
 lines = src.split('\n')
 print(f'file: {PATH}')
@@ -94,7 +94,7 @@ else:
 
 # ---- 3. spot checks ----
 checks = {
-    "'==== INFINITY trigger test v18'": '==== INFINITY trigger test v18' in src,
+    "'==== INFINITY trigger test v19'": '==== INFINITY trigger test v19' in src,
     'New-Req defined': 'function New-Req' in src,
     'Send-Req defined': 'function Send-Req' in src,
     'no $pid param in New-Req': re.search(r'function New-Req\([^)]*\$pid', src, re.I) is None,
@@ -105,7 +105,7 @@ checks = {
     'attach op 7': '0x1555 7' in src,
     'seq ladder J..M': all(s in src for s in ('0x1666', '0x1777', '0x1888', '0x1999')),
     'Stop-Transcript present': 'Stop-Transcript' in src,
-    'END v18 marker': '==== END v18 ====' in src,
+    'END v19 marker': '==== END v19 ====' in src,
 }
 bad = [k for k, v in checks.items() if not v]
 print('SPOT CHECKS:', 'ALL OK' if not bad else 'FAILED: ' + ', '.join(bad))
