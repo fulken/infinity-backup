@@ -397,3 +397,23 @@ Stage Summary:
 - Local vault (rollback-proof): FULLY up to date — v18 zip + v17 report + all scripts committed
 - GitHub vault (total-loss-proof): BEHIND by the v18 delta; blocked ONLY on a fresh GITHUB_TOKEN from user
 - Next: user sends token -> run GITHUB_TOKEN='...' bash scripts/push-infinity-backup.sh (idempotent, keeps backup history, leak-checked)
+
+---
+Task ID: v18.2
+Agent: Super Z (main)
+Task: Store user-provided GitHub token; record user's standing rules; push v18 delta to GitHub vault
+
+Work Log:
+- User provided fresh GITHUB_TOKEN and gave TWO STANDING RULES (permanent, user-authorized):
+  * RULE 1: Before starting any task that needs GitHub, ask the user for the token FIRST if I don't have it
+  * RULE 2: Token storage is permanently pre-approved ("store it anywhere, always at hand, no permission needed")
+- Token stored at /home/z/my-project/.github-token (chmod 600, committed as ef4d8fc -> rollback-proof). SECURITY: root path is NOT in push-infinity-backup.sh's mirror list (only version-archive/patches/scripts/worklog/edk2_Runtime.c/test-v7) so it is NEVER pushed; leak checks verified green twice. Future scripts must load it via GITHUB_TOKEN="$(cat /home/z/my-project/.github-token)" — NEVER hardcode it in scripts/ (scripts/ IS mirrored)
+- Vault push executed: fulken/infinity-backup main, backup commit f88f4ba (16 commits, 80 files, 31M). Delta landed: infinity-trigger-v18.zip, v17 report archive, audit-v18-ps1.py, worklog v18 updates, README refresh. All leak checks green (staged content, .git/config, remote URL)
+- DISCOVERY (recovery-relevant): mirror push deleted patches/v13..v17 *.efi from the backup's CURRENT tree (they no longer exist in workspace after rollbacks), BUT they are preserved in backup git history at commit e1242b6 and earlier — recoverable via: git clone + git show e1242b6:patches/v17-memory-RT.efi > v17-memory-RT.efi (same for v13-v16, SAFE+RT each). So NO v13-v17 binary is actually lost: v17-RT (120678 B), v17-SAFE (104052 B), v16/v15 (RT 120229 B), v14 (RT 119026 B), v13 (RT 118002 B) all restorable
+- Staging cleaned after verification
+
+Stage Summary:
+- GitHub vault UP TO DATE through v18 (f88f4ba); local vault at e67b32b+token ef4d8fc
+- v13-v17 binaries: recoverable from backup history @ e1242b6 (not lost, just not in HEAD tree)
+- Standing rules recorded in durable memory; token survives rollbacks at .github-token
+- Next: user runs trigger-test-v18.ps1 on stick (phase D), sends output txt + serial-phase-d.log
