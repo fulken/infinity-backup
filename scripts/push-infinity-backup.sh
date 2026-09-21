@@ -4,16 +4,14 @@
 # private GitHub repo (default: fulken/infinity-backup).
 #
 # Usage:
-#   GITHUB_TOKEN='github_pat_...' bash scripts/push-infinity-backup.sh
-#   (or no env var: falls back to /home/z/my-project/.secrets/github-token,
-#    which the user explicitly authorized for on-disk storage on 2026-09-21,
-#    7-day fine-grained PAT, admin perms. NEVER mirror .secrets/ anywhere.)
+#   GITHUB_TOKEN='github_pat_...' \
+#   GITHUB_OWNER='fulken' \
+#   REPO_NAME='infinity-backup' \
+#   bash /home/z/my-project/scripts/push-infinity-backup.sh
 #
 # Design rules (same as fetch-infinity-repo.sh):
-#   - Token comes from env var OR the local .secrets file; it is NEVER
-#     written to .git/config, remotes, or COMMITTED TO THE VAULT REPO
-#     (staging leak-check aborts the push if the token value appears in
-#     any mirrored file).
+#   - Token is passed ONLY as an ephemeral git http header / API header.
+#     It is NEVER written to .git/config, remotes, files, or commits.
 #   - Idempotent: creates the repo if missing, clones its history, mirrors
 #     the CURRENT workspace artifacts on top, commits the delta, pushes.
 #   - Staging lives under backups/ (gitignored, disposable) — it is rebuilt
@@ -23,16 +21,12 @@
 # ============================================================================
 set -euo pipefail
 
-# Token resolution: env var wins; else the user-authorized local secrets file.
-BASE=/home/z/my-project
-if [ -z "${GITHUB_TOKEN:-}" ] && [ -f "$BASE/.secrets/github-token" ]; then
-  GITHUB_TOKEN="$(head -1 "$BASE/.secrets/github-token" | tr -d '[:space:]')"
-fi
-TOKEN="${GITHUB_TOKEN:?GITHUB_TOKEN is not set and $BASE/.secrets/github-token is missing}"
+TOKEN="${GITHUB_TOKEN:?GITHUB_TOKEN is not set}"
 OWNER="${GITHUB_OWNER:-fulken}"
 REPO="${REPO_NAME:-infinity-backup}"
 API="https://api.github.com"
 URL="https://github.com/$OWNER/$REPO.git"
+BASE=/home/z/my-project
 BACKUPS="$BASE/backups"
 STAGE="$BACKUPS/$REPO-staging"
 AUTH="Authorization: Basic $(printf "x-access-token:%s" "$TOKEN" | base64 -w0)"
@@ -74,7 +68,7 @@ fi
 
 echo
 echo "== [3/6] Mirror current workspace artifacts (explicit list)"
-rm -rf version-archive patches scripts validation-evidence addons worklog.md edk2_Runtime.c README.md
+rm -rf version-archive patches scripts validation-evidence worklog.md edk2_Runtime.c README.md
 cp -r "$BASE/version-archive" .
 cp -r "$BASE/patches" .
 cp -r "$BASE/scripts" .
@@ -83,11 +77,6 @@ cp    "$BASE/edk2_Runtime.c" .
 mkdir -p validation-evidence/test-v7
 cp -r "$BASE/test-v7/artifacts" validation-evidence/test-v7/
 cp    "$BASE/scripts/infinity-backup-README.md" README.md
-# clipboard add-on (SPICE copy-paste) source files — added 2026-09-21
-if [ -d "$BASE/infinity-qemu-test/clipboard-addon" ]; then
-  mkdir -p addons
-  cp -r "$BASE/infinity-qemu-test/clipboard-addon" addons/
-fi
 echo "  mirrored: $(find . -path ./.git -prune -o -type f -print | wc -l) files, $(du -sh --exclude=.git . | cut -f1)"
 
 echo
