@@ -584,3 +584,95 @@ Stage Summary:
   Windows SetVariable(GetVariable) round-trips through the hooked runtime
   services with a correct PONG, zero crashes, live build detection**
 - v16 scope (script-only + cosmetics) locked; v17 direction = data path
+
+---
+Task ID: 24
+Agent: Super Z (main)
+Task: Build v16 (script truth fixes + driver cosmetics) per the locked Task-23 scope
+
+Work Log:
+- Restored the rollback-lost deployed files from the shipped v15 package:
+  infinity-qemu-test/trigger-test-v15.ps1 (17430 B, sha matches zip root
+  AND usb-d copies) + README-V15-FA.md (the make-v16 base)
+- scripts/patch-v16.py: 12 cosmetic edits anchored on the exact v15 tree
+  (all 12 anchors dry-run verified count==1 BEFORE patching): C1/C2 serial
+  build lines (v15/v7 -> v16), C3/C4 the STALE SCREEN banners (said "v7 RT -
+  EARLY gRT hooks (phase D2)" since phase D2 - now "v16 RT - full bridge
+  proven (phase D COMPLETE)"; same padded width), C5/C6 efi_main/variant
+  lines, C7 the "0x=0x" fix (KV appends "=0x" itself; labels
+  "kusd raw 0x260=0x" -> "kusd raw 0x260"), C8/C8b KVD trailing spaces,
+  C9/C10 RT-EARLY/RT-VA banners, C11 the EBS "windows build=0" line
+  relabelled to "(EBS-time; 0 is normal - live probe fills)" + proven
+  wording comment, C12 stale WindowsOffsets.h "0x308" header comment ->
+  empirical truth (0x260=19045 live, 0x308 read 0)
+- TWO patch iterations: C3/C4 first wrote the closing quote BEFORE the
+  \r\n escape (invalid C, caught by the SAFE compile) - quote moved after
+  the in-string \r\n, widths kept at v7 parity (57/59)
+- scripts/make-v16-script.py -> trigger-test-v16.ps1 (19894 B, LF like v15,
+  structurally tokenized: braces/parens/quotes balanced, no bare exit): S1
+  header (v16 story), S2 Start-Transcript auto-tee (timestamped
+  trigger-test-v16-output-*.txt beside the script; every exit routed
+  through __Finish which stops the transcript), S3 all 4 abort paths ->
+  __Finish, S4 banner, S5 THE DWORD FIX (U32 now plain [uint32] math - no
+  -shl at all, immune to PS's byte-preserving shift semantics that
+  truncated v15 displays: 19045->"101", 377->"121", 0x1337->"0x37"), S6
+  A/B note, S7 E2 SlotStatus decode (0=Pending 1=Success 2=ErrGeneric
+  3=ErrTimeout 4=ErrAccess 5=ErrInvalid 6=ErrNoBridge 7=ErrNotFound
+  8=ErrUnsupported; ANSWERED = seq echoed + status=1; "PONG PERFECT"
+  text), S8 consumption evidence (reqConsumed = INFCNT>=2 or PONG;
+  NVRAM read-back ABSENT = EXPECTED), S9 [4] relabel, S10 verdict
+  branches (v17 directions; full-bridge branch announces the data path),
+  S11 frozen note, S12 build note + END banner + transcript stop
+- scripts/patch-v16-bat.py -> phase-d.bat v16 (10322 B): pure v-bump of
+  the pristine phase-d-v13.bat + 2 v16 additions (auto-save instruction
+  block; [BLD] kusd milestone line). First iteration had a paren in the
+  milestone line (17th audit shape) -> rewritten paren-free = EXACTLY the
+  16 field-proven shapes. Multi-line bat anchors need \r\n (CRLF file)
+- scripts/build-v16.sh + scripts/test-v16-linux.sh: v16 pipeline. TWO
+  check-section fixes: (1) kBuildLine turned out to be DEAD CODE
+  (compiler-eliminated since the v7 era) - the LIVE screen banner is the
+  wide string, checked via strings -e l; (2) `set -o pipefail` +
+  `strings | grep -q` is a SIGPIPE RACE (grep -q exits on first match ->
+  strings dies 141 -> pipeline "fails" with the string present) - strings
+  now collected into variables, greps use -qF herestrings
+- BUILD: v16-memory-SAFE.efi 105032 B (sha 020d69c76e30f156...) +
+  v16-memory-RT.efi 120229 B (sha b9ca2c6b5ce113c0...) - same sizes as
+  v15 (cosmetics only). CHECKS: SAFE (clean + u16 banner + 2 strings),
+  RT (10 strings incl. "memory.efi v16 RT", "full bridge proven, clean
+  serial labels", "kusd raw 0x260/0x308" clean labels, "v16 early",
+  "EBS-time; 0 is normal", "efi_main v16 boot"; double-prefix label ABSENT;
+  4 u16 names; RT u16 screen banner) + VA-safety disassembly: 0 stale
+  pointer loads, 140 rip-relative LEA hex sites (identical to v15 - the
+  hex code is untouched)
+- SANDBOX: A (RT) PASS - full green chain (v16 banners, stage 1/2/3, CVT
+  st=0 all, armed, kernel boot, documented NX stop, no double-prefix BLD)
+  + B (SAFE) PASS (stage 1, kernel, /init, no hook lines, same initramfs
+  quirk NOTE as v7/v15)
+- README-V16-FA.md (Persian): the v15 verdict correction story, what v16
+  changes, expected ">>> FULL BRIDGE PROVEN" output, no-photos flow
+- PACKAGE: download/infinity-qemu-test-v16.zip (3273344 B; SAFE 105032 B,
+  RT 120229 B; 3 identical script copies root+usb-d+transfer; bat size
+  line 19894 matches; VERSION.txt hashes all match; guard simulation
+  PASS; no stale versioned files; paren audit = the 16 field-proven
+  shapes). Archived to version-archive/packages/
+- U32 SIMULATION against the REAL v15 field bytes: win 65 4A 00 00 -> v15
+  displayed 101, v16 will display 19045; calls 79 01 00 00 -> 121 -> 377;
+  seq 37 13 00 00 -> 0x37 -> 0x1337; PONG condition (seq==0x1337 and
+  status==1) now evaluates TRUE
+- version-archive/README.md: v16 table row + v15/v16 zip + driver hashes +
+  the v15 REPORT row (best result of the project, with the source-level
+  correction)
+
+Stage Summary:
+- v16 SHIPPED: download/infinity-qemu-test-v16.zip - the v15 bridge with
+  honest instrumentation; driver is FUNCTIONALLY IDENTICAL to v15
+  (cosmetics only), the script now tells the truth
+- Expected v16 run: ">>> FULL BRIDGE PROVEN - PHASE D COMPLETE <<<" +
+  "[5] ... PONG PERFECT" + win_build driver-live=19045 script-side=19045
+  + [4] consumed YES - and the run self-documents via the auto-tee .txt
+- BLOCKED on: user runs the v16 package (extract over old folder ->
+  phase-d.bat must say "package v16" -> trigger-test-v16.ps1 elevated ->
+  send the trigger-test-v16-output-*.txt + serial-phase-d.log, no photos)
+- v17 direction (locked): data-bearing round trips - ReqOp_Read of a
+  known-safe dword (e.g. KUSD build) through the bridge, proving the DATA
+  path (payload + crc) that the real client (Infinity.exe) uses

@@ -24,6 +24,7 @@
 | v13 | 2026-09-20 | دارم | observability امن: INFDIAG/INFCNT از RAM زنده جواب داده می‌شوند (صفر فراخوانی orig، صفر نوشتن NVRAM) + پچ بسته‌بندی v12.2 (پرانتز داخل بلاک bat)؛ اجرای v13 بدون BSOD |
 | v14 | 2026-09-20 | دارم | **فیکس باگ مقایسه GUID** (gnu-efi CompareGuid بازگشتی 0=مساوی، دو call-site با سماتیک EDK2-BOOLEAN استفاده شده بود → سرویس RAM و IsOurVariable هر دو dead-code!) + کپچر live بیلد ویندوز از KUSD (NtBuildNumber@+0x308، صفحه global، خواندن مستقیم volatile) + chain-after-handle دوگانه در S-hook → تست v14 = حکم واقعی full-bridge |
 | v15 | 2026-09-20 | دارم | **فیکس ریشهٔ BSOD های v12+v14** (disassembly): جدول هگز SerialTrace به‌صورت `static const char*` کامپایل می‌شد به اسلات اشاره‌گر با آدرس فیزیکی زمان لود — تبدیل‌نشده در VA event → اولین چاپ هگز در بافت ویندوز = #PF؛ v15 آن را به آرایه (rip-relative) تبدیل کرد + پروب دو-آفستهٔ بیلد (0x260+0x308 با تریس مقدار خام) چون +0x308 روی 19045 واقعی نهی بود |
+| v16 | 2026-09-21 | دارم | **حقیقت اسکریپت + کازمتیک درایور**: اجرای v15 پل کامل را اثبات کرد (تحلیل سورس: status=1 = SlotStatus_Success است؛ حکم «WRONG-CONTENT» اسکریپت فالس-نگاتیو بود). v16 فقط اسکریپت را درست می‌کند (پارس کامل dword — نمایش بایت‌بریدهٔ v15 مثل 19045→«101»، دیکد نام SlotStatus، ریلبیل [4] برای طراحی RAM-consume، auto-tee خروجی به فایل بدون نیاز به عکس) + کازمتیک صفر-ریسک درایور (بنر صفحهٔ v7→v16، دابل‌پریفیکس `0x=0x` سریال، نوت EBS، کامنت 0x308) — منطق درایور دست‌نخورده |
 
 نام‌گذاری zip از v9 به بعد با VERSION.txt داخلی هم‌راستاست (v8 و v8.1 اسم zip یکسانی داشتن که باعث اشتباه شد).
 
@@ -50,6 +51,11 @@ v14 SAFE driver (104969 B)                 6f6e1d1006da9017... (پیشوند؛ �
 v14 RT driver (119026 B)                   51e8132b2d2496f8... (پیشوند؛ کامل: sha256sum patches/v14-memory-RT.efi)
 v15 SAFE driver (105032 B)                 3f2734369e988bc5... (پیشوند؛ کامل: sha256sum patches/v15-memory-SAFE.efi)
 v15 RT driver (120229 B)                   af1acda401999a97... (پیشوند؛ کامل: sha256sum patches/v15-memory-RT.efi)
+infinity-qemu-test-v15.zip (بسته کامل)     3270130 B — sha256 با sha256sum packages/infinity-qemu-test-v15.zip
+infinity-qemu-test-v16.zip (بسته کامل)     3273344 B — sha256 با sha256sum packages/infinity-qemu-test-v16.zip
+v16 SAFE driver (105032 B)                 020d69c76e30f156... (پیشوند؛ کامل: sha256sum patches/v16-memory-SAFE.efi)
+v16 RT driver (120229 B)                   b9ca2c6b5ce113c0... (پیشوند؛ کامل: sha256sum patches/v16-memory-RT.efi)
+trigger-test-v16.ps1 (19894 B)             sha256 کامل در VERSION.txt داخل بستهٔ v16
 ```
 
 (پیشوندهای ۱۶ کاراکتری برای خوانایی؛ مقدار کامل هر هش با `sha256sum` روی فایل‌های `patches/` و `packages/` قابل بازتولید است.)
@@ -70,6 +76,7 @@ v15 RT driver (120229 B)                   af1acda401999a97... (پیشوند؛ �
 | `infinity-qemu-test-v12-TestReport.zip` | v12 phase-d | بوت زنجیره ۱۰۰٪ سبز تا G#320؛ PS step A → **BSOD KMODE_EXCEPTION_NOT_HANDLED در ۲۱٪** وسط freshen INFDIAG = خواندن دسکتاپ به hook رسید؛ [CLR] بدون S OURVAR = نوشتن بایپس؛ تحلیل کامل → طراحی v13 |
 | `infinity-qemu-test-v13-Report.zip` | v13 phase-d | اجرای بدون‌کرش؛ hook_calls=251 ثابت + INFCNT=203 + InfinityResp=203 → اولاً به‌ظاهر «هر دو مسیر بایپس»؛ شواهد عکس PS + serial-check؛ **بعداً ریشه‌یابی: باگ CompareGuid (v14) — حکم آرتیفکت بود** |
 | `infinity-qemu-test-v14-Report.zip` | v14 phase-d | بوت سبز تا دسکتاپ + فیکس GUID کار کرد (۳ تریس S OURVAR delete + اولین G INFDIAG live) → **BSOD KMODE روی step A وسط چاپ هگز**؛ ریشه‌یابی دیس‌اسمبلی: اسلات اشاره‌گر جدول هگز (v12 هم همین بود) + KUSD+0x308 نهی؛ منشأ v15 |
+| `infinity-qemu-test-v15-Report.zip` | v15 phase-d | **بهترین نتیجهٔ پروژه**: هر دو مسیر هوک از دسکتاپ اثبات شد (hook_calls زنده 121→134، stage=4، INFCNT=2، پرچم 0x20)، خواندن KUSD زنده کار کرد (`kusd raw 0x260=0x4A65` = بیلد 19045)، **بدون BSOD** و فاز-b-check سالم؛ InfinityResp با seq=0x1337 اکو + status=1 برگشت — آن‌وقت «شکست» تلقی شد اما تحلیل سورس (ANALYSIS-V15.md + تصحیح) نشان داد status=1 = Success است → **پل کامل اثبات شد؛ باگ فقط در نمایش اسکریپت بود** |
 | `vars-forensics-v12-v13/` | vars های v12+v13 کاربر | OVMF_VARS_4M.fd هر دو + خروجی dmpstore (Checked)؛ ۱۸ بوت تاریخ INFDIAG decode شد؛ **اثبات باینری فرود freshen v12 (stage=4 flags=0xF calls=341 در NVRAM)** + فرود همه‌ی نوشتن‌های دسکتاپ v13 (INFPROBE/INFTRIGGER/InfinityReq state 0x3F) → نوشتن‌ها به NVRAM می‌رسیدند اما hook تشخیص نمی‌داد (باگ GUID) |
 | `loose-evidence/` | اولین اجراها و عیب‌یابی هش | serial/عکس phase-a/b اولیه (v1 era) + اسکرین‌شات‌های عیب‌یابی hash-mismatch و خطای PowerShell (2026-09-20) |
 
