@@ -1,0 +1,40 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260922051436
+Username: DESKTOP-23EQNHP\Administrator
+RunAs User: DESKTOP-23EQNHP\Administrator
+Configuration Name: 
+Machine: DESKTOP-23EQNHP (Microsoft Windows NT 10.0.19045.0)
+Host Application: PowerShell.exe -noexit -command Set-Location -literalPath 'C:\Users\Administrator\Desktop'
+Process ID: 5876
+PSVersion: 5.1.19041.7663
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7663
+BuildVersion: 10.0.19041.7663
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+[LOG] writable spot found - auto-saving all output to:
+[LOG] C:\Users\Administrator\Desktop\trigger-test-v21-output-20260922-051435.txt
+[LOG] (the folder beside the script is READ-ONLY - the boot
+[LOG]  stick is read-only by design - so the transcript lands
+[LOG]  on a writable drive instead. Get it out of the VM with
+[LOG]  the transfer stick + refresh-files.bat - see the end.)
+
+==== INFINITY trigger test v21 (v20 crash root-caused - the pid safety ladder J1..J9) ====
+[ENV] PowerShell 5.1.19041.7663  Windows build 10.0.19045.0
+Cannot convert value "-1" to type "System.UInt32". Error: "Value was either too large or too small for a UInt32."
+At D:\trigger-test-v21.ps1:444 char:1
++ ST-Check ((U32 $stb 0) -eq [uint32]0xFFFFFFFF) 'U32 FF FF FF FF must  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvalidCastIConvertible
+Cannot convert value "-1" to type "System.UInt32". Error: "Value was either too large or too small for a UInt32."
+At D:\trigger-test-v21.ps1:444 char:1
++ ST-Check ((U32 $stb 0) -eq [uint32]0xFFFFFFFF) 'U32 FF FF FF FF must  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvalidCastIConvertible
+

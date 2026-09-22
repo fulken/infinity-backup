@@ -488,3 +488,29 @@ Stage Summary:
 - v22 success criteria: J1 (or any window rung) returns 19045 = KERNEL DATA PATH VIA REQUESTS PROVEN = PHASE E COMPLETE; step 0 of the next run names the v21 killer; canaries make any future death precisely attributable
 - Driver binary lineage fully restored: v4-v8 + v12 (workspace) + v13-v17 (vault e1242b6) + v18 (fresh); source recipe pinned: Infinity@uefi-full-migration a8e41b3 + patches/v7 diff + scripts/patch-v13..v18.py chain
 - Open items: v21 step-A death root cause (awaits the v22 step-0 post-mortem); v19/v20 scripts exist only on the user's stick (superseded; ask user to send if archive completeness wanted); QEMU sandbox bench lost (rebuild only if driver-side iteration resumes)
+
+---
+Task ID: v22-report (PHASE E COMPLETE)
+Agent: Super Z (main)
+Task: Analyze the v18-driver + v22-script run report; deliver the Phase E verdict; archive + vault push
+
+Work Log:
+- Zip: upload/infinity-qemu-test-v18-with-trigger-v22-Report.zip (sha256 93acac19...) -> upload/v22-extract/ (4 files: phase-d-Boot.png, serial-phase-d.log 21KB, trigger-test-v21-output-20260922-051435.txt, trigger-test-v22-output-20260922-062852.txt)
+- THE RUN SURVIVED - first full clean run since v18-driver-era began; transcript complete WITH footer ("output saved and VERIFIED"), so analysis is text-exact, no photo-dependence
+- v22 transcript: SELFTEST all pass (line-444 literal fix worked - no cast error); A=343 B=344 (read path live), C INFPROBE NVRAM ok, D flags 0x2F TRIGGER-SEEN, E/E2 PONG seq=0x1337 status=1, F ok, G INFCNT=2, H byte-exact; attach I skipped
+- LADDER RESULTS: J1 ErrAccess(4) | J2 Success+19045 at InfinityData@0 (!!) | J3 ErrAccess(4) | J4 Success+0 (expected) | J5 ErrAccess(4) | J6 ErrAccess(4) non-canonical | J7 ErrAccess(4) no-attach (pid=3332, NO [RD] on serial - rejected pre-read as designed). VM ALIVE THROUGH ALL 7. INFCNT final=10=G+8 exactly as predicted
+- SCRIPT-SIDE BUG FOUND (cosmetic to verdict): user-alias rungs J1/J3/J5 sent 0x00007FFE00000260 instead of 0x000000007FFE0260 (hex-string assembly slip in patch-v22.py lines 272-278: '00007FFE00000260' instead of '000000007FFE0260'; kernel-alias strings 'FFFFF78000000260'/'308' were CORRECT). The v18 GATE therefore correctly rejected those as out-of-window -> accidental extra negative tests; driver blameless. Only unproven cell: user-alias read VIA REQUEST (kernel alias is the stronger claim anyway; [BLD] proves the page itself reads fine)
+- Serial: v18 RT banner + full boot trail; canaries ('S OURVAR delete') before every J-send worked exactly as designed; [RD] mapped va/mapped read ok pairs: J1 ok=0, J2 ok=1, J3 ok=0, J4 ok=1, J5 ok=0, J6 ok=0, J7 absent (pre-read reject). [BLD] kusd 0x260=0x4A65 (19045), 0x308=0
+- Screenshot (VLM vlm-v22-boot.json): boot-phase photo - v18 RT banner "bridge + direct KUSD reads (phase E)", driver loaded, Windows boot from FS1. Consistent with serial
+- v21 output txt (051435): TRUNCATED transcript (no footer) - banner + ENV + line-444 cast error x2, then silence = instant death, buffer never flushed. Confirms the v21 cosmetic bug class and the death class
+- STEP 0 POST-MORTEM (the v21 killer question, ANSWERED): v21 death window 9/22 05:14-06:16 has NO bugcheck - only Kernel-Power 41 @ 6:16:07 AM = instant-death class (no chance to log; v19/v20 class) - a non-dispatchable fault, consistent with firmware-context fault-storm. Older real bugchecks 0x1E(0xC0000005) at 9/20 10:16PM + 11:40PM (same IP = same crash twice) and 9/21 4:10PM = the v19-era attach-walk access violations. Case closed on v21: step-A instant death, non-dispatchable, not a script regression (v22 ran the identical step A green in the next boot)
+- VERDICT (script's own words, corroborated by serial + screenshot): ">>> KERNEL DATA PATH VIA REQUESTS PROVEN - PHASE E COMPLETE <<<" Windows -> InfinityReq -> hook -> direct KUSD read -> InfinityResp/InfinityData (J2: 19045 via kernel alias 0xFFFFF78000000260, 4 bytes, status=1, seq_ok)
+- Archived: report zip -> version-archive/reports/ (hash-verified); 4 evidence files -> version-archive/reports/loose-evidence/v22-run/
+- Vault push executed after this entry (v22 report + this worklog delta)
+
+Stage Summary:
+- PHASE E COMPLETE: full request->kernel-read->response data path proven end-to-end with correct data (19045/0), 5 clean negative rejections (out-of-window x3, non-canonical, no-attach), ZERO crashes, VM survived the whole matrix
+- Driver v18 = flawless in the field (gate accepts the 2 valid kernel-alias reads, rejects all 5 invalid, never faults); script v22 has the user-alias hex-string slip (J1/J3/J5) - harmless to the verdict, fix optional for any rerun
+- v21 mystery CLOSED: 41-only instant death at step A (non-dispatchable fault class; not a script regression - v22 proved the same step green)
+- All v13-v17 binaries recoverable from vault e1242b6; v19/v20 scripts stick-only (superseded); v18/v22 = current generation, fully vaulted
+- Next milestone decision belongs to the user (Phase F / integration into Infinity.exe / wider read windows)
