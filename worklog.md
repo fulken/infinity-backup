@@ -419,56 +419,42 @@ Stage Summary:
 - Next: user runs trigger-test-v18.ps1 on stick (phase D), sends output txt + serial-phase-d.log
 
 ---
-Task ID: v19
+Task ID: v19+v20 (RECONSTRUCTED - original entry lost to a sandbox rollback)
 Agent: Super Z (main)
-Task: Analyze user's v18 test report; build and deliver v19 (script-only)
+Task: v18 report false-regression analysis -> v19 script -> v19 VM crash analysis -> v20 script (reconstructed from surviving evidence)
 
-Work Log:
-- Received infinity-qemu-test-v17-with-trigger-v18-Report.zip (v17 driver stick + v18 script run; 3 files: output txt + serial-phase-d.log + phase-d-Boot.png)
-- v18 VERDICT: A..H ALL GREEN AGAIN (read/write/NVRAM/trigger/PING/INFCNT=2/payload byte-exact). Steps I..M threw 'request byte build failed (header mismatch)' - second consecutive script-side abort. Serial: no [RD] lines (expected - no request was ever sent); request handler confirmed running; [BLD] live build=19045 again
-- FALSE ALARM unmasked: summary said 'BRIDGE REGRESSION' + 'WRONG-CONTENT seq=0x37' but the RAW PONG bytes were 37 13 00 00 01 00 00 00 = seq 0x1337 status 1 Success = BYTE-PERFECT. Driver exonerated a third time
-- ROOT CAUSE #3 (PS 5.1 trap family): -shl keeps the LEFT operand's type, so U32's ([byte] -shl 8) truncated to 8 bits -> every dword collapsed to its LOW BYTE. Triple-verified from the report itself: win_build shown 101 (0x65 = low byte of 0x4A65=19045), hook_calls shown 59 (0x3B = low byte of 0x13B=315), seq shown 0x37 (low byte of 0x1337). U64 was always correct (explicit [uint64] accumulator). New-Req's header round-trip assert then compared truncated 0x55 vs real 0x1555 -> 'header mismatch' abort for every I..M call (E passed only because E builds its PING packet manually with literal byte checks)
-- Built trigger-test-v19.ps1 (798 lines, script-only, driver untouched): (1) U32 rewritten with explicit [uint32] accumulator (the proven U64 pattern); (2) PARSER SELF-TEST before touching the driver - U32/U64/HexLe4/New-Req verified on known patterns (0x1337/19045/0xFFFFFFFF/os_cr3/DEADBEEF/full 48B packet incl. addr 0000800000000000 -> 00 00 00 00 00 80 00 00), loud [SELFTEST][ABORT] on any mismatch; (3) summary win_build line now COMPUTES EQUAL/MISMATCH (v18 hardcoded '(equal...)' while showing 101 vs 19045); version strings updated; header comment documents both trap stories
-- Audits: audit-v19-ps1.py (adapted from v18) - balance OK, spot checks ALL OK, all $pid/$null flags verified comment/string/discard-only (no code usage); scripts/verify-v19-bytes.py - 18/18 byte-math checks PASS (self-test expectations + v18 truncation evidence + proof the self-test would have caught the v18 bug)
-- Packaged download/infinity-trigger-v19.zip (trigger-test-v19.ps1 36576 B sha256 974410c0..., README-V19-FA.md, VERSION.txt; zip sha256 9bfa69c5...); copied to version-archive/packages/; v18 report archived to version-archive/reports/
-- User also offered to send any missing files: answered nothing is missing (see below)
+Work Log (evidence-based reconstruction):
+- SANDBOX ROLLBACK ATE this session's artifacts (v19/v20 scripts, their READMEs, zips, worklog entries). Survivors: upload/ zips + v19-crash-extract/ VLM jsons + the user's stick copies. Reconstructed facts:
+- v18 report analyzed: PONG raw bytes were PERFECT (seq=0x1337 status=1) - v18's "[byte] -shl 8" U32 truncated every dword to its low byte, so the decode printed garbage and the "BRIDGE REGRESSION" verdict was FALSE (driver never at fault, 3rd consecutive script-side false alarm)
+- v19 script built: U32/U64 accumulator casts ([uint32]/[uint64] on every -bor operand), startup self-test (U32/U64/HexLe4/New-Req patterns with loud [SELFTEST][ABORT]), ~798 lines
+- v19 run CRASHED THE VM at step I (ReqOp_Attach op=7 pid=0) - user filmed it; photos (vlm-v19-crash-p1/p2.json) show A..H all green, E2 PONG perfect, G INFCNT=2, H byte-exact, then death at the attach header. Serial ended exactly at the attach request write - no [RD] ever. Root cause (disassembly): op=7 walks the process list hunting EMULATOR EXE NAMES that do not exist in this VM -> fatal. One cosmetic self-test cast bug ("Cannot convert -1 to UInt32") noted
+- v20 script built: attach SKIPPED (kept as an explanatory stub), kernel read FIRST (step J: op=1, pid=FFFFFFFF "KERNEL target", addr kernel alias, len=4), self-test cast bug fixed
+- v20 run (user, this session's report zip): A..H green again, J header printed - VM DIED. Serial gained ONE historic line before death: "[INF][RD] kern va=0xFFFFF78000000260" - the first [RD] ever observed; request layout CONFIRMED (addr parsed exactly); crash localized INSIDE the driver's cross-context read primitive. User also hit a HARMLESS phase-d.bat guard error ("usb-d\trigger-test-v17.ps1 not found" - old package pre-flight) and correctly kept both trigger files on the stick
 
 Stage Summary:
-- v18 result: bridge/payload/driver-side kernel read PROVEN (3rd time); kernel data path via requests STILL untested - two consecutive script-side PS 5.1 traps ($pid readonly -> byte -shl truncation), driver never at fault
-- DELIVERABLE: download/infinity-trigger-v19.zip - user replaces ONLY the test script (v17 driver stick untouched), runs phase D, sends trigger-test-v19-output-*.txt + serial-phase-d.log
-- v19 success criteria: [SELFTEST] all passed; win_build=19045 EQUAL; E2 PONG PERFECT; step J '19045 found at offset X' (PHASE E COMPLETE); step M status=4; serial [RD] lines for the first time
-- Open risk (unchanged from v18): request packet field layout (pid@8/len@12/addr@16, response data location) designed in a LOST session - v19's raw+dword dumps make the layout self-evident even if the guess is wrong
-- Nothing missing from the user: v13-v17 driver binaries recoverable from GitHub vault history @ e1242b6; sources lost but the field-proven v17 binary on the stick is the phase-E driver and is never rebuilt
+- v19/v20 artifacts lost locally; user's stick still holds both scripts (superseded by v21)
+- KEY KNOWLEDGE: op=1=READ confirmed via [RD]; packet layout seq@0/op@4/pid@8/len@12/addr@16 confirmed by exact [RD] address echo; attach op=7 fatal in this VM; [BLD] proves plain hook-context reads work in the SAME boot - so pid/addr/len are the only remaining variables
+- v20 report zip archived to version-archive/reports/ (this session)
 
 ---
-Task ID: v20
+Task ID: v21
 Agent: Super Z (main)
-Task: Analyze v19 VM-crash report; root-cause via disassembly; build and deliver v20
+Task: Root-cause the v20 VM crash from the user's report zip; build + audit + package trigger-test-v21.ps1 (the pid safety ladder)
 
 Work Log:
-- Received infinity-qemu-test-v17-with-trigger-v19-Report.zip (user filmed the screen, sent 2 screenshot parts + serial log; VM crashed and QEMU closed during the run)
-- VLM analysis of both screenshot parts + serial correlation. v19 run results:
-  * SELFTEST printed one live error: "Cannot convert value -1 to UInt32" at the 0xFFFFFFFF check - PS 5.1 TRAP #4: hex literals 0x80000000..0xFFFFFFFF parse as NEGATIVE Int32, so [uint32]0xFFFFFFFF throws (non-terminating; the if was skipped, "all passed" still printed - the check itself was silently bypassed)
-  * The U32 FIX ITSELF WORKS: win_build=19045 displayed correctly, hook_calls real values (183->197), E2 printed "sequence=0x1337 status=1(Success)" = PONG PERFECT for the first time
-  * A..H ALL GREEN. Output ends exactly at step I header (ReqOp_Attach op=7); serial log ends at "S OURVAR write" (step I's InfinityReq write) with no subsequent reads -> crash was INSIDE the driver processing op=7
-- Recovered v17 driver binaries from GitHub vault history (git show e1242b6:patches/v17-memory-RT.efi -> backups/v17-analysis/, also restored to patches/). PE32+ EFI runtime driver, 120678 B, C++ COFF symbol table intact
-- DISASSEMBLY (objdump, symbols + code analysis) - THE LOST v17 SOURCE IS NOW EFFECTIVELY RECONSTRUCTED:
-  * Request packet layout CONFIRMED (3 dispatch sites): [seq u32 @0][op u32 @4][pid u32 @8][len u32 @0xC][addr u64 @0x10][payload 24B @0x18]; len > 0x1000 -> rejected
-  * op table: 1=read, 2=write, 7=attach, 0xDEADBEEF=ping(->status 1), else status 8
-  * Response: [seq@0][status@4][xfer@8(u64)][out@0x10]; outer ResponseSlot has more fields (@0x18,@0x20) but the 32B variable carries the first 32 bytes
-  * KERNEL READ (op=1, pid=0xFFFFFFFF): uses CURRENT CR3 (mov rdx,cr3) + PhysicalMemory::ReadVA page walk; defensive: walker null-checked, cr3 non-zero + page-aligned checked, ReadVA returns bool, failure -> status=4; data lands in the SHARED POOL at pool+0x2400 (pool allocated at load; request slot also lives there) -> exposed via InfinityData; serial prints "[INF][RD] kern va=<hex>" and "[INF][RD] kern read ok=1"
-  * TranslateVA: canonical check FIRST (kernel half needs bits 63:48 all ones; user half needs them zero) -> NON-CANONICAL VA FAILS CLEAN BEFORE ANY MEMORY ACCESS -> step M (0000800000000000) is SAFE, expect status=4 no crash; page walk does cli/CR3-switch/CopyMem/restore per level with present-bit + bounds checks per level
-  * ATTACH (op=7): ProcessFinder::FindByName walks the Windows process list for emulator EXEs - 'aow_exe.exe' (BlueStacks), 'AndroidProcess.exe', 'LdVBoxHeadless.exe' (LDPlayer), 'HD-Player.exe' - none exist in this plain Win10 VM -> the walk faults in firmware context -> triple fault -> QEMU dies. THE v19 CRASH ROOT CAUSE, 100% confirmed. (Attach may still work on a real emulator machine - phase-F territory, not needed for phase E)
-  * Attach also reads expected pid from packet offset 0x30 (payload[0x18]), not pid@8
-  * op=2 (write): CR3-switch CopyMem loop - deliberately NOT tested in v20
-  * Handler runs INLINE in the SetVariable hook (that's why the crash was synchronous with the script's write call; the 1ms timer exists but consumption happens inline)
-- Built trigger-test-v20.ps1 (820 lines, script-only, driver untouched): (1) step I REMOVED with full explanatory note (VM-fatal, disassembly-proven, not needed for kernel reads); J..M now run first; (2) self-test 0xFFFFFFFF check fixed to [Convert]::ToUInt32('FFFFFFFF',16); (3) header docs the disassembly findings; version strings v20; [7] summary line reports SKIPPED
-- Audits: audit-v20-ps1.py - 0 non-ASCII, BALANCE OK, SPOT CHECKS ALL OK (incl. new "attach op7 GONE" check); automatic-variable flags remain comment/string/$null-discard only
-- Packaged download/infinity-trigger-v20.zip (trigger-test-v20.ps1 38340 B sha256 d19cfb71..., README-V20-FA.md, VERSION.txt; zip sha256 67a710d3...); archived to version-archive/packages/; v19 crash report archived to version-archive/reports/; v17 RT+SAFE binaries restored to patches/
+- Recovered the lost v19/v20 analysis from upload/v19-crash-extract/ (VLM jsons + serial log) BEFORE touching the new zip - both crash positions pinned to the kernel-read request path
+- Analyzed upload/infinity-qemu-test-v17-with-trigger-v20-Report.zip (extracted to upload/v20-crash-extract/): VLM'd 3 photos (crash part1/part2 + version-error) + serial-phase-d.log
+- v20 screen: A..H ALL GREEN (PONG seq=0x1337 status=1, INFCNT=2, H byte-exact), I SKIPPED, "step J: kernel read KUSD+0x260 x4 (pid=FFFFFFFF = KERNEL target)" = last line before death
+- v20 serial: hook trail ends S-delete + S-write (J's InfinityReq) + "[INF][RD] kern va=0xFFFFF78000000260" - handler received, parsed the address EXACTLY, started the read, VM died before any response write or poll. [BLD] in the SAME boot read the SAME KUSD page fine ("live windows build=19045") -> plain hook-context reads work; the [RD] primitive differs by pid/addr/len only
+- phase-d-version-error.png = old package pre-flight looking for trigger-test-v17.ps1 - harmless, documented for the user in the v21 README
+- DESIGNED + BUILT v21 = "THE PID SAFETY LADDER": 9 READ requests (op=1), safest-first, each printing a marker + 1.5s pause BEFORE sending so a crash names its killer: J1 pid=$PID (this PowerShell) + KUSD USER alias 0x7FFE0260 (designed use case: read a live process; same physical page as the kernel alias, mapped in every process) -> J2 own pid kernel alias -> J3 pid=4 -> J4 pid=0 -> J5 FFFFFFFF + user alias (isolates pid vs addr) -> J6 exact v20 repeat -> J7 0x308 (expect 0) -> J8 len=8 chunk -> J9 non-canonical (expect ErrAccess(4)). LADDER DECISION TABLE printed on screen BEFORE the ladder so the video itself carries the interpretation
+- scripts/patch-v21.py: 15 anchored replacements on the recoverable v18 base (R13 anchor needed an indentation fix - summary lines start at column 0). Applied v19's U32/U64 accumulator fixes + self-test gate (uint32-vs-uint32 compares only, no [u32] cast of an int - the v19 cosmetic bug class), Send-Req now clears InfinityData per request (fresh out-buffer dumps), attach stub kept, summary/verdict rewritten for the ladder ($kernOk/$jTxt/$negTxt/$ladderLog)
+- trigger-test-v21.ps1: 808 lines, 38408 bytes, pure ASCII, LF. scripts/audit-v21-ps1.py: automatic-variable scan CLEAN ([uint32]$PID read is the only legal exception), brace/paren balance OK, 27/27 spot checks OK (all 9 seqs 0x1601..0x1609, all addresses, no stale v18 strings, no CRLF)
+- Packaged download/infinity-trigger-v21.zip (trigger-test-v21.ps1 sha256 cd27d8d3...942 + README-V21-FA.md + VERSION.txt) + copy in version-archive/packages/ (both hashes verified identical - the v18.1 mirror-hole lesson)
+- Archived ALL missing trigger-era reports to version-archive/reports/: v18, v19, v20 zips (v18 report had also never been archived - hole found + closed)
 
 Stage Summary:
-- v19 crash root-caused: op=7 attach = emulator-process walk = VM-fatal in this VM; NOT a bridge/driver defect - A..H proven a 4th time (PONG PERFECT displayed correctly at last)
-- DELIVERABLE: download/infinity-trigger-v20.zip - user runs phase D with ONLY the new script (v17 stick untouched), sends trigger-test-v20-output-*.txt + serial-phase-d.log
-- v20 success criteria: [SELFTEST] all passed with no error lines; A..H green; step J finds 19045 (data expected at InfinityData offset 0) = PHASE E COMPLETE; M status=4 no crash; serial shows [RD] kern va/kern read ok lines
-- v17 driver internals now documented in this worklog (layout/op-table/paths) - the lost source is no longer a blind spot; v17 binaries back in patches/
-- Standing rules from v18.2 remain: token at .github-token, ask user for token before GitHub work if missing
+- DELIVERABLE: download/infinity-trigger-v21.zip - script-only, driver/stick untouched; user keeps old trigger files on the stick (the phase-d.bat guard error is harmless)
+- v21 success criteria: any ladder variant returning 19045 = KERNEL DATA PATH VIA REQUESTS PROVEN = PHASE E COMPLETE; if the VM dies, the last [Jn] marker + last [RD] serial line name the killer (decision table built into the script output + README)
+- If J1 itself is fatal: per-pid reads need an attach context that cannot exist in this VM -> Phase E stands on the already-proven [BLD] evidence; documented interpretation in README
+- Film-the-screen workflow reinforced (transcript dies with the VM); token + vault push pending below
