@@ -555,3 +555,22 @@ Stage Summary:
 - DELIVERABLES: download/infinity-qemu-test-v18b.zip (full) + download/infinity-v23-swap.zip (stick swap: replace usb-d\trigger-test-v23.ps1, delete old v22, phase-d.bat; memory.efi identical)
 - Driver v18 RT UNTOUCHEN (sha256 matches the Phase-E-proven binary); bat keeps v18 name/guard (driver generation), checks v23 script marker
 - Next: Phase C item 2 — QEMU sandbox bench rebuild + smoke boot; then worklog/vault finalization
+
+---
+Task ID: phase-c-bench (QEMU bench rebuild + v18 validation — PHASE C COMPLETE)
+Agent: Super Z (main)
+Task: Phase C item 2 — rebuild the QEMU sandbox bench lost to rollbacks; smoke-validate BOTH v18 driver binaries; archive evidence; final vault push
+
+Work Log:
+- BENCH REBUILT: the "lost bench" turned out to be only the test DIRS — qemu-root (QEMU 10.0.11, verified --version runs with LD_LIBRARY_PATH=qemu-root/usr/lib/x86_64-linux-gnu), qemu-bios, upload/extracted-v9-full (OVMF 4M firmware + EFI Shell bootx64.efi), alpine.iso and scripts/iso_extract.py all survived. scripts/test-v18-linux.sh (adapted from test-v17-linux.sh, v18 banner/parenthetical patterns, bench-rebuild header) recreates test-v18/ from scratch: vmlinuz+initrd extracted from alpine.iso, ritual FAT (driver+kernel+scan-loop startup.nsh CRLF), fresh VARS pflash per mode
+- MODE A (v18 RT — byte-identical to the Phase-E-proven field binary): VERDICT PASS 13/13 — [RT-EARLY] v18 banner with "kernel data path: direct KUSD reads", gRT hooks installed at load, BOOT-CTX hook traces (call#64 sampled; GetVariable statuses 0x5/0xE = Linux's normal patterns), stage 2 EBS write + os_cr3 captured, SetVirtualAddressMap event, stage 3 write, virtual mode armed, ALL ConvertPointer st=0, Linux 6.12.51 booted via EFI stub, then the documented post-chain NX panic (Linux limitation since v6 — Windows is the target). [RD] mapped lines cannot fire without a Windows-side request (binary-presence proven at build + in field J2=19045)
+- MODE B (v18 SAFE — first run ever, never field-deployed): VERDICT PASS 5/5 — stage 1 write (flags 0x1), Linux booted, init ran, ZERO gRT hook lines (SAFE contract), initramfs boot-media mount quirk same as archived v7 SAFE run (vvfat+TCG, not driver-related)
+- INFDIAG PFLASH EVIDENCE (independent of serial): lA = stage 1 (flags 0x9 loaded+EARLY_hooks) -> stage 2 (EBS fired, os_cr3=0x3fc01000, hook_calls=75) -> stage 3 (gRT hooks); lB = stage 1 (flags 0x1) -> stage 2 (hook_calls=0). Full chain confirmed in NVRAM
+- EVIDENCE ARCHIVED: version-archive/reports/loose-evidence/v18-bench/ (serial-lA/lB.log + infdiag-lA/lB.txt + README.txt with verdicts) — inside the vault mirror set
+- Vault pushes this session: phase-E-proven tag (be72386) + v23 milestone (187d826) + this final push
+
+Stage Summary:
+- PHASE C COMPLETE: (1) v23 script fix packaged [infinity-qemu-test-v18b.zip + infinity-v23-swap.zip], (2) QEMU bench rebuilt + both v18 binaries validated green, (3) phase-E-proven tag secured on GitHub. All three Phase C items closed
+- Bench ready for any Phase F driver iteration (no Windows needed for driver-side smoke tests)
+- v18 driver binary NEVER touched this session (sha256 9F441788... identical across v18 package, v18b package, field-proven stick copy, and bench run)
+- Next milestone decision belongs to the user: run v23 on the Windows VM stick (closes the last ladder cell: J1 user-alias), or start Phase F (wider read windows / integration into Infinity.exe)

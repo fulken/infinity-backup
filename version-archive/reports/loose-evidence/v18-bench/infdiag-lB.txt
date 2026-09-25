@@ -1,0 +1,16 @@
+INFDIAG FOUND at offset 0x18ec
+  magic          = 0x494e4644
+  stage          = 1  -> driver loaded OK (pool + handler + EBS hook installed)
+  flags          = 0x1  (loaded)
+  win_build      = 0
+  os_cr3         = 0x0
+  hook_calls     = 0
+  last_status    = 0x00000000  (0x0 = last INFDIAG write succeeded)
+INFDIAG FOUND at offset 0x1958
+  magic          = 0x494e4644
+  stage          = 2  -> ExitBootServices FIRED (os_cr3 + win_build captured)
+  flags          = 0x3  (loaded, EBS_fired)
+  win_build      = 0
+  os_cr3         = 0x3fc01000
+  hook_calls     = 0
+  last_status    = 0x00000000  (0x0 = last INFDIAG write succeeded)
