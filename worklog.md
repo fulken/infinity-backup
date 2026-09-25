@@ -603,3 +603,22 @@ Stage Summary:
 - v23 script fix (patch-v23.py) validated in the field; v18 driver flawless again (accepts 5 valid, rejects 2 invalid, never faults)
 - Phase C fully closed AND independently field-confirmed. All Phase C items: (1) v23 fix packaged+run GREEN, (2) QEMU bench rebuilt+validated, (3) phase-E-proven tag secured
 - Next milestone decision belongs to the user: Phase F (wider read windows / integration into Infinity.exe / arbitrary-address reads) or anything else
+
+---
+Task ID: f1-base (F1 kickoff: source tree rebuilt + byte-verified)
+Agent: Super Z (main)
+Task: Phase F1 step 1 - reconstruct the driver source tree and PROVE it reproduces the field-proven v18 binaries byte-for-byte
+
+Work Log:
+- USER GO: standing permission reconfirmed (joint project, no per-step approval needed); roadmap = C done, F1 (SIDT + anchor stack + 4 converging validators, fail-closed) next; user priorities: never reading failures, ZERO BSOD, must work with Infinity.exe
+- /home/sync/repo.tar (436M) inspected: workspace snapshot, NOT the source tree - discarded lead
+- infinity-repo CLONED via scripts/fetch-infinity-repo.sh (token ephemeral): fulken/Infinity @ uefi-full-migration, HEAD a8e41b3b7fb... (exact documented base). Cache: backups/infinity-...-20260925-234438.bundle (533M) + .tar.gz (574M) - future rollback recovery needs NO token
+- CHAIN LESSON: patch-v12.py is a DEAD-END branch (v7->v12; its observability design caused the v12 BSOD, superseded). The live chain: v7-diff -> patch-v13.py (v7->v13: safe observability) -> v14 -> v15 -> v16 -> v17 -> v18. First attempt applied v12 then chained - anchors failed; correct chain applied CLEAN (each step sanity-checked)
+- BUILD: gnu-efi 3.0.13 jammy (EFI_LIB_DIR/EFI_INC_DIR overrides), SAFE + RT=1, R4 GLOB_DAT + R6 orphan-.bss checks clean
+- HASH VERDICT: rebuilt-RT.efi 121253 B sha256 9f44178895e4a9e0...abcdea == patches/v18-memory-RT.efi (field-proven v23-ladder binary) - BYTE-IDENTICAL. rebuilt-SAFE.efi 105032 B 258e2683... == patches/v18-memory-SAFE.efi - BYTE-IDENTICAL. Outputs kept at build/v18-rebuild/ (gitignored build/); proven binaries untouched
+- F1 DESIGN BASELINE fixed: v19 will be surgical edits on this exact tree; ReadKernelVA currently = direct volatile read in hook context gated to KUSD windows (user 0x7FFE0000-0x7FFEFFFF, kernel alias 0xFFFFF78000000000-0xFFFFF7800000FFFF, size<=4096, fail-clean before any access outside)
+
+Stage Summary:
+- SOURCE TREE FULLY RECOVERED AND TRUSTED: recipe (clone a8e41b3 + v7 diff + patch chain v13..v18 + gnuefi-jammy) reproduces the field-proven driver byte-for-byte (both RT and SAFE)
+- Rollback resilience: bundle+tarball cache on disk; recipe all-vaulted; infinity-repo/ and backups/ gitignored by design
+- Next: F1 design on the real source (SIDT + anchor stack + 4 converging validators, fail-closed), then patch-v19.py
