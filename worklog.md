@@ -574,3 +574,32 @@ Stage Summary:
 - Bench ready for any Phase F driver iteration (no Windows needed for driver-side smoke tests)
 - v18 driver binary NEVER touched this session (sha256 9F441788... identical across v18 package, v18b package, field-proven stick copy, and bench run)
 - Next milestone decision belongs to the user: run v23 on the Windows VM stick (closes the last ladder cell: J1 user-alias), or start Phase F (wider read windows / integration into Infinity.exe)
+
+---
+Task ID: v23-report (Phase C field validation - THE LADDER CLOSES)
+Agent: Super Z (main)
+Task: Receive + analyze the user's v23 field report (infinity-qemu-test-v18-with-trigger-v23-Report.zip); archive evidence; vault push
+
+Work Log:
+- DELIVERY FIGHT: the IM file gateway failed 3x (gateway accepted the upload but nothing ever landed in upload/ - full filesystem sweep clean each time). SOLVED: user provided a direct link (services.dworld.ir); plain curl got 403, but browser-like headers (User-Agent/Referer) downloaded it fine - 7473 B valid zip, sha256 e7ad2748...d62ea0
+- Infra note: a 22:58 sandbox sync event rewrote 77 tracked files (mode bits 644->755 only, ZERO content change - verified via git diff --stat 0/0; restored with git checkout; all key artifacts hash-verified identical, v18 driver still 9f441788...)
+- CONTENTS: trigger-test-v23-output-20260925-213107.txt (16 KB, complete transcript with clean footer, runtime 21:31:11->21:32:09 = 58 s) + serial-phase-d.log (21 KB, full boot chain)
+- SCRIPT-SIDE RESULTS (v23 = v22 + the 4 real user-alias addresses):
+  * A/B: hook_calls 324->325 (live RAM read path via hook); STAGE=4 flags=0xF; win_build=19045 os_cr3=0x7FC01000
+  * C: INFPROBE NVRAM write + read-back 0x42 OK; D: INFTRIGGER flag 0x20 SET; E/E2: PING->PONG seq=0x1337 status=1 PERFECT; F: InfinityReq consumed in RAM (read-back absent = expected); G: INFCNT=2 (both writes reached hook); H: 32-byte InfinityData round trip BYTE-EXACT
+  * J1 (THE LAST UNPROVEN CELL - user-alias 0x7FFE0260 via request): ANSWERED status=1 Success seq_ok=True + 19045 FOUND at InfinityData offset 0 - THE V22 HEX-SLIP FIX IS FIELD-VALIDATED
+  * J2 (kernel alias FFFFF78000000260): Success + 19045 (re-confirmed); J3 (user 0x7FFE0308): Success + 0 (expected 0 - first ever, the slipped address now works); J4 (kernel 0x308): Success + 0; J5 (8-byte user read): Success, dword[0]=19045 dword[1]=1 (real adjacent KUSD field - not a canned echo)
+  * J6 (non-canonical 0x0000800000000000): ErrAccess(4) clean; J7 (pid=4960 real, no-attach, VALID window addr): ErrAccess(4) clean, script alive = the pid-gate isolation works exactly as designed
+  * N: INFCNT final = 10 = G+8 EXACTLY as predicted (H +1, J1..J7 +7); step 0 post-mortem: only OLD bugchecks (9/20-9/21 v19-era) + 41-only events (newest 21:19:55 = the stick-swap hard poweroff 11 min before the run - no new bugcheck, v23 run itself clean start-to-finish)
+- SERIAL-SIDE CROSS-CHECK (independent firmware evidence - ALL CONFIRMS):
+  * v18 RT banner, gRT hooks installed at load, EBS fired os_cr3=0x7FC01000, SetVirtualAddressMap event, all ConvertPointer st=0, virtual mode armed (full documented chain)
+  * [BLD] live probe: kusd 0x260=0x4A65 (19045), 0x308=0 - the SAME values the ladder returned
+  * [RD] pairs: J1 va=0x7FFE0260 ok=1 / J2 va=0xFFFFF78000000260 ok=1 / J3 va=0x7FFE0308 ok=1 / J4 va=0xFFFFF78000000308 ok=1 / J5 va=0x7FFE0260 ok=1 / J6 va=0x0000800000000000 ok=0 (gate rejected BEFORE access) / J7: NO [RD] LINE AT ALL (pid-gate rejected pre-read - exactly the designed signature)
+- VERDICT (script's own words + serial + values, all three sources agree): ">>> KERNEL DATA PATH VIA REQUESTS PROVEN - PHASE E COMPLETE <<<"
+- Archived: zip -> version-archive/reports/ (hash-identical), 2 evidence files -> version-archive/reports/loose-evidence/v23-run/
+
+Stage Summary:
+- THE ENTIRE LADDER MATRIX IS CLOSED: user-alias positive (J1/J3/J5) + kernel-alias positive (J2/J4) + negative gate (J6) + negative pid (J7) - every cell of (user+kernel) x (positive+negative) proven in the field, with ZERO crashes, VM survived the whole matrix, 58-second clean runtime
+- v23 script fix (patch-v23.py) validated in the field; v18 driver flawless again (accepts 5 valid, rejects 2 invalid, never faults)
+- Phase C fully closed AND independently field-confirmed. All Phase C items: (1) v23 fix packaged+run GREEN, (2) QEMU bench rebuilt+validated, (3) phase-E-proven tag secured
+- Next milestone decision belongs to the user: Phase F (wider read windows / integration into Infinity.exe / arbitrary-address reads) or anything else
