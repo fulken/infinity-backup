@@ -533,3 +533,25 @@ Stage Summary:
 - READINESS VERDICT: GREEN for Phase C start. Token valid, vault complete, workspace fully restored + hash-verified, uploads immune. NOTHING needed from the user (v19/v20 stick scripts remain optional archive completeness items, superseded anyway)
 - Rollback pattern confirmed AGAIN: only the vault (GitHub) + upload mount survive; the mirror-list design proved itself - restore took minutes, zero data loss
 - Next: Phase C = (1) fix J1/J3/J5 user-alias hex in trigger-test-v22.ps1 + patch-v22.py, re-audit, repackage; (2) restore/rebuild QEMU sandbox bench; (3) tag phase-E-proven baseline in vault
+
+---
+Task ID: phase-c-v23 (script fix milestone)
+Agent: Super Z (main)
+Task: Phase C item 1 — fix the J1/J3/J5/J7 user-alias hex slip; build + audit + package trigger-test-v23.ps1; vault push
+
+Work Log:
+- TAG FIRST (user standing rule: GitHub before anything): tag `phase-E-proven` created at local HEAD 6bce0dc AND vault HEAD 4447328 (be72386) via scripts/tag-phase-e-baseline.sh — the exact Phase-E-proven artifact set is now permanently marked on GitHub
+- Restored the field-proven v22-era build inputs from version-archive/packages/infinity-qemu-test-v18.zip (hash-verified vs VERSION.txt: script 2950CE8D..., bat E1B9041A...) into infinity-qemu-test/ — the stale post-rollback dir (v18-era) was missing them; upload/extracted-v9-full template confirmed present
+- scripts/patch-v23.py (8 anchored edits on the v22 script): J1/J5/J7 addr '00007FFE00000260'->'000000007FFE0260', J3 ->'000000007FFE0308', banner/transcript/end markers v22->v23, J7 why-text updated to v18-proven semantics (pid check, not attach fatality), v23 header block stacked after the v21/v22 headers (house convention), NEW self-test: user-alias string round-trip (bytes 60 02 FE 7F 00 00 00 00 asserted) — the v22-slip class can never again reach the driver
+- trigger-test-v23.ps1 BUILT: 45620 B, 936 lines, pure ASCII, LF. scripts/audit-v23-ps1.py (v22 audit + per-rung exact address matrix + bad-pattern eradication + slip-doc-once checks): ALL CHECKS PASSED (autovars clean, balance OK, no hex-cast traps, ladder seqs 0x1601-0x1607 intact, canaries/post-mortem/selftest verified)
+- scripts/patch-v23-bat.py (10 anchored edits on phase-d-v18.bat): all 9 script refs ->v23, findstr marker ->"trigger test v23", v22-ladder wordings ->v23, old-files note v17..v22, package refs ->v18b, v23 header note; LF-only format PRESERVED (field-proven). Result 9461 B, all final checks pass (121253 x6, 120678 x2, marker x2, no v22 strings left)
+- infinity-qemu-test/README-V23-FA.md written (fa): Phase-E recap, the slip story, swap table (script NEW / bat / memory.efi unchanged-but-shipped), expectations table incl. J7's now-real pid-check isolation, decision table
+- scripts/build-v23-package.sh: full bundle infinity-qemu-test-v18b.zip (3298163 B, from the v9-full template; all stale trigger scripts glob-stripped) + mini swap infinity-v23-swap.zip (60588 B: usb-d/memory.efi + usb-d/trigger-test-v23.ps1 + phase-d.bat + README). GUARD SIMS ALL PASS: v23 marker present, driver 121253 B (sha256 9F441788... IDENTICAL to the proven v18 — driver untouched), bat references v23, real user-alias addrs present, bad pattern absent, no stale v20/v21/v22 scripts in bundle. Mirrors in version-archive/packages/ hash-identical
+- VERSION.txt v18b: full sha256 manifest (script D060C484..., bat 9B9F691E...)
+
+Stage Summary:
+- v23 script = v22 + the 4 real user-alias addresses + hardened selftest; everything else byte-identical strategy (step 0, canaries, A-H, decision logic untouched)
+- Expected v23 run: J1 Success+19045 (the last unproven cell: user-alias via request), J2/J4 re-confirm, J3 Success+0, J5 Success+19045 dword[0], J6/J7 clean ErrAccess negatives, INFCNT G+8; success closes the ENTIRE ladder matrix (user+kernel x positive+negative)
+- DELIVERABLES: download/infinity-qemu-test-v18b.zip (full) + download/infinity-v23-swap.zip (stick swap: replace usb-d\trigger-test-v23.ps1, delete old v22, phase-d.bat; memory.efi identical)
+- Driver v18 RT UNTOUCHEN (sha256 matches the Phase-E-proven binary); bat keeps v18 name/guard (driver generation), checks v23 script marker
+- Next: Phase C item 2 — QEMU sandbox bench rebuild + smoke boot; then worklog/vault finalization
