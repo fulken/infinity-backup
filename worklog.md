@@ -514,3 +514,22 @@ Stage Summary:
 - v21 mystery CLOSED: 41-only instant death at step A (non-dispatchable fault class; not a script regression - v22 proved the same step green)
 - All v13-v17 binaries recoverable from vault e1242b6; v19/v20 scripts stick-only (superseded); v18/v22 = current generation, fully vaulted
 - Next milestone decision belongs to the user (Phase F / integration into Infinity.exe / wider read windows)
+
+---
+Task ID: rollback-recovery-3 (pre-Phase-C readiness audit)
+Agent: Super Z (main)
+Task: User-requested readiness audit before Phase C; discovered sandbox rollback; full recovery from GitHub vault
+
+Work Log:
+- USER QUESTION: "check you have everything at hand to start; if anything is missing say so; verify token still works"
+- TOKEN CHECK: HTTP 200 as login fulken; repo fulken/infinity-backup accessible (private, pushed_at 2026-09-22T03:22:26Z) - token VALID, no re-send needed
+- ROLLBACK #N DETECTED: workspace snapshot reverted to ~Sep 21 18:26 (v18.1 era). Lost locally: ALL v19-v22 session artifacts - build-v17-tree, build-v18-tree, scripts v18-v22 (patch-v18/21/22.py, audit-v21/22-ps1.py, build-v18-package.sh, 43 scripts total), patches v13-v18 binaries, version-archive reports v18-v22 + loose-evidence/v22-run, packages v18/v21/swaps, worklog entries v19+v20/v21/v21-report/v22-report. SURVIVED: upload/ volume (all user files incl. v22 report + v22-extract + vlm jsons - separate mount, rollback-immune), .github-token, .git (HEAD 83c0e13), alpine.iso, QEMU debs + qemu-root + qemu-bios, gnuefi trees, deb files
+- RECOVERY: cloned vault @ 094e543 via ephemeral Basic auth header (tokenless remote). Restored: worklog.md (75583 B, full), scripts/ (66 files - vault 68 minus 2 .pyc caches), patches/ (full binary lineage v4-v18 RT+SAFE + diffs + bat), version-archive/reports/ (v1-v22 complete incl. v22 zip + loose-evidence/v22-run), version-archive/packages/ (14 zips incl. v18 full + v18-swap + v21), addons/, validation-evidence/, README.md, edk2_Runtime.c
+- HASH VERIFICATION: v18-memory-RT.efi 121253 B sha256 9f441788...abcdea IDENTICAL in packages/v18-swap and patches/; v18-SAFE 105032 B; trigger-test-v22.ps1 43521 B (matches build log exactly). All Phase-E-proven artifacts byte-identical to what the user's stick carries
+- NOT RECOVERED (rebuildable, NOT blocking C): build-v17/v18-tree source trees (not in vault mirror list by design) - rebuild recipe documented: fulken/Infinity @ ueui-full-migration a8e41b3 + patches/v7-on-a8e41b3.diff + scripts/patch-v13..v18.py chain (all patch scripts now restored). Only needed for F-line driver work, not for C's script fix. QEMU sandbox bench = already a planned C item (alpine.iso + qemu debs + qemu-root all present)
+- Local workspace git committed post-restore; vault pushed to record the recovery
+
+Stage Summary:
+- READINESS VERDICT: GREEN for Phase C start. Token valid, vault complete, workspace fully restored + hash-verified, uploads immune. NOTHING needed from the user (v19/v20 stick scripts remain optional archive completeness items, superseded anyway)
+- Rollback pattern confirmed AGAIN: only the vault (GitHub) + upload mount survive; the mirror-list design proved itself - restore took minutes, zero data loss
+- Next: Phase C = (1) fix J1/J3/J5 user-alias hex in trigger-test-v22.ps1 + patch-v22.py, re-audit, repackage; (2) restore/rebuild QEMU sandbox bench; (3) tag phase-E-proven baseline in vault
