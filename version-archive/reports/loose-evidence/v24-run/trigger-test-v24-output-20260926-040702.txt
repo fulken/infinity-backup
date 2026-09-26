@@ -1,0 +1,43 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260926040704
+Username: DESKTOP-23EQNHP\Administrator
+RunAs User: DESKTOP-23EQNHP\Administrator
+Configuration Name: 
+Machine: DESKTOP-23EQNHP (Microsoft Windows NT 10.0.19045.0)
+Host Application: PowerShell.exe -noexit -command Set-Location -literalPath 'C:\Users\Administrator\Desktop'
+Process ID: 4924
+PSVersion: 5.1.19041.7663
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7663
+BuildVersion: 10.0.19041.7663
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+[LOG] writable spot found - auto-saving all output to:
+[LOG] C:\Users\Administrator\Desktop\trigger-test-v24-output-20260926-040702.txt
+[LOG] (the folder beside the script is READ-ONLY - the boot
+[LOG]  stick is read-only by design - so the transcript lands
+[LOG]  on a writable drive instead. Get it out of the VM with
+[LOG]  the transfer stick + refresh-files.bat - see the end.)
+
+==== INFINITY trigger test v24 (v19 driver: anchors - the F1 proof ladder K,L + J regression) ====
+[ENV] PowerShell 5.1.19041.7663  Windows build 10.0.19045.0
+
+--- step 0: previous-boot post-mortem (Event Log) ---
+      BUGCHECK 9/21/2026 4:10:48 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff80185689ab9, 0x0000000000000000, 0x000000007fab841f). A dump was saved in: C:\Windows\MEMORY.DMP. R...
+      BUGCHECK 9/20/2026 11:40:23 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff8071d886428, 0x0000000000000000, 0x000000007fab83dc). A dump was saved in: C:\Windows\MEMORY.DMP. R...
+      BUGCHECK 9/20/2026 10:16:11 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff8075c886428, 0x0000000000000000, 0x000000007fab83dc). A dump was saved in: C:\Windows\MEMORY.DMP. R...
+      KERNEL-POWER 41 9/25/2026 9:19:55 PM (unexpected stop - the instant-death class leaves ONLY this)
+      KERNEL-POWER 41 9/22/2026 6:16:07 AM (unexpected stop - the instant-death class leaves ONLY this)
+      KERNEL-POWER 41 9/22/2026 5:02:10 AM (unexpected stop - the instant-death class leaves ONLY this)
+      -> a BUGCHECK line at the v21 run time names the v21 step-A killer;
+         41-only = instant death with no chance to log (v19/v20 class).
+[SELFTEST] FAILED: U64 must parse a canonical kernel base 0xFFFF800010000000 (DECIMAL literal - the v21 hex-cast trap class)
+[SELFTEST][ABORT] parser self-test failed - the driver was NOT touched. Send the output .txt / a photo.
+**********************
+Windows PowerShell transcript end
+End time: 20260926040717
+**********************
