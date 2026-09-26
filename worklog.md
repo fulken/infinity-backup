@@ -622,3 +622,40 @@ Stage Summary:
 - SOURCE TREE FULLY RECOVERED AND TRUSTED: recipe (clone a8e41b3 + v7 diff + patch chain v13..v18 + gnuefi-jammy) reproduces the field-proven driver byte-for-byte (both RT and SAFE)
 - Rollback resilience: bundle+tarball cache on disk; recipe all-vaulted; infinity-repo/ and backups/ gitignored by design
 - Next: F1 design on the real source (SIDT + anchor stack + 4 converging validators, fail-closed), then patch-v19.py
+
+---
+Task ID: f1-v19-build (F1 driver v19: anchor stack implemented + host-proven + built + disasm-verified)
+Agent: Super Z (main)
+Task: Implement F1 (SIDT + anchor stack + 4 converging validators, fail-closed) as driver v19; prove the logic on the host; build + verify
+
+Work Log:
+- DESIGN (on the real v18 source, user's F1 spec + user priorities zero-BSOD / no read failures):
+  * NEW KernelAnchor.h (pure logic, host-testable, no EFI deps, no pointers):
+    A0 SIDT (register read) -> A1 IDT #PF(0x0E)+#BP(0x03) handler VAs (IDT = non-paged resident) -> A2 IA32_LSTAR MSR 0xC0000082 (register read) -> A3 walk-back to image base (64KB steps, 512 max = 32MB hard bound, single 2-byte 'MZ' probe per candidate, every candidate FULLY PE-validated)
+  * 4 CONVERGING VALIDATORS: V1/V2/V3 = three independent walk-backs must land on the SAME base; V4 = full structural PE validation at the converged base (MZ, e_lfanew bounds, PE sig, AMD64, PE32+ 0x20B, opt-hdr exactly 0xF0, nsec 1..96, SizeOfImage 128KB..64MB page-aligned, entry point inside, sections page-aligned+ascending+non-overlapping+inside) + CONTAINMENT of all three anchor VAs inside [base, base+SizeOfImage)
+  * FAIL-CLOSED: 9 reason codes (ok, walkbound1-3, mismatch, peinvalid, contain, idtinvalid, anchorinvalid); failure caches for the whole boot; the read gate stays exactly v18
+  * GATE (ProcessMemory.h ReadKernelVA): THIRD range [pe_base, pe_base+pe_size) unlocked ONLY while anchors CONVERGED; the two KUSD windows unchanged (always on)
+  * TRANSPORT (RequestHandler.h variable path): op 9 = ReqOp_Anchors (was free in the Windows-side enum); idempotent DiscoverAnchorsOnce (limit check >=16 entries, SIDT, IDT parse, RDMSR LSTAR, DiscoverCore, [AN] serial traces: sidt base/idt pf/idt bp/lstar/walk v1-3/CONVERGED base+size or FAIL-CLOSED reason); INFDIAG flag 0x40 set on convergence; 32-byte InfinityData payload (u32 state, u32 reason, u64 pe_base, u64 pe_size, u64 idt_base)
+  * banners v19 everywhere (main.c, RuntimeHook.h RT-EARLY/RT-VA markers)
+- scripts/patch-v19.py: 1 new file + 13 anchored edits, ALL APPLIED clean (N1, E1a/b, E2a/b/c, E3a-f, E4a/b) + sanity checks (KernelAnchor purity: no SerialTrace/efi.h/gBS; gate constants; case 9; v18 strings eradicated)
+- scripts/host-test-v19.c: unit-tests the REAL KernelAnchor.h (compiled with -DKERNEL_ANCHOR_HOST_TEST, synthetic memory map + IDT builders). 8 scenarios / 29 checks - ALL PASSED:
+  * T1 valid: converged, exact base/size, ZERO out-of-map reads (happy path never strays)
+  * T2 LSTAR 48MB below: WalkBound3, exactly 512 bounded probes
+  * T3 two images: Mismatch (each walk found its own image)
+  * T4 corrupt SizeOfImage: walk REJECTED the candidate -> WalkBound1 (structural rejection in-walk proven)
+  * T5 LSTAR above image end: walks converge on the image, containment fires -> Contain
+  * T6 IDT base 0 -> IdtInvalid; T7 non-canonical anchor -> AnchorInvalid
+  * T8 NESTED fully-valid PE inside the image: captured all three walks, converged on the NESTED base, containment backstop fired -> Contain (the nested-PE trap is closed)
+- BUILD (gnu-efi 3.0.13 jammy, same recipe as the byte-verified v18): v19-RT.efi 125450 B sha256 2561e543f83e... (v18 RT was 121253 — anchors add ~4.2KB); v19-SAFE.efi 105032 B sha256 115fc1342341...; R4 GLOB_DAT + R6 orphan-.bss checks clean on both
+- DISASSEMBLY VERIFICATION (v18 discipline, objdump):
+  * op dispatch chain confirmed in ProcessSingleVariableRequest: cmp $0x7 (Attach) / cmp $0x9 (Anchors, je to its handler) / cmp $0xdeadbeef (Ping)
+  * rdmsr x1, sidt x2 present; MZ cmp 0x5a4d x4; PE sig 0x4550 x2; machine 0x8664 x2; magic 0x20b x2
+  * SizeOfImage bound compiled to the sub/cmp idiom (0x3fe0000 x2); canonical guard as bt $0x2f + shr $0x30 idioms (x2 each - compiler trick, no movabs literal)
+  * walk step 0x10000 x10; v18 KUSD gates 0x7ffeffff/0xfffff7800000ffff STILL PRESENT (windows untouched)
+  * strings: all v19 markers present (CONVERGED base/size, FAIL-CLOSED reason, sidt base, idt pf, lstar), ZERO stale v18 strings
+- Artifacts: patches/v19-memory-RT.efi + v19-memory-SAFE.efi (lineage convention)
+
+Stage Summary:
+- F1 DRIVER BUILT AND PROVEN AT LOGIC LEVEL: anchor stack + 4 validators + fail-closed gate + op-9 transport, host-tested 29/29 including the nested-PE and corrupt-PE traps
+- v19 = v18 + anchors: KUSD path byte-preserved in behavior (gates unchanged), everything else additive
+- Next: QEMU bench lifecycle regression (test-v19-linux.sh) -> v24 script + bat + packages + vault
