@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "```text\nPS C:\\Users\\Administrator\\Desktop> cd d:\nPS D:\\> .\\trigger-test-v16.ps1\n[LOG] auto-saving all output to:\n[LOG] D:\\trigger-test-v16-output-20260921-184852.txt\n==== INFINITY trigger test v16 (dword fix + status decode + auto-tee) ====\n[ENV] PowerShell 5.1.19041.7663  Windows build 10.0.19045.0\n[OK] SeSystemEnvironmentPrivilege enabled (rc=0)\n[CLR] stale probe variables cleaned (best effort)\n\n--- step A/B: baseline INFDIAG double read (read path via hook?) ---\n     v16: reads are answered LIVE from RAM by the hook (the\n     bridge is field-proven since v15), so B must be A+1 or\n     more if the readpath works.\n[A] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 00 7D 01 00 00 00 00 00 00 00\n[A] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=381 last_status=0x0\n[B] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 00 7E 01 00 00 00 00 00 00 00\n[B] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=382 last_status=0x0\n\n--- step C: INFPROBE write (neutral name; raw NVRAM write path) ---\n[OK] INFPROBE write accepted (Win32=0)\n[C] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 00 81 01 00 00 00 00 00 00 00\n[C] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=385 last_status=0x0\n[OK] INFPROBE read-back: 1 bytes: 42\n\n--- step D: INFTRIGGER write (trigger flag 0x20 + INFCNT +1) ---\n[OK] INFTRIGGER write accepted (Win32=0)\n[D] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 00 85 01 00 00 00 00 00 00 00\n[D] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=389 last_status=0x0\n\n--- step E: InfinityReq PING (48 bytes, op=0xDEADBEEF) ---\n     req.bytes[0..7]: 37 13 00 00 EF BE AD DE (37 13 00 00 EF BE AD DE expected)\n[OK] InfinityReq write accepted (Win32=0)\n[E] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 00 88 01 00 00 00 00 00 00 00\n[E] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=392 last_status=0x0\n\n--- step E2: reading InfinityResp (FULL BRIDGE check) ---\n[OK] InfinityResp 32 bytes: 37 13 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n     sequence=0x1337   status=1(Success)   bytes_transferred=0   out_address=0x0\n\n--- step F: final INFDIAG + InfinityReq read-back ---\n[F] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 00 8A 01 00 00 00 00 00 00 00\n[F] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=394 last_status=0x0\n[--] InfinityReq read-back: ABSENT (Win32=203)\n\n--- step G: INFCNT read (live RAM count: 0 = writes bypassed, 2 = both reached) ---\n[OK] INFCNT read-back: 4 bytes: 02 00 00 00\n\n==== SUMMARY (auto-saved to the output .txt) ====\nhook_calls    A=381 B=382 C=385 D=389 E=392 F=394\n```",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1790005559,
+  "id": "20260921234516436defe439cf4f8d",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260921234516436defe439cf4f8d",
+  "usage": {
+    "completion_tokens": 1361,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 2856,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 4217
+  }
+}

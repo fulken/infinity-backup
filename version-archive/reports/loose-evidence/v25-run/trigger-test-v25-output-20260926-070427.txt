@@ -1,0 +1,283 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260926070429
+Username: DESKTOP-23EQNHP\Administrator
+RunAs User: DESKTOP-23EQNHP\Administrator
+Configuration Name: 
+Machine: DESKTOP-23EQNHP (Microsoft Windows NT 10.0.19045.0)
+Host Application: PowerShell.exe -noexit -command Set-Location -literalPath 'C:\Users\Administrator\Desktop'
+Process ID: 3132
+PSVersion: 5.1.19041.7663
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7663
+BuildVersion: 10.0.19041.7663
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+[LOG] writable spot found - auto-saving all output to:
+[LOG] C:\Users\Administrator\Desktop\trigger-test-v25-output-20260926-070427.txt
+[LOG] (the folder beside the script is READ-ONLY - the boot
+[LOG]  stick is read-only by design - so the transcript lands
+[LOG]  on a writable drive instead. Get it out of the VM with
+[LOG]  the transfer stick + refresh-files.bat - see the end.)
+
+==== INFINITY trigger test v25 (v19 driver: anchors - the F1 proof ladder K,L + J regression; v24 selftest fixture fixed) ====
+[ENV] PowerShell 5.1.19041.7663  Windows build 10.0.19045.0
+
+--- step 0: previous-boot post-mortem (Event Log) ---
+      BUGCHECK 9/21/2026 4:10:48 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff80185689ab9, 0x0000000000000000, 0x000000007fab841f). A dump was saved in: C:\Windows\MEMORY.DMP. R...
+      BUGCHECK 9/20/2026 11:40:23 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff8071d886428, 0x0000000000000000, 0x000000007fab83dc). A dump was saved in: C:\Windows\MEMORY.DMP. R...
+      BUGCHECK 9/20/2026 10:16:11 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff8075c886428, 0x0000000000000000, 0x000000007fab83dc). A dump was saved in: C:\Windows\MEMORY.DMP. R...
+      KERNEL-POWER 41 9/25/2026 9:19:55 PM (unexpected stop - the instant-death class leaves ONLY this)
+      KERNEL-POWER 41 9/22/2026 6:16:07 AM (unexpected stop - the instant-death class leaves ONLY this)
+      KERNEL-POWER 41 9/22/2026 5:02:10 AM (unexpected stop - the instant-death class leaves ONLY this)
+      -> a BUGCHECK line at the v21 run time names the v21 step-A killer;
+         41-only = instant death with no chance to log (v19/v20 class).
+[SELFTEST] U32/U64/HexLe4/New-Req all passed - parsers verified before touching the driver
+[OK] SeSystemEnvironmentPrivilege enabled (rc=0)
+[CLR] stale probe variables cleaned (best effort)
+[CANARY] pre-A (baseline INFDIAG reads next - v21 died HERE)  (serial: 'S OURVAR delete' = we got this far)
+
+--- step A/B: baseline INFDIAG double read (read path via hook?) ---
+       v15+: reads are answered LIVE from RAM by the hook (the
+       bridge is field-proven since v15), so B must be A+1 or
+       more if the read path works.
+[A] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 AF 00 00 00 00 00 00 00
+[A] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=175 last_status=0x0
+[B] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 B0 00 00 00 00 00 00 00
+[B] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=176 last_status=0x0
+
+--- step C: INFPROBE write (neutral name; raw NVRAM write path) ---
+[OK] INFPROBE write accepted (Win32=0)
+[C] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 B3 00 00 00 00 00 00 00
+[C] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=179 last_status=0x0
+[OK] INFPROBE read-back: 1 bytes: 42
+
+--- step D: INFTRIGGER write (trigger flag 0x20 + INFCNT +1) ---
+[OK] INFTRIGGER write accepted (Win32=0)
+[D] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 B7 00 00 00 00 00 00 00
+[D] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=183 last_status=0x0
+
+[CANARY] pre-E (the PING request transport next)  (serial: 'S OURVAR delete' = we got this far)
+--- step E: InfinityReq PING (48 bytes, op=0xDEADBEEF) ---
+       req bytes[0..7]: 37 13 00 00 EF BE AD DE  (37 13 00 00 EF BE AD DE expected)
+[OK] InfinityReq write accepted (Win32=0)
+[E] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 BB 00 00 00 00 00 00 00
+[E] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=187 last_status=0x0
+
+--- step E2: reading InfinityResp (FULL BRIDGE check) ---
+[OK] InfinityResp 32 bytes: 37 13 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     sequence=0x1337  status=1(Success)  bytes_transferred=0  out_address=0x0
+
+--- step F: final INFDIAG + InfinityReq read-back ---
+[F] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 BE 00 00 00 00 00 00 00
+[F] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=190 last_status=0x0
+[--] InfinityReq read-back: ABSENT (Win32=203)
+
+--- step G: INFCNT read (live RAM count: 0 = writes bypassed, 2 = both reached) ---
+[OK] INFCNT read-back: 4 bytes: 02 00 00 00
+
+--- step H: InfinityData write+read round trip (the payload transport) ---
+[OK] InfinityData write accepted (Win32=0)
+[OK] InfinityData read-back: 32 bytes: 47 14 00 00 27 2E 35 3C 43 4A 51 58 5F 66 6D 74 7B 82 89 90 97 9E A5 AC B3 BA C1 C8 CF D6 DD E4
+     32-byte pattern echoed back byte-exact: YES - payload transport WORKS
+
+--- step I: ReqOp_Attach -- SKIPPED (v19 crashed the VM here; op=7 walks the ---
+    process list for emulator EXEs that do not exist in this VM -
+    disassembly-proven fatal, and NOT needed for kernel reads)
+
+--- step K: ReqOp_Anchors (op=9) - F1 anchor discovery ---
+      status=1(Success) => CONVERGED: the validated image range unlocks (L1..L3).
+      status=4(ErrAccess) => FAIL-CLOSED: gate stays KUSD-only (L1..L3 skip; L4/L5 still run).
+[CANARY] pre-K  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 17 00 00 04 00 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1701  status=4(ErrAccess)  bytes_transferred=32  out_address=0x0
+     resp dwords: @0=5889  @4=4  @8=32  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 32 bytes: 02 00 00 00 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 C0 46 72 04 F8 FF FF
+     data dwords: @0=2  @4=6  @8=0  @12=0  @16=0  @20=0  @24=1917239296  @28=4294965252
+     [K] payload: state=2 reason=6 pe_base=0x0 pe_size=0x0 idt_base=0xFFFFF8047246C000
+     [K] FAIL-CLOSED (reason above) - L1..L3 SKIPPED, L4/L5 run at a fixed VA
+
+--- step L1: read @pe_base len=4 - the MZ signature ---
+     [L1] SKIPPED (anchors not converged)
+
+--- step L2a: read @pe_base+0x3C len=4 - e_lfanew ---
+     [L2a] SKIPPED (anchors not converged)
+
+--- step L2b: read @pe_base+e_lfanew len=0x58 - the PE header block ---
+     [L2b] SKIPPED (anchors not converged / no e_lfanew)
+
+--- step L3: read @pe_base+entryRVA len=8 - real kernel code bytes ---
+     [L3] SKIPPED (no validated entry RVA)
+
+--- steps L4/L5: gate negatives (below and above the validated range) ---
+[CANARY] pre-L4  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 06 17 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1706  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5894  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+     [L4] PASS: fixed kernel VA (fail-closed mode) rejected ErrAccess(4) - gate closed below
+[CANARY] pre-L5  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 07 17 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1707  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5895  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+     [L5] PASS: fixed kernel VA (fail-closed mode) rejected ErrAccess(4) - gate closed above
+
+LADDER DECISION TABLE (for reading the video if the VM dies):
+ dies at J1     -> the driver is NOT v18 (a v17 would walk+CR3-switch = v20 death).
+                  Check usb-d\memory.efi size: v19-RT = 125450 bytes.
+ dies at J2..J5 -> a window read is fatal DESPITE the direct path - the serial
+                  [RD] mapped va / mapped read ok pair tells exactly how far it got
+ dies at J6/J7  -> unexpected (gate-rejected / no-attach paths) - send everything
+ J1 answers ErrAccess(4) -> the gate rejected a VALID KUSD address: driver not v18.
+                  Do NOT rerun until memory.efi is replaced (size 121253).
+ survives all 7 -> full matrix ran; verdict printed at the end
+
+--- step J1: kernel READ  pid=FFFFFFFF  len=4  addr=USER alias 0x7FFE0260 ---
+      why: THE DATA PATH PROOF: v18 direct read, user window - the same page [BLD] reads
+[CANARY] pre-J1  (serial: 'S OURVAR delete' = we got this far)
+[J1] >>> SENDING op=1(READ) seq=0x1601 pid=FFFFFFFF len=4 addr=0x000000007FFE0260
+[J1]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=USER alias 0x7FFE0260 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1601  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5633  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 65 4A 00 00
+     data dwords: @0=19045
+      *** KERNEL DATA PATH ANSWER: 19045 (0x4A65) came back at InfinityData offset 0 ***
+      [J1] result: ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+
+--- step J2: kernel READ  pid=FFFFFFFF  len=4  addr=KERNEL alias 0xFFFFF78000000260 ---
+      why: kernel-space VA via requests - first kernel-alias data ever (v20 died here; v18 reads it directly)
+[CANARY] pre-J2  (serial: 'S OURVAR delete' = we got this far)
+[J2] >>> SENDING op=1(READ) seq=0x1602 pid=FFFFFFFF len=4 addr=0xFFFFF78000000260
+[J2]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=KERNEL alias 0xFFFFF78000000260 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 02 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1602  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5634  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 65 4A 00 00
+     data dwords: @0=19045
+      [J2] result: ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+
+--- step J3: kernel READ  pid=FFFFFFFF  len=4  addr=USER alias 0x7FFE0308 ---
+      why: second KUSD field, known value 0 (v15/v16 field truth)
+[CANARY] pre-J3  (serial: 'S OURVAR delete' = we got this far)
+[J3] >>> SENDING op=1(READ) seq=0x1603 pid=FFFFFFFF len=4 addr=0x000000007FFE0308
+[J3]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=USER alias 0x7FFE0308 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 03 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1603  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5635  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 00 00 00 00
+     data dwords: @0=0
+      [J3] result: ANSWERED status=1(Success) seq_ok=True | J3 dword@0 = 0 (expected 0)
+
+--- step J4: kernel READ  pid=FFFFFFFF  len=4  addr=KERNEL alias 0xFFFFF78000000308 ---
+      why: second field via the kernel alias - cross-check of J3
+[CANARY] pre-J4  (serial: 'S OURVAR delete' = we got this far)
+[J4] >>> SENDING op=1(READ) seq=0x1604 pid=FFFFFFFF len=4 addr=0xFFFFF78000000308
+[J4]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=KERNEL alias 0xFFFFF78000000308 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 04 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1604  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5636  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 00 00 00 00
+     data dwords: @0=0
+      [J4] result: ANSWERED status=1(Success) seq_ok=True | J4 dword@0 = 0 (expected 0)
+
+--- step J5: kernel READ  pid=FFFFFFFF  len=8  addr=USER alias 0x7FFE0260 ---
+      why: x8 chunk test (dword[0] must equal J1; stays inside the window)
+[CANARY] pre-J5  (serial: 'S OURVAR delete' = we got this far)
+[J5] >>> SENDING op=1(READ) seq=0x1605 pid=FFFFFFFF len=8 addr=0x000000007FFE0260
+[J5]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=USER alias 0x7FFE0260 + len=8
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 05 16 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1605  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=5637  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 65 4A 00 00 01 00 00 00
+     data dwords: @0=19045  @4=1
+      [J5] result: ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0 | J5 dword[0]=19045 dword[1]=1 (dword[0] must be 19045)
+
+--- step J6: kernel READ  pid=FFFFFFFF  len=4  addr=NON-CANONICAL VA ---
+      why: negative: the gate must reject BEFORE any access - expect ErrAccess(4), no crash
+[CANARY] pre-J6  (serial: 'S OURVAR delete' = we got this far)
+[J6] >>> SENDING op=1(READ) seq=0x1606 pid=FFFFFFFF len=4 addr=0x0000800000000000
+[J6]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=NON-CANONICAL VA + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 06 16 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1606  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5638  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+      [J6] result: ANSWERED status=4(ErrAccess) seq_ok=True
+
+--- step J7: kernel READ  pid=3132  len=4  addr=USER alias 0x7FFE0260 ---
+      why: per-pid read WITHOUT attach, VALID window address: expect clean ErrAccess(4) pre-read, NO [RD] on serial - isolates the pid check; honest negative
+[CANARY] pre-J7  (serial: 'S OURVAR delete' = we got this far)
+[J7] >>> SENDING op=1(READ) seq=0x1607 pid=3132 len=4 addr=0x000000007FFE0260
+[J7]     if the VM dies NOW, the killer is: pid=3132 + addr=USER alias 0x7FFE0260 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 07 16 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1607  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5639  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+      [J7] result: ANSWERED status=4(ErrAccess) seq_ok=True
+[CANARY] post-ladder (all J-steps done)  (serial: 'S OURVAR delete' = we got this far)
+
+--- step N: final INFCNT read (live RAM count; expect G+8+anchors: H +1, J1..J7 +7, K/L requests) ---
+[OK] INFCNT read-back: 4 bytes: 0D 00 00 00
+
+==== SUMMARY (auto-saved to the output .txt) ====
+hook_calls  A=175 B=176 C=179 D=183 E=187 F=190
+stage F=4  flags F=0x2F  trigger_seen(0x20)=SET
+win_build  driver-live=19045  script-side=19045   (equal = build detection works)
+INFCNT live RAM count (our-var writes that reached the hook) = 2   (0 = bypassed, 2 = both)
+[1] GetVariable path via hook : PROVEN (hook_calls moves between reads)
+[2] SetVariable path via hook : PROVEN (INFCNT=2, flag 0x20)
+[3] INFPROBE landed in NVRAM  : YES (raw firmware write path works)
+[4] InfinityReq consumed (RAM) : YES (PONG proves it)
+    NVRAM read-back: absent - ABSENT is EXPECTED (v13+ consumes it in RAM)
+[5] InfinityResp PING         : ANSWERED seq=0x1337 status=1(Success) - PONG PERFECT
+[6] InfinityData buffer round trip : BYTE-EXACT (payload transport works)
+[7] Attach step (I)                : SKIPPED (v19-proven fatal in this VM)
+     ladder detail (each line = one variant, in send order):
+    [J1] pid=FFFFFFFF   addr=USER alias 0x7FFE0260  -> ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+    [J2] pid=FFFFFFFF   addr=KERNEL alias 0xFFFFF78000000260 -> ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+    [J3] pid=FFFFFFFF   addr=USER alias 0x7FFE0308  -> ANSWERED status=1(Success) seq_ok=True | J3 dword@0 = 0 (expected 0)
+    [J4] pid=FFFFFFFF   addr=KERNEL alias 0xFFFFF78000000308 -> ANSWERED status=1(Success) seq_ok=True | J4 dword@0 = 0 (expected 0)
+    [J5] pid=FFFFFFFF   addr=USER alias 0x7FFE0260  -> ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0 | J5 dword[0]=19045 dword[1]=1 (dword[0] must be 19045)
+    [J6] pid=FFFFFFFF   addr=NON-CANONICAL VA       -> ANSWERED status=4(ErrAccess) seq_ok=True
+    [J7] pid=3132       addr=USER alias 0x7FFE0260  -> ANSWERED status=4(ErrAccess) seq_ok=True
+[8] Kernel read via ladder (J1..J7) : PROVEN - 19045 via J1 InfinityData offset 0
+[9] Negatives (J6 gate, J7 no-attach) : OK - J7 status=4(ErrAccess) as designed; script still alive = no crash
+[10] F1 anchors (K) : FAIL-CLOSED (state=2 reason=6) - the gate stayed KUSD-only
+     [11] Validated-image reads (L1..L3) : SKIPPED (fail-closed)
+[12] Range negatives (L4 below, L5 above) : OK - both outside-range reads rejected ErrAccess(4), no crash
+    INFCNT final = 13   (expect G+8+ = 13: H's InfinityData write (+1), the
+     7 ladder InfinityReq writes (+7), and the K/L anchor requests (+anSent); requests are consumed in RAM and deletes never count)
+
+VERDICT:
+>>> KERNEL DATA PATH VIA REQUESTS PROVEN - PHASE E COMPLETE <<<
+Windows -> InfinityReq -> our hook -> direct KUSD read -> InfinityResp (J1 InfinityData offset 0).
+
+>>> F1 FAIL-CLOSED (the gate never opened). The ladder regression below still counts. <<<
+Serial [AN] lines name the exact reason - send them + the output .txt.
+==== END v25 ====
+[LOG] output saved and VERIFIED: C:\Users\Administrator\Desktop\trigger-test-v25-output-20260926-070427.txt
+[LOG] HOW TO GET THE .TXT OUT of the VM (no photos needed):
+[LOG]   1. on YOUR machine: put any file for the VM into the
+[LOG]      transfer folder and double-click refresh-files.bat
+[LOG]      - a USB stick appears inside Windows
+[LOG]   2. inside Windows: copy the .txt onto that stick
+[LOG]   3. on YOUR machine: run refresh-files.bat again - the
+[LOG]      file lands in the transfer folder. Send that file.
+**********************
+Windows PowerShell transcript end
+End time: 20260926070528
+**********************
