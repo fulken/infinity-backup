@@ -680,3 +680,25 @@ Stage Summary:
 - F1 COMPLETE AT THE ENGINEERING LEVEL: driver v19 (anchor stack, host-proven 29/29, bench-proven RT 13/13 + SAFE 5/5, disasm-verified) + field kit v24 (script audited ALL PASS + bat + README + packages) - everything vaulted
 - EXPECTED v24 FIELD RUN: K Success + state=1 reason=0 + real pe_base/pe_size; L1 MZ; L2 PE sig + size match; L3 entry bytes; L4/L5 ErrAccess clean; J1..J7 regression all green; INFCNT G+15; verdict '>>> F1 PROVEN <<<'. On ANY anchor failure: clean fail-closed with a reason code - still a VALID, documented outcome
 - NEXT: user runs the v24 package on the Windows VM stick and sends the report; then F2 (PE parse + validated-offsets framework + PTE base) builds on the proven anchors
+
+---
+Task ID: v25
+Agent: main (Super Z)
+Task: Analyze the v24 field report (infinity-qemu-test-v19-with-trigger-v24-Report.zip); root-cause the selftest abort; fix + re-ship as v25; vault everything.
+
+Work Log:
+- Report was NOT in upload/ (IM gateway delivery broken as before); downloaded from https://services.dworld.ir/Download/Reports/infinity-qemu-test-v19-with-trigger-v24-Report.zip with browser headers (22691B, sha256 cc1cfb10...); extracted to upload/v24-extract/ (transcript + serial-phase-d.log + boot png)
+- VERDICT OF THE RUN: script aborted at step-0 parser selftest - "[SELFTEST] FAILED: U64 must parse a canonical kernel base 0xFFFF800010000000" then [SELFTEST][ABORT]. Serial cross-check: ZERO [RD] lines, INFCNT unmoved, boot completed normally - the driver was NEVER touched, NO crash, no new bugcheck (event-log entries are all old: 9/20+9/21 bugchecks = v19/v20/v21 era; 9/22+9/25 KERNEL-POWER 41 = inter-phase hard poweroffs, already classified in v23). The fail-closed gate worked exactly as designed - it caught a bad constant BEFORE touching the driver. All OTHER selftest checks passed (U32/U64/HexLe4/New-Req + range math) - only the new v24 canonical-base check failed
+- ROOT CAUSE (python-verified): the fixture BYTE ARRAY was hand-assembled wrong. Bytes 00 00 10 80 FF FF FF FF encode 0xFFFFFFFF80100000, NOT 0xFFFF800010000000 (correct LE: 00 00 00 10 00 80 FF FF). The U64 function is CORRECT (its other fixture 00 10 C0 7F -> 0x7FC01000 passed) and the decimal literal 18446603336489631744 == 0xFFFF800010000000 is CORRECT. Searched the whole script: the wrong pattern exists ONLY in the selftest fixture; L4/L5 runtime addresses go through the field-proven hex-string path
+- FIX (class-kill, not patch): v25 script DERIVES the fixture bytes from the decimal literal itself ($stBase = [uint64]18446603336489631744; for loop $stU64[$i] = [byte](($stBase -shr (8*$i)) -band 0xFF)) - bytes and expectation can never disagree again. K/L/J steps byte-identical to v24 (runtime diff = transcript name + banner + END marker + fixture, verified by diff)
+- AUDIT HARDENING: new scripts/audit-v25-ps1.py = audit-v24 + a SEQUENTIAL fixture emulator (walks the file line-by-line maintaining array state because $stb is reassigned between checks; emulates every U32/U64 ST-Check, resolves $-literals, cross-checks label hex tokens vs compared literals, emulates both New-Req selftest byte expectations from call args). Result: 7 fixtures + 5 labels + stBase + 2 New-Req ALL machine-verified PASS. This audit now catches the v24 class BEFORE shipping (two audit-own bugs found+fixed during development: wrong regex group, final-snapshot array state)
+- BAT: phase-d-v19.bat retargeted (marker "trigger test v25", refs v25, stale message corrected - v24 bat still said "NOT the v23 script"; old-files range v17..v24; driver guards 125450/121253/120678 UNTOUCHED, LF-only format preserved)
+- DOCS: README-V25-FA.md (script-only swap; driver v19 stays; same K/L/J expectations; success criteria)
+- BUILD: scripts/build-v25-package.sh (audit runs INSIDE the build, refuses on failure); produced download/infinity-v25-swap.zip (66230B: usb-d/memory.efi v19-RT hash-identical + trigger-test-v25.ps1 + phase-d.bat + README) + rebuilt full bundle infinity-qemu-test-v19.zip (3311505B); both mirrored hash-identical to version-archive/packages/
+- VAULT: v24 report archived first (zip + loose evidence v24-run/), commit be8b1f8 -> vault 991a647; then v25 kit commit a5cb4e9 -> vault bb5055f (31 commits)
+
+Stage Summary:
+- v24 FIELD RUN = a CLEAN fail-closed abort, NOT a failure of the ladder: zero driver contact, zero crash. The selftest gate proved its worth by catching a bug in its own fixture
+- v25 SHIPPED: download/infinity-v25-swap.zip - replace usb-d\trigger-test-v25.ps1 (delete v24) + phase-d.bat; memory.efi v19-RT (125450) stays if already placed
+- EXPECTED v25 RUN: SELFTEST all passed -> K state=1 reason=0 + pe_base/pe_size/idt_base -> L1 MZ + L2 PE sig + size match + L3 entry bytes -> L4/L5 ErrAccess(4) -> J1..J7 v23 regression -> INFCNT G+15 (converged) or G+11 (fail-closed, still a valid documented outcome)
+- NEXT: user runs the v25 swap package and sends the report; on green -> F1 CLOSES and F2 (PE parse + validated-offsets + PTE base) builds on the proven anchors
