@@ -659,3 +659,24 @@ Stage Summary:
 - F1 DRIVER BUILT AND PROVEN AT LOGIC LEVEL: anchor stack + 4 validators + fail-closed gate + op-9 transport, host-tested 29/29 including the nested-PE and corrupt-PE traps
 - v19 = v18 + anchors: KUSD path byte-preserved in behavior (gates unchanged), everything else additive
 - Next: QEMU bench lifecycle regression (test-v19-linux.sh) -> v24 script + bat + packages + vault
+
+---
+Task ID: f1-v24-package (F1 field kit: bench + v24 script + bat + packages + vault)
+Agent: Super Z (main)
+Task: Bench-validate the v19 driver lifecycle; build the v24 field script (K anchors + L validated reads + J regression) + bat + README + packages; vault push
+
+Work Log:
+- BENCH (scripts/test-v19-linux.sh, adapted from test-v18 with v19 patterns; NOTE: [AN] traces cannot fire on the bench - no requester - they are the v24 field script's job):
+  * MODE A (v19-RT): VERDICT PASS 13/13 - v19 banner "kernel data path: direct reads + anchors", gRT hooks at load, BOOT-CTX traces, stage 2 EBS + stage 3 VA, all CVT st=0, virtual mode armed, Linux 6.12.51 booted via EFI stub, documented post-chain NX stop
+  * MODE B (v19-SAFE): VERDICT PASS 5/5 - stage 1 write, Linux boot, /init ran, ZERO gRT hook lines, documented initramfs quirk
+  * Evidence archived: version-archive/reports/loose-evidence/v19-bench/ (serial-lA/lB + infdiag + README)
+- SCRIPT v24 (scripts/patch-v24.py, 12 anchored edits on the v23 script): K = ReqOp_Anchors op-9 (seq 0x1701) parses the 32-byte payload (state/reason/pe_base/pe_size/idt_base); L1 MZ @pe_base; L2a e_lfanew @+0x3C; L2b 0x58-byte PE header block (sig PE\0\0 + machine AMD64 + entry RVA + SizeOfImage MUST equal the payload pe_size - transport double-validates the driver's range); L3 8 entry-point code bytes; L4/L5 range negatives (below pe_base-0x1000 / above pe_base+pe_size -> ErrAccess; on fail-closed they run at fixed kernel VAs and must STILL be rejected - proof the gate never opens without anchors); J1..J7 BYTE-IDENTICAL regression (same seqs 0x1601..0x1607); self-test + MZ/PE/canonical-base round-trips (DECIMAL literals - the v21 hex-cast trap class caught by the audit and fixed pre-release); INFCNT expected G+15 converged / G+11 fail-closed; verdicts 'F1 PROVEN' / 'F1 PARTIAL' / 'F1 FAIL-CLOSED'
+- AUDIT (scripts/audit-v24-ps1.py): autovars clean, balance OK, hex-literal cast scan CLEAN (caught one real [uint64]0xFFFF800010000000 trap during development - fixed to decimal 18446603336489631744), F1 seq space 0x1701..0x1707 exact, K payload offsets exact, ladder matrix exact, stale v23 markers gone, ASCII/LF - ALL CHECKS PASSED
+- BAT (scripts/patch-v24-bat.py -> phase-d-v19.bat, 9992 B): DRIVER GENERATION CHANGES so the bat takes the v19 name; size guard 125450 with THREE-way detection (v17=120678 refuses to start - the CR3 killer; v18=121253 warns 'K/L cannot run, op 9 unsupported' - degraded; unknown refuses); marker 'trigger test v24'; package refs v19; LF preserved
+- README-V24-FA.md: the F1 story (why the driver changed), the anchor-stack diagram, the 4-validators table, K/L expectations table, stick-swap table (driver FIRST this time), success criteria
+- PACKAGES (scripts/build-v24-package.sh, guard sims ALL PASS): download/infinity-qemu-test-v19.zip (3310488 B, full bundle from the v9-full template) + download/infinity-v24-swap.zip (66113 B: usb-d/memory.efi v19-RT + usb-d/trigger-test-v24.ps1 + phase-d.bat + README). Mirrors in version-archive/packages/ hash-identical. VERSION.txt carries the full sha256 manifest (RT 2561E543..., SAFE 115FC134..., script 229CB0A1..., bat A617317A...)
+
+Stage Summary:
+- F1 COMPLETE AT THE ENGINEERING LEVEL: driver v19 (anchor stack, host-proven 29/29, bench-proven RT 13/13 + SAFE 5/5, disasm-verified) + field kit v24 (script audited ALL PASS + bat + README + packages) - everything vaulted
+- EXPECTED v24 FIELD RUN: K Success + state=1 reason=0 + real pe_base/pe_size; L1 MZ; L2 PE sig + size match; L3 entry bytes; L4/L5 ErrAccess clean; J1..J7 regression all green; INFCNT G+15; verdict '>>> F1 PROVEN <<<'. On ANY anchor failure: clean fail-closed with a reason code - still a VALID, documented outcome
+- NEXT: user runs the v24 package on the Windows VM stick and sends the report; then F2 (PE parse + validated-offsets framework + PTE base) builds on the proven anchors
