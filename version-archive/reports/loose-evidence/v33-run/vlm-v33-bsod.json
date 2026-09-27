@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the image provided, here is the exact text and information requested:\n\n1.  **Stop code / Bugcheck name:** `PAGE FAULT IN NONPAGED AREA`\n2.  **Error code:** Not shown (The line \"If you call a support person, give them this info:\" only lists the stop code name, not a hexadecimal error code like 0x00000050).\n3.  **Failing address:** Not shown.\n4.  **What was happening (percentage counter):** `20% complete` (under the text \"We're just collecting some error info, and then we'll restart for you.\").",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1790548163,
+  "id": "202609280629214e92ba17c0044ef1",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202609280629214e92ba17c0044ef1",
+  "usage": {
+    "completion_tokens": 131,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1525,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 1656
+  }
+}
