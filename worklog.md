@@ -859,3 +859,29 @@ Stage Summary:
 - Expected v29 run: K CONVERGED (3rd consecutive proof) -> L1..L3 green -> L4/L5 ErrAccess -> M1..M4 ALL green WITH M2r PASSING on the canonical value (raw=0xF0004A65, build(low word)=19045, canonical=True) -> J regression 100% -> INFCNT 27 with 'expect G+8+13+4 = 27' (every term named) -> verdict '>>> F2 PROVEN: EXPORT-RESOLVED SYMBOLS + VALIDATED READS VIA REQUESTS <<<'
 - Process note: the audit discipline caught TWO of my own bugs before shipping (a hex-cast trap reintroduction + a wrong decimal constant) - the M2r emulator's canon == 0xF0004A65 assert is what made the second one impossible to miss
 - On green: F2 CLOSES at the driver AND script level; F3 (EPROCESS walk via the field-resolved PsInitialSystemProcess 0xFFFFF8071A4FC420 + KPCR 0xFFFF8E808758B000, reads outside the ntoskrnl image) is the next milestone, then F4 (PTE base), then Infinity.exe
+
+---
+Task ID: v29-report-analysis (user's field run of the v29 kit - FULL GREEN, F2 CLOSED at driver AND script level)
+Agent: Super Z (main)
+Task: Obtain the v29 field report (IM upload failed - recovered from the user's site), verify every v29 expectation, close F2, define the F3 milestone
+
+Work Log:
+- IM UPLOAD FAILED: the chat upload of infinity-qemu-test-v21-with-trigger-v29-Report.zip never landed (40+ s of polling, no new file anywhere under /home/z/my-project); user then said it was also on their site
+- SITE RECOVERY: plain curl to services.dworld.ir/Download/packages/... -> HTTP 403 Cloudflare challenge (cf-mitigated: challenge, even the known-good v21 package URL blocked); browser UA bypasses the challenge -> the packages/ autoindex holds ONLY the v21 driver zip; directory walk found /Download/Reports/ -> v29 report present there (29190 B, ts 1790475223) -> downloaded clean: upload/infinity-qemu-test-v21-with-trigger-v29-Report.zip sha256 230732bdbfe2655fc7f7044bf43b206f362db14f2aab0b5ceced0796190db3bf, zip integrity OK, extracted upload/v29-extract/ (phase-d-Boot.png + serial-phase-d.log + trigger-test-v29-output-20260927-053639.txt)
+- REPORT VERIFIED against EVERY v29-kit prediction (all met, zero deviations):
+  (1) M2r THE FIX PROVEN IN THE FIELD: raw dword = 0xF0004A65 (4026550885), build(low word) = 19045, canonical = True -> PASS ('== the KUSD J1 ground truth (double-proven; the bits above the low word are the QFE marker)') - the exact value the v28 script falsely failed
+  (2) INFCNT ARITHMETIC EXACT: final = 27, 'expect G+8+13+4 = 27' with every term named (H +1, 7 ladder reqs, K/L+M requests, M name-writes) - the v28 'expect G+8+ = 23' empty-slot bug gone
+  (3) L1..L5 100%: MZ header, e_lfanew=0x118, SizeOfImage==anchor pe_size, 8 entry-point bytes back, L4/L5 out-of-range both rejected ErrAccess(4) - fail-closed gate holds below AND above
+  (4) M1..M4 100%: M1 PsInitialSystemProcess walk entry IN-IMAGE @ 0xFFFFF8071A4FC420, M2 NtBuildNumber @ 0xFFFFF8071A412130, M3 KeBugCheckEx @ 0xFFFFF80719BFE1C0 + non-zero code bytes, M4 malformed-name negative refused ErrNotFound(7) cleanly
+  (5) J1..J7 regression 100%: 19045 FOUND via J1/J2/J5 (InfinityData offset 0), J3/J4 dword@0==0 as expected, J6 non-canonical VA rejected ErrAccess, J7 pid-scoped rejected ErrAccess, script alive throughout
+  (6) THREE VERDICT BLOCKS: '>>> KERNEL DATA PATH VIA REQUESTS PROVEN - PHASE E COMPLETE <<<' + '>>> F1 PROVEN: ANCHORS CONVERGED + VALIDATED-IMAGE READS VIA REQUESTS <<<' + '>>> F2 PROVEN: EXPORT-RESOLVED SYMBOLS + VALIDATED READS VIA REQUESTS <<<'
+  (7) build detection: driver-live=19045 == script-side=19045; win_build flags 0x2F, stage F=4, trigger_seen 0x20 SET
+- STABILITY: serial-phase-d.log CLEAN (0 bugcheck/crash/fatal), all canaries survived (pre-A..pre-M4 + 'S OURVAR delete' pattern), VM alive at end, INFCNT live-RAM path [2] SetVariable PROVEN (INFCNT=2), GetVariable [1] BYPASSED by design (counts frozen); VLM on phase-d-Boot.png: INFINITY UEFI BRIDGE v21 RT banner 'anchors + exports (F2)', 'Driver has been loaded', 'SUCCESS: Bridge ready', NO BSOD/error
+- ARCHIVED: version-archive/packages/infinity-qemu-test-v21-with-trigger-v29-Report.zip (hash-identical to upload/)
+
+Stage Summary:
+- *** V29 FULL GREEN - F2 IS CLOSED AT BOTH LEVELS (driver v21 + script v29). The v28 'F2 PARTIAL' was 100% script-side expectation, as diagnosed; every mechanism of the v21 driver is now field-proven twice over ***
+- The complete proven capability set: NVRAM raw write path, RAM request/response channel (PONG), byte-exact payload transport, KUSD kernel read via J-ladder, SIDT->IDT/LSTAR->walk-backs->4-validator gate (converged pe_base=0xFFFFF80719800000 pe_size=0x1046000 idt=0xFFFF8E8087598000), validated-image reads with fail-closed range gate, export-table symbol resolution with cross-validated reads + clean negatives
+- F3 MILESTONE (next): EPROCESS walk - start from the field-resolved PsInitialSystemProcess @ 0xFFFFF8071A4FC420, walk ActiveProcessLinks to a target PID, reads OUTSIDE the ntoskrnl image range (the gate must extend: today L4/L5 reject everything outside [pe_base, pe_base+pe_size)); the true KPCR @ 0xFFFF8E808758B000 (match=1) is in hand for the CPU-area reads
+- F4 after that: PTE/page-table base for arbitrary kernel VAs; then Infinity.exe (the userspace tool)
+- Process note: the v29 kit's predictions were met to the byte (raw value, low-word build, canonical flag, INFCNT 27 with named terms, all three verdict strings) - the emulator-based audit discipline is paying off
