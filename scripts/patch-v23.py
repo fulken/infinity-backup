@@ -1,186 +1,162 @@
 #!/usr/bin/env python3
-"""patch-v23.py — build trigger-test-v23.ps1 from trigger-test-v22.ps1.
-
-v23 = v22 + THE USER-ALIAS HEX FIX (script-only; driver v18 unchanged).
-
-WHAT WAS WRONG (found in the 2026-09-22 Phase-E run analysis):
-  The ladder's USER-alias rungs sent '00007FFE00000260' where the
-  intended address was 0x000000007FFE0260 (KUSD+0x260 via the user
-  window). A hex-string assembly slip: the string has the same 16-char
-  length so nothing structural caught it. The v18 gate correctly
-  rejected all three as out-of-window (J1/J3/J5 = accidental extra
-  negatives; J7 also carried it). The kernel-alias strings
-  ('FFFFF78000000260' / 'FFFFF78000000308') were CORRECT, which is why
-  J2 still proved the kernel data path (19045) = PHASE E COMPLETE.
-
-WHAT v23 CHANGES (8 anchored edits, everything else byte-identical):
-  1-2) the four bad addr= strings -> the real user-alias addresses
-  3)   banner v22 -> v23
-  4)   transcript name -> trigger-test-v23-output-
-  5)   end marker -> ==== END v23 ====
-  6)   J7 why-text: updated to v18-proven semantics (pid check,
-       not the attach fatality, is what J7 documents now)
-  7)   v23 header block (stacked on the v21/v22 headers, house style)
-  8)   self-test: NEW user-alias round-trip check — this class of
-       slip can never again reach the driver (fails pre-flight)
-
-Expected v23 ladder outcome with the v18 driver:
-  J1 Success+19045 (user alias via request — the last unproven cell)
-  J2 Success+19045 / J3 Success+0 / J4 Success+0 / J5 Success+19045
-  J6 ErrAccess(4) non-canonical / J7 ErrAccess(4) real pid, no attach
-  N  INFCNT = G+8 (unchanged)
-"""
+# ============================================================================
+# patch-v23.py — v22 -> v23 driver source transformation
+#
+# THE ONE FIX (F2/F3 field regression, v30 run, root-caused from the
+# disassembly of the field-proven patches/v21-memory-RT.efi):
+#
+#   KernelExports.h export-size gate:
+#       exp_size >= 0x10000   ->   exp_size >= 0x100000
+#
+#   v21 binary proof (op-10 walk @10ed2):
+#       10fbb:  lea edx,[rax-0x28]      ; edx = exp_size - 0x28
+#       10fbe:  cmp edx,0xfffd8         ; 0x100000 - 0x28 - 1
+#       10fc4:  ja  refuse
+#   => the TRUE v21 upper bound is 0x100000 (1 MiB). The f3-design
+#   hand-RE dropped a zero ("0x10000") and v22 coded it. ntoskrnl
+#   19045's export directory is ~0x11000-0x13000 bytes (~2350 names):
+#   it trips 0x10000 and passes 0x100000, so v22 refused EVERY
+#   resolve in the field (M1..M4 rc=4 + W1/W5 resolve-failed) while
+#   failing CLOSED exactly as designed (VM never at risk, negatives
+#   clean, F1 + gate + J matrix all green on the same binary).
+#
+# Everything else is banner-only (v22 -> v23). The wire contract, the
+# walk, the anchors, the ring path: UNTOUCHED.
+#
+# Usage: python3 scripts/patch-v23.py <v22-tree>
+# ============================================================================
+import pathlib
 import sys
 
-BASE = '/home/z/my-project/infinity-qemu-test/trigger-test-v22.ps1'
-OUT = '/home/z/my-project/infinity-qemu-test/trigger-test-v23.ps1'
 
-src = open(BASE, encoding='utf-8').read()
-orig_len = len(src)
-fails = []
+def main():
+    if len(sys.argv) != 2:
+        print("usage: patch-v23.py <v22-tree>")
+        sys.exit(1)
+    tree = pathlib.Path(sys.argv[1])
+
+    def p(rel):
+        f = tree / rel
+        if not f.exists():
+            print(f"FATAL: missing {rel} - not a v22 tree?")
+            sys.exit(1)
+        return f
+
+    def rep(rel, old, new, label, count=1):
+        f = p(rel)
+        t = f.read_text(encoding="utf-8")
+        n = t.count(old)
+        if n != count:
+            print(f"[{label}] FATAL: anchor found {n} times (need {count})")
+            sys.exit(1)
+        f.write_text(t.replace(old, new), encoding="utf-8")
+        print(f"[{label}] OK")
+
+    # ---- sanity: it must be a v22 tree ----
+    mc = p("UEFI/src/main.c")
+    if "efi_main v22 boot" not in mc.read_text(encoding="utf-8"):
+        print("FATAL: not a v22 tree (banner mismatch)")
+        sys.exit(1)
+
+    # ---- THE FIX: export-size gate 0x10000 -> 0x100000 ----
+    rep("UEFI/include/KernelExports.h",
+        "        if (exp_size < 0x28 || exp_size >= 0x10000) { c->err = 4; r.rc = kXResolve_Refused; return r; }",
+        "        // v23 FIX (field-proven bound): the v21 binary gates exp_size to\n"
+        "        // [0x28, 0x100000) - see 10fbb lea edx,[rax-0x28]; cmp edx,0xfffd8\n"
+        "        // (= 0x100000-0x28-1) in patches/v21-memory-RT.efi. v22 wrongly used\n"
+        "        // 0x10000 (a dropped zero in the hand-RE); ntoskrnl 19045's export\n"
+        "        // directory is ~0x11000-0x13000 bytes and tripped it in the v30 run.\n"
+        "        if (exp_size < 0x28 || exp_size >= 0x100000) { c->err = 4; r.rc = kXResolve_Refused; return r; }",
+        "FIX-exp-size-0x100000")
+
+    # ---- KernelExports.h: version tag + provenance note ----
+    rep("UEFI/include/KernelExports.h",
+        " * KernelExports.h  (UEFI side — v21 F2 re-derived / v22)",
+        " * KernelExports.h  (UEFI side — v21 F2 re-derived / v22 / v23 fix)",
+        "KX-title")
+    rep("UEFI/include/KernelExports.h",
+        " * THE GATE (Rd32): every export-directory access is an RVA relative",
+        " * v23 FIX NOTE: the export-size gate upper bound is corrected to\n"
+        " * 0x100000 per the v21 binary disassembly (the v30 field run refused\n"
+        " * every resolve under the wrong 0x10000 bound - fail-closed, no\n"
+        " * crash; see the v30-report worklog entry for the full evidence).\n"
+        " *\n"
+        " * THE GATE (Rd32): every export-directory access is an RVA relative",
+        "KX-v23-note")
+
+    # ---- ProcessWalk.h: version tag ----
+    rep("UEFI/include/ProcessWalk.h",
+        " * ProcessWalk.h  (UEFI side — v22 / F3)",
+        " * ProcessWalk.h  (UEFI side — v22/v23 / F3)",
+        "PW-title")
+
+    # ---- RequestHandler.h: op-11 comment tag ----
+    rep("UEFI/include/RequestHandler.h",
+        "            case 11 /* ReqOp_ProcessWalk — v22 F3: the EPROCESS walk.",
+        "            case 11 /* ReqOp_ProcessWalk — v23 F3: the EPROCESS walk.",
+        "RH-op11")
+
+    # ---- main.c banners ----
+    rep("UEFI/src/main.c",
+        '    static const char kBuildLine[] = "  Build: v22 RT - anchors + exports + process walk";',
+        '    static const char kBuildLine[] = "  Build: v23 RT - anchors + exports + process walk";',
+        "MC-kbuild-rt")
+    rep("UEFI/src/main.c",
+        '    static const char kBuildLine[] = "  Build: v22 SAFE (phase F3)";',
+        '    static const char kBuildLine[] = "  Build: v23 SAFE (phase F3)";',
+        "MC-kbuild-safe")
+    rep("UEFI/src/main.c",
+        'Print((CHAR16*)L"  Build: v22 RT - anchors + exports + process walk (F3)   \\r\\n");',
+        'Print((CHAR16*)L"  Build: v23 RT - anchors + exports + process walk (F3)   \\r\\n");',
+        "MC-screen-rt")
+    rep("UEFI/src/main.c",
+        'Print((CHAR16*)L"  Build: v22 SAFE (phase F3)                               \\r\\n");',
+        'Print((CHAR16*)L"  Build: v23 SAFE (phase F3)                               \\r\\n");',
+        "MC-screen-safe")
+    rep("UEFI/src/main.c",
+        'SerialTrace::Line("MAIN", "efi_main v22 boot");',
+        'SerialTrace::Line("MAIN", "efi_main v23 boot");',
+        "MC-boot")
+    rep("UEFI/src/main.c",
+        'SerialTrace::Line("MAIN", "variant: RT (EARLY gRT hooks - v22)");',
+        'SerialTrace::Line("MAIN", "variant: RT (EARLY gRT hooks - v23)");',
+        "MC-variant")
+
+    # ---- RuntimeHook.h banners ----
+    rep("UEFI/include/RuntimeHook.h",
+        'SerialTrace::Line("RT-EARLY", "memory.efi v22 RT (kernel data path: direct reads + export resolution + process walk)");',
+        'SerialTrace::Line("RT-EARLY", "memory.efi v23 RT (kernel data path: direct reads + export resolution + process walk)");',
+        "RH-rt-early")
+    rep("UEFI/include/RuntimeHook.h",
+        'SerialTrace::Line("RT-VA", "hooks already installed at load (v22 early) - keeping slots");',
+        'SerialTrace::Line("RT-VA", "hooks already installed at load (v23 early) - keeping slots");',
+        "RH-rt-va")
+
+    # ---- final verification ----
+    kx = p("UEFI/include/KernelExports.h").read_text(encoding="utf-8")
+    assert "exp_size >= 0x100000" in kx, "fix missing"
+    assert "exp_size >= 0x10000) " not in kx.replace("0x100000", ""), "old bound survived"
+    for rel, allow in (
+        ("UEFI/src/main.c", 0),
+        ("UEFI/include/RuntimeHook.h", 0),
+        ("UEFI/include/RequestHandler.h", 0),
+    ):
+        left = p(rel).read_text(encoding="utf-8").count("v22")
+        if left != allow:
+            print(f"[CHECK] FATAL: {rel} still has {left} 'v22' strings")
+            sys.exit(1)
+        print(f"[CHECK] {rel}: no stale v22 banners")
+    # KernelExports.h keeps exactly the historical provenance mentions
+    n = kx.count("v22")
+    if n < 2:
+        print(f"[CHECK] FATAL: KernelExports.h v22 mentions = {n} (provenance notes expected)")
+        sys.exit(1)
+    print(f"[CHECK] KernelExports.h: {n} historical v22 mentions (provenance - OK)")
+    print()
+    print("[patch-v23] ALL EDITS APPLIED - tree is now v23")
+    print("[patch-v23] the fix: KernelExports.h export-size gate 0x10000 -> 0x100000")
+    print("[patch-v23] banners: v22 -> v23 everywhere (wire contract untouched)")
 
 
-def rep(old, new, label, expect=1):
-    global src
-    c = src.count(old)
-    if c != expect:
-        fails.append(f'{label}: expected {expect} occurrence(s), found {c}')
-        print(f'  FAIL  {label}: expected {expect}, found {c}')
-        return
-    src = src.replace(old, new)
-    print(f'  PASS  {label}')
-
-
-# ----------------------------------------------------------------------
-# 1) J1 / J5 / J7 user-alias address fix (3 identical bad strings)
-# ----------------------------------------------------------------------
-rep("addr = '00007FFE00000260'", "addr = '000000007FFE0260'",
-    'J1/J5/J7 user-alias hex 0x7FFE0260', expect=3)
-
-# 2) J3 user-alias address fix
-rep("addr = '00007FFE00000308'", "addr = '000000007FFE0308'",
-    'J3 user-alias hex 0x7FFE0308', expect=1)
-
-# ----------------------------------------------------------------------
-# 3) runtime banner (the phase-d.bat marker greps this)
-# ----------------------------------------------------------------------
-rep("==== INFINITY trigger test v22 (v18 driver: direct KUSD reads - the proof ladder J1..J7) ====",
-    "==== INFINITY trigger test v23 (v18 driver: direct KUSD reads - the proof ladder J1..J7) ====",
-    'banner v22 -> v23')
-
-# 4) transcript file name
-rep('trigger-test-v22-output-', 'trigger-test-v23-output-',
-    'transcript name v23')
-
-# 5) end marker
-rep('==== END v22 ====', '==== END v23 ====', 'end marker v23')
-
-# ----------------------------------------------------------------------
-# 6) J7 why-text: v18-proven semantics (J7's reject is the pid check)
-# ----------------------------------------------------------------------
-rep("why = 'per-pid read WITHOUT attach: expect clean ErrAccess(4) - per-pid reads still need a (currently fatal) attach; honest negative'",
-    "why = 'per-pid read WITHOUT attach, VALID window address: expect clean ErrAccess(4) pre-read, NO [RD] on serial - isolates the pid check; honest negative'",
-    'J7 why-text v18 semantics')
-
-# ----------------------------------------------------------------------
-# 7) v23 header block (stacked after the v22 header, house style)
-# ----------------------------------------------------------------------
-rep("""# ============================================================
-
-$ErrorActionPreference = 'Continue'""",
-    """# ============================================================
-# INFINITY bridge trigger test v23  (run INSIDE the Windows VM,
-# in an ELEVATED PowerShell: "Run as Administrator")
-#
-# v23 = v22 + THE USER-ALIAS HEX FIX. Script-only; the driver is
-# UNCHANGED (memory.efi v18 RT, 121253 bytes). In the v22 ladder
-# the USER-alias rungs carried a mis-assembled hex string
-# (0x00007FFE00000260 - the intended 0x7FFE0260 shifted up 32
-# bits - instead of 0x000000007FFE0260) - the v18 gate
-# correctly rejected them as out-of-window (J1/J3/J5 became
-# accidental extra negatives; the 2026-09-22 run still PROVED the
-# kernel alias: J2 -> 19045 = PHASE E COMPLETE). v23 sends the
-# REAL user-alias addresses, so the last unproven cell runs:
-#     J1/J5/J7  0x000000007FFE0260  (KUSD+0x260, user window)
-#     J3        0x000000007FFE0308  (KUSD+0x308, user window)
-# Expected with the v18 driver:
-#     J1 Success + 19045   <- user-alias read via request
-#     J2 Success + 19045   (re-confirm the kernel alias)
-#     J3 Success + 0
-#     J4 Success + 0       (re-confirm)
-#     J5 Success + dword[0] = 19045
-#     J6 ErrAccess(4)  non-canonical, gate reject, NO crash
-#     J7 ErrAccess(4)  real pid without attach = pre-read reject
-#                      (with the VALID address this now isolates
-#                      the pid check; NO [RD] on serial = the pid
-#                      check fires BEFORE the window gate)
-#     N  INFCNT = G+8 (unchanged)
-# The self-test now ALSO round-trips the user-alias hex string,
-# so this class of slip can never again reach the driver.
-# ============================================================
-
-$ErrorActionPreference = 'Continue'""",
-    'v23 header block')
-
-# ----------------------------------------------------------------------
-# 8) self-test: user-alias round-trip (the v22-slip class, never again)
-# ----------------------------------------------------------------------
-rep("""ST-Check $stOk 'New-Req header bytes (seq/op/pid/len/addr) must round-trip'""",
-    """ST-Check $stOk 'New-Req header bytes (seq/op/pid/len/addr) must round-trip'
-$stReq2 = $null
-try { $stReq2 = New-Req 0x1338 1 'FFFFFFFF' 4 '000000007FFE0260' $null }
-catch { $stReq2 = $null }
-$stOk2 = ($null -ne $stReq2 -and $stReq2.Length -eq 48 -and
-    $stReq2[16] -eq 0x60 -and $stReq2[17] -eq 0x02 -and $stReq2[18] -eq 0xFE -and $stReq2[19] -eq 0x7F -and
-    $stReq2[20] -eq 0x00 -and $stReq2[21] -eq 0x00 -and $stReq2[22] -eq 0x00 -and $stReq2[23] -eq 0x00)
-ST-Check $stOk2 'New-Req user alias 000000007FFE0260 -> bytes 60 02 FE 7F 00 00 00 00 (the v22 slip, never again)'""",
-    'selftest user-alias round-trip')
-
-if fails:
-    print('\nPATCH FAILED — nothing written:')
-    for f in fails:
-        print(' -', f)
-    sys.exit(1)
-
-open(OUT, 'w', encoding='utf-8', newline='\n').write(src)
-
-# ----------------------------------------------------------------------
-# verification summary
-# ----------------------------------------------------------------------
-print()
-print(f'wrote {OUT}')
-print(f'  bytes : {len(src)} (v22 base: {orig_len}, delta: {len(src) - orig_len:+d})')
-print(f'  lines : {src.count(chr(10)) + 1}')
-checks = [
-    ("NO rung carries the bad pattern (addr = '00007FFE...)",
-     src.count("addr = '00007FFE") == 0),
-    ("NO quoted string literal carries the bad address",
-     src.count("'00007FFE00000260'") == 0),
-    ("exactly 7 ladder rungs survived",
-     src.count("addr = '") == 7),
-    ("user-alias 0260: J1/J5/J7 + selftest(x2) + header(x2)",
-     src.count('000000007FFE0260') == 7),
-    ("user-alias 0308: J3 + header",
-     src.count('000000007FFE0308') == 2),
-    ("kernel alias 0260 unchanged (v21-header x2 + selftest + J2 addr+atxt)",
-     src.count('FFFFF78000000260') == 5),
-    ("kernel alias 0308 unchanged (J4 addr+atxt)",
-     src.count('FFFFF78000000308') == 2),
-    ("non-canonical rung unchanged (J6)",
-     src.count('0000800000000000') == 1),
-    ('v23 banner', src.count('==== INFINITY trigger test v23') == 1),
-    ('v23 transcript name', src.count('trigger-test-v23-output-') == 1),
-    ('v23 end marker', src.count('==== END v23 ====') == 1),
-    ('stale v22 banner gone', src.count('==== INFINITY trigger test v22') == 0),
-    ('stale v22 transcript gone', src.count('trigger-test-v22-output-') == 0),
-    ('stale v22 end gone', src.count('==== END v22 ====') == 0),
-    ('pure ASCII', all(ord(c) < 128 for c in src)),
-    ('LF only', '\r' not in src),
-]
-bad = [lbl for lbl, ok in checks if not ok]
-for lbl, ok in checks:
-    print(f'  {"PASS" if ok else "FAIL"}  {lbl}')
-if bad:
-    print('\nPOST-BUILD CHECKS FAILED:', bad)
-    sys.exit(1)
-print('\nPATCH v23: ALL ANCHORS + CHECKS PASSED')
+if __name__ == "__main__":
+    main()
