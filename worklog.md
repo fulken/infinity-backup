@@ -1033,3 +1033,18 @@ Stage Summary:
 - v24 = v23 + the deref chain (the walk finally starts at the EPROCESS the symbol points at); the v21 field binary remains the rollback anchor; v23/v22 preserved as the historical bug exhibits (patches/v23-memory-RT.efi, untouched)
 - Expected v32 field run: M1..M4 green again (regression), W1 sys==0xFFFFF8071A4FC420 (serial) + eproc=0xFFFF8Exxxxxxxx canonical OUT-OF-IMAGE + count 30..64 + entries[0] System pid 4 at eproc + names@0x5A8 'System' flags=1 + closed, W2/W3 green, W4 ErrInvalid(5), W5 Success, INFCNT 33 (G+8+13+4+6, wSent=6), verdict '>>> F3 PROVEN: THE EPROCESS WALK - PROCESS DATA OUTSIDE THE IMAGE <<<'
 - After green: F4 (PTE/page-table base - true residency validation), then Infinity.exe (the userspace client)
+---
+Task ID: vault-push-04e61e1 (GitHub backup refreshed with the v31-report analysis + v24-v32 kit)
+Agent: Super Z (main)
+Task: User supplied a fresh GitHub PAT via IM; run the standing vault push (scripts/push-infinity-backup.sh) to mirror the latest workspace state to fulken/infinity-backup
+
+Work Log:
+- Token used ONLY as an ephemeral git HTTP header (the script's design rule: never in .git/config, remotes, files, or commits) - leak checks passed pre-commit and post-push (.git/ clean, remote URL tokenless)
+- Vault state before: HEAD 3a29457 (17:29 UTC backup of workspace 85c12c6 = the v23-v31 kit) - MISSING the two newest local commits: 6980a5b (v31-report analysis: M fully green, W root-caused to the missing deref) + 12de3d5 (v24-v32 kit: the DEREF fix, host 66/66, two-way class-kill, disasm-verified, packages)
+- Staging rebuilt from tracked workspace files: 359 files, 98 MB (version-archive + patches + scripts + worklog + edk2_Runtime.c + test-v7 evidence + backup README)
+- PUSHED: 3a29457..04e61e1 main -> main (42nd backup commit, 2026-09-27 17:32 UTC, workspace 12de3d5); post-push verification clean
+
+Stage Summary:
+- The GitHub vault is now fully caught up with local HEAD 12de3d5: the v31 field-report evidence (M green = export fix field-proven; W = the missing PsInitialSystemProcess deref) + the complete v24-v32 kit (driver v24 with SysEprocessFromSymbol chain, script v32 with corrected W1 expectations, 3-way hash-guard bat, both packages) are all safely on GitHub
+- Local workspace clean (nothing to commit pre-push); vault and local are in sync
+- NEXT: the user's field run of v24 + v32 (expected: M green regression + W1 eproc=0xFFFF8E... OUT-OF-IMAGE + count 30..64 + names 'System' + INFCNT 33 + 'F3 PROVEN'), then F4 (PTE/page-table base), then Infinity.exe
