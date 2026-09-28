@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the screenshot provided, here is the exact report:\n\n**1) INFINITY Banner Text and Build/Variant Line**\n*   **Banner:** `INFINITY UEFI BRIDGE LOADED`\n*   **Made by:** `Made by: fulken`\n*   **Build/Variant Line:** `Build: v2b RT - anchors + exports + process walk (F4)`\n\n**2) Success/Error Status Lines**\n*   `Driver has been loaded. You can now boot to the OS.`\n*   `SUCCESS: Bridge ready. Returning to boot menu.`\n*   `Image 'F90:\\memory.efi' loaded at 7FAA0000 - Success`\n\n**3) OS/File Being Booted and Filesystem**\n*   **OS:** Windows\n*   **File:** `\\EFI\\Microsoft\\Boot\\bootmgfw.efi`\n*   **Filesystem (FS):** FS1 (The text explicitly states \"Booting Windows from FS1\")\n\n**4) Other Notable Text**\n*   **Context/Instructions:** `When you boot to Windows, Infinity.exe will detect the bridge and use it automatically.`\n*   **Shell Commands Visible:**\n    *   `endif`\n    *   `if exist FS1:\\memory.efi then` (and similar checks for FS2, FS3, FS4)\n    *   `echo === driver stage done ===`\n    *   `echo Booting Windows from FS1`\n    *   `FS1:\\EFI\\Microsoft\\Boot\\bootmgfw.efi` (The final execution command)\n*   **Environment:** The interface indicates this is running within a UEFI Shell environment (`Shell>` prompt).",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1790568646,
+  "id": "202609281210424888ad14b51e4093",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "202609281210424888ad14b51e4093",
+  "usage": {
+    "completion_tokens": 350,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1473,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 1823
+  }
+}

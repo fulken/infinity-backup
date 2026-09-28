@@ -1,0 +1,268 @@
+==============================================================================
+PART A — integrity + anchors
+==============================================================================
+dump: 1025488 bytes = 0xFA5D0  (.data RVA 0xC00000 .. 0xCFA5D0)
+[ANCHOR] NtBuildNumber @RVA 0xC12130 (dump 0x12130): 0xF0004A65 -> low word 19045 == 19045 OK
+[ANCHOR] R2 slot      @RVA 0xCFA358 (dump 0xFA358): 0x0000000000000000 == 0 OK (matches live read)
+[INFO] qwords == R4 poison 0xFFFFF8064D930000 in .data: 0
+[INFO] qwords == R5 value 0xFFFFF98000000000 in .data: 1
+[INFO] qwords == live MmPteBase 0xFFFF9C0000000000 in .data: 1
+
+==============================================================================
+PART B — full section table (D2 chunks from the transcript)
+==============================================================================
+  [ 0] .rdata     VA=0x00001000 VS=0x000C80B0 RS=0x000C8200 RA=0x00000800 CH=0x48000040 end=0xC90B0
+  [ 1] .pdata     VA=0x000CA000 VS=0x00067974 RS=0x00067A00 RA=0x000C8A00 CH=0x48000040 end=0x131974
+  [ 2] .idata     VA=0x00132000 VS=0x000020C2 RS=0x00002200 RA=0x00130400 CH=0x48000040 end=0x1340C2
+  [ 3] .edata     VA=0x00135000 VS=0x00018D7E RS=0x00018E00 RA=0x00132600 CH=0x40000040 end=0x14DD7E
+  [ 4] PROTDATA   VA=0x0014E000 VS=0x00000001 RS=0x00000200 RA=0x0014B400 CH=0x48000040 end=0x14E001
+  [ 5] GFIDS      VA=0x0014F000 VS=0x00008C48 RS=0x00008E00 RA=0x0014B600 CH=0x42000040 end=0x157C48
+  [ 6] Pad1       VA=0x00158000 VS=0x000A8000 RS=0x00000000 RA=0x00000000 CH=0x42000080 end=0x200000
+  [ 7] .text      VA=0x00200000 VS=0x003CBEB9 RS=0x003CC000 RA=0x00154400 CH=0x68000020 end=0x5CBEB9
+  [ 8] PAGE       VA=0x005CC000 VS=0x003C3146 RS=0x003C3200 RA=0x00520400 CH=0x60000020 end=0x98F146
+  [ 9] PAGELK     VA=0x00990000 VS=0x00024C34 RS=0x00024E00 RA=0x008E3600 CH=0x60000020 end=0x9B4C34
+  [10] POOLCODE   VA=0x009B5000 VS=0x000003BB RS=0x00000400 RA=0x00908400 CH=0x68000020 end=0x9B53BB
+  [11] PAGEKD     VA=0x009B6000 VS=0x00005B92 RS=0x00005C00 RA=0x00908800 CH=0x60000020 end=0x9BBB92
+  [12] PAGEVRFY   VA=0x009BC000 VS=0x0003211C RS=0x00032200 RA=0x0090E400 CH=0x60000020 end=0x9EE11C
+  [13] PAGEHDLS   VA=0x009EF000 VS=0x000025D6 RS=0x00002600 RA=0x00940600 CH=0x60000020 end=0x9F15D6
+  [14] PAGEBGFX   VA=0x009F2000 VS=0x000069EA RS=0x00006A00 RA=0x00942C00 CH=0x60000020 end=0x9F89EA
+  [15] INITKDBG   VA=0x009F9000 VS=0x000195BA RS=0x00019600 RA=0x00949600 CH=0x68000020 end=0xA125BA
+  [16] TRACESUP   VA=0x00A13000 VS=0x0000175B RS=0x00001800 RA=0x00962C00 CH=0x68000020 end=0xA1475B
+  [17] KVASCODE   VA=0x00A15000 VS=0x0000242B RS=0x00002600 RA=0x00964400 CH=0x68000020 end=0xA1742B
+  [18] RETPOL     VA=0x00A18000 VS=0x00000720 RS=0x00000800 RA=0x00966A00 CH=0x68000020 end=0xA18720
+  [19] MINIEX     VA=0x00A19000 VS=0x000025AE RS=0x00002600 RA=0x00967200 CH=0x62000020 end=0xA1B5AE
+  [20] INIT       VA=0x00A1C000 VS=0x0008A738 RS=0x0008A800 RA=0x00969800 CH=0x62000020 end=0xAA6738
+  [21] Pad2       VA=0x00AA7000 VS=0x00159000 RS=0x00000000 RA=0x00000000 CH=0x62000080 end=0xC00000
+  [22] .data      VA=0x00C00000 VS=0x000FA5D0 RS=0x00013200 RA=0x009F4000 CH=0xC8000040 end=0xCFA5D0
+  [23] ALMOSTRO   VA=0x00CFB000 VS=0x000272E0 RS=0x00001400 RA=0x00A07200 CH=0xC8000040 end=0xD222E0
+  [24] CACHEALI   VA=0x00D23000 VS=0x000092C0 RS=0x00000200 RA=0x00A08600 CH=0xC8000040 end=0xD2C2C0
+  [25] PAGEDATA   VA=0x00D2D000 VS=0x00014610 RS=0x00001800 RA=0x00A08800 CH=0xC0000040 end=0xD41610
+  [26] PAGEVRFD   VA=0x00D42000 VS=0x00015D00 RS=0x00008000 RA=0x00A0A000 CH=0xC0000040 end=0xD57D00
+  [27] INITDATA   VA=0x00D58000 VS=0x0001BC44 RS=0x00000800 RA=0x00A12000 CH=0xC2000020 end=0xD73C44
+  [28] Pad3       VA=0x00D74000 VS=0x0008C000 RS=0x00000000 RA=0x00000000 CH=0xC2000080 end=0xE00000
+  [29] CFGRO      VA=0x00E00000 VS=0x00001CC8 RS=0x00001E00 RA=0x00A12800 CH=0xC8000040 end=0xE01CC8
+  [30] Pad4       VA=0x00E02000 VS=0x001FE000 RS=0x00000000 RA=0x00000000 CH=0xCA000080 end=0x1000000
+  [31] .rsrc      VA=0x01000000 VS=0x0003B00C RS=0x0003B200 RA=0x00A14600 CH=0x42000040 end=0x103B00C
+  [32] .reloc     VA=0x0103C000 VS=0x00009C2C RS=0x00009E00 RA=0x00A4F800 CH=0x42000040 end=0x1045C2C
+  probe RVA 0xCFB358 -> ('ALMOSTRO', 13611008, 160480)
+  probe RVA 0xCFC420 -> ('ALMOSTRO', 13611008, 160480)
+  probe RVA 0xCFC500 -> ('ALMOSTRO', 13611008, 160480)
+  probe RVA 0xCFC510 -> ('ALMOSTRO', 13611008, 160480)
+
+==============================================================================
+PART C — qword census (all 8-aligned qwords, 128186 slots)
+==============================================================================
+  zero                            115675
+  low/user                          5612
+  image-self                        3591
+  canonical-kernel-nonimage         1671
+  noncanonical                      1637
+  kernel-pointer VA classes (top-16 bits of the value, top 20):
+    0xFFFFF80     3737
+    0xFFFFC30      722
+    0xFFFFE60      352
+    0xFFFFFFF      155
+    0xFFFF8C0       86
+    0xFFFFE38       70
+    0xFFFFF7B       43
+    0xFFFFF00       26
+    0xFFFFFC8       13
+    0xFFFF9BF        9
+    0xFFFF9C7        6
+    0xFFFF9C4        6
+    0xFFFFC04        5
+    0xFFFFF7D        3
+    0xFFFFF98        3
+    0xFFFFC05        2
+    0xFFFFC00        2
+    0xFFFFA18        2
+    0xFFFF8B0        2
+    0xFFFFB18        2
+
+==============================================================================
+PART D — MmPageLocationList signature hunt (0x30-stride link clusters)
+==============================================================================
+non-image canonical kernel pointers in .data: 1671
+residue census of those pointers (mod 0x30):
+  r=0x00     450
+  r=0x01       3
+  r=0x02       4
+  r=0x04       6
+  r=0x06       1
+  r=0x08      50
+  r=0x09       2
+  r=0x0A       4
+  r=0x0C       4
+  r=0x0D       3
+  r=0x0E       3
+  r=0x0F      92
+  r=0x10     429
+  r=0x11       1
+  r=0x12       3
+  r=0x14       5
+  r=0x18      62
+  r=0x1A       6
+  r=0x1C       6
+  r=0x1F       1
+  r=0x20     443
+  r=0x23       1
+  r=0x24       3
+  r=0x25       1
+  r=0x27       1
+  r=0x28      63
+  r=0x29       1
+  r=0x2A       5
+  r=0x2C       5
+  r=0x2E       4
+  r=0x2F       9
+same-residue link clusters (>=3 links / 128B): 216
+  dump 0x4E8..0x4F0  r=0x10  max-links=3
+  dump 0x5D0..0x5D0  r=0x00  max-links=3
+  dump 0x2B60..0x2BB0  r=0x10  max-links=4
+  dump 0x2BD0..0x2BE8  r=0x20  max-links=3
+  dump 0x2DB8..0x2DC0  r=0x00  max-links=3
+  dump 0x46A0..0x46F8  r=0x20  max-links=3
+  dump 0xF320..0xF388  r=0x0F  max-links=3
+  dump 0x11820..0x118B8  r=0x0F  max-links=3
+  dump 0x12278..0x12350  r=0x0F  max-links=9
+  dump 0x12DF8..0x12F60  r=0x0F  max-links=16
+  dump 0x13568..0x135B8  r=0x00  max-links=4
+  dump 0x16168..0x16180  r=0x10  max-links=3
+  dump 0x16810..0x16850  r=0x28  max-links=3
+  dump 0x16A70..0x16AE8  r=0x00  max-links=3
+  dump 0x19468..0x19470  r=0x20  max-links=3
+  dump 0x19478..0x194A8  r=0x10  max-links=3
+  dump 0x194B0..0x194B8  r=0x20  max-links=3
+  dump 0x19690..0x196E8  r=0x10  max-links=3
+  dump 0x19930..0x19998  r=0x10  max-links=3
+  dump 0x19B00..0x19B70  r=0x10  max-links=4
+
+self-linking-head signature windows (empty LIST_ENTRYs point home):
+  dump 0x3B8 r=0x20 arraylinks=3(2 congruent) selflinks=2  RVA 0xC003B8
+  dump 0x3C0 r=0x20 arraylinks=4(2 congruent) selflinks=2  RVA 0xC003C0
+  dump 0x3C8 r=0x20 arraylinks=4(2 congruent) selflinks=2  RVA 0xC003C8
+  dump 0x3D0 r=0x20 arraylinks=4(2 congruent) selflinks=2  RVA 0xC003D0
+  dump 0x3D8 r=0x20 arraylinks=4(2 congruent) selflinks=2  RVA 0xC003D8
+  dump 0x3E0 r=0x20 arraylinks=3(1 congruent) selflinks=2  RVA 0xC003E0
+  dump 0x478 r=0x00 arraylinks=3(2 congruent) selflinks=2  RVA 0xC00478
+  dump 0x480 r=0x00 arraylinks=4(2 congruent) selflinks=2  RVA 0xC00480
+  dump 0x488 r=0x00 arraylinks=4(2 congruent) selflinks=2  RVA 0xC00488
+  dump 0x490 r=0x00 arraylinks=4(2 congruent) selflinks=2  RVA 0xC00490
+  dump 0x498 r=0x00 arraylinks=4(2 congruent) selflinks=2  RVA 0xC00498
+  dump 0x4A0 r=0x00 arraylinks=3(1 congruent) selflinks=2  RVA 0xC004A0
+  dump 0x1110 r=0x20 arraylinks=3(2 congruent) selflinks=2  RVA 0xC01110
+  dump 0x1118 r=0x20 arraylinks=3(2 congruent) selflinks=2  RVA 0xC01118
+  dump 0x1120 r=0x20 arraylinks=3(2 congruent) selflinks=2  RVA 0xC01120
+  dump 0x1128 r=0x20 arraylinks=3(2 congruent) selflinks=3  RVA 0xC01128
+  dump 0x1130 r=0x20 arraylinks=3(2 congruent) selflinks=2  RVA 0xC01130
+  dump 0x1138 r=0x20 arraylinks=3(2 congruent) selflinks=2  RVA 0xC01138
+  dump 0x2AF0 r=0x28 arraylinks=4(2 congruent) selflinks=2  RVA 0xC02AF0
+  dump 0x2AF8 r=0x28 arraylinks=4(2 congruent) selflinks=2  RVA 0xC02AF8
+
+==============================================================================
+PART E — THE PIN: page-aligned non-image canonical qwords by residue
+==============================================================================
+page-aligned non-image canonical qwords in .data: 224
+  residue 0x00: 77 candidates
+  residue 0x10: 83 candidates
+  residue 0x20: 64 candidates
+link-census ranking (most common residues): ['0x0', '0x20', '0x10', '0xf', '0x28', '0x18']
+
+==============================================================================
+PART F — stride-witness scoring of every candidate (vs all links)
+==============================================================================
+top 15 candidates by stride-witness count:
+  W=  449  dump 0x04EDC8 RVA 0x00C4EDC8  val 0xFFFF8C00C3D09000 (res 0x00)
+  W=  448  dump 0x04E128 RVA 0x00C4E128  val 0xFFFF8C00C3FA0000 (res 0x00)
+  W=  447  dump 0x04EB40 RVA 0x00C4EB40  val 0xFFFF8C00C4000000 (res 0x00)
+  W=  441  dump 0x054860 RVA 0x00C54860  val 0xFFFF800000000000 (res 0x20)
+  W=  441  dump 0x054808 RVA 0x00C54808  val 0xFFFF800000000000 (res 0x20)
+  W=  439  dump 0x04FB38 RVA 0x00C4FB38  val 0xFFFF8C0000000000 (res 0x20)
+  W=  439  dump 0x04E0F8 RVA 0x00C4E0F8  val 0xFFFF8C0000000000 (res 0x20)
+  W=  438  dump 0x053F40 RVA 0x00C53F40  val 0xFFFF8C00C42B5000 (res 0x00)
+  W=  438  dump 0x04E098 RVA 0x00C4E098  val 0xFFFF8C00C3D0B000 (res 0x20)
+  W=  437  dump 0x052190 RVA 0x00C52190  val 0xFFFF8C00C3D32000 (res 0x20)
+  W=  436  dump 0x0521C0 RVA 0x00C521C0  val 0xFFFF8C00C3D80000 (res 0x20)
+  W=  436  dump 0x023470 RVA 0x00C23470  val 0xFFFF8C00ECC8F000 (res 0x00)
+  W=  436  dump 0x023468 RVA 0x00C23468  val 0xFFFF8C00ECC8F000 (res 0x00)
+  W=  435  dump 0x0521C8 RVA 0x00C521C8  val 0xFFFF8C00C3F00000 (res 0x20)
+  W=  429  dump 0x016BC8 RVA 0x00C16BC8  val 0xFFFF8C00C4200000 (res 0x20)
+
+==============================================================================
+PART G — verdict scaffolding
+==============================================================================
+dominant cluster residue from self-link signature: 0x20
+candidates with residue 0x20 (the pdb lattice):
+  dump 0x000FF8 RVA 0x00C00FF8 val 0xFFFFE60C0DD8B000 W=95
+  dump 0x001170 RVA 0x00C01170 val 0xFFFFE60C0D440000 W=148
+  dump 0x001188 RVA 0x00C01188 val 0xFFFFE60C0D440000 W=148
+  dump 0x001250 RVA 0x00C01250 val 0xFFFFE60C0DDBE000 W=94
+  dump 0x002658 RVA 0x00C02658 val 0xFFFFC3020F1F8000 W=230
+  dump 0x013508 RVA 0x00C13508 val 0xFFFF9BFDC9E00000 W=422
+  dump 0x016B90 RVA 0x00C16B90 val 0xFFFFC3020F999000 W=217
+  dump 0x016BC8 RVA 0x00C16BC8 val 0xFFFF8C00C4200000 W=429
+  dump 0x0234A8 RVA 0x00C234A8 val 0xFFFFE60C10E03000 W=92
+  dump 0x0234F8 RVA 0x00C234F8 val 0xFFFFE60C10E1B000 W=91
+  dump 0x044730 RVA 0x00C44730 val 0xFFFFE60C0D5CF000 W=124
+  dump 0x0481B0 RVA 0x00C481B0 val 0xFFFFF80654870000 W=17
+  dump 0x048D80 RVA 0x00C48D80 val 0xFFFFF7B0FFFFE000 W=51
+  dump 0x049428 RVA 0x00C49428 val 0xFFFFF7B08000F000 W=52
+  dump 0x04C960 RVA 0x00C4C960 val 0xFFFFC3010B200000 W=407
+  dump 0x04CC68 RVA 0x00C4CC68 val 0xFFFFC3020DF02000 W=296
+  dump 0x04CDE0 RVA 0x00C4CDE0 val 0xFFFFC01940000000 W=413
+  dump 0x04CDE8 RVA 0x00C4CDE8 val 0xFFFFC05B40000000 W=409
+  dump 0x04DE20 RVA 0x00C4DE20 val 0xFFFFC04940000000 W=412
+  dump 0x04E098 RVA 0x00C4E098 val 0xFFFF8C00C3D0B000 W=438
+  dump 0x04E0E0 RVA 0x00C4E0E0 val 0xFFFF9BFD9DA00000 W=424
+  dump 0x04E0F8 RVA 0x00C4E0F8 val 0xFFFF8C0000000000 W=439
+  dump 0x04E140 RVA 0x00C4E140 val 0xFFFFF80000000000 W=46
+  dump 0x04E188 RVA 0x00C4E188 val 0xFFFFC05B40000000 W=409
+  dump 0x04E1D0 RVA 0x00C4E1D0 val 0xFFFFE60000000000 W=155
+  dump 0x04E200 RVA 0x00C4E200 val 0xFFFF8C00C42C0000 W=427
+  dump 0x04E288 RVA 0x00C4E288 val 0xFFFFF7B080000000 W=58
+  dump 0x04E360 RVA 0x00C4E360 val 0xFFFFB18CC0000000 W=415
+  dump 0x04E370 RVA 0x00C4E370 val 0xFFFFF7D3C0000000 W=48
+  dump 0x04E378 RVA 0x00C4E378 val 0xFFFFF7D3C0000000 W=48
+  dump 0x04E380 RVA 0x00C4E380 val 0xFFFFF7D3C0000000 W=48
+  dump 0x04E758 RVA 0x00C4E758 val 0xFFFF9BF000000000 W=425
+  dump 0x04EBA8 RVA 0x00C4EBA8 val 0xFFFF9C71C0000000 W=419
+  dump 0x04EDA0 RVA 0x00C4EDA0 val 0xFFFFF9800001B000 W=8
+  dump 0x04EDB0 RVA 0x00C4EDB0 val 0xFFFFF980000CC000 W=7
+  dump 0x04F268 RVA 0x00C4F268 val 0xFFFFC302149F7000 W=200
+  dump 0x04FB18 RVA 0x00C4FB18 val 0xFFFFE60000000000 W=155
+  dump 0x04FB38 RVA 0x00C4FB38 val 0xFFFF8C0000000000 W=439
+  dump 0x04FB58 RVA 0x00C4FB58 val 0xFFFFF98000000000 W=9
+  dump 0x04FB78 RVA 0x00C4FB78 val 0xFFFFB18000000000 W=416
+  dump 0x04FBC8 RVA 0x00C4FBC8 val 0xFFFFF80000000000 W=46
+  dump 0x04FC30 RVA 0x00C4FC30 val 0xFFFFE60C125A6000 W=72
+  dump 0x04FC38 RVA 0x00C4FC38 val 0xFFFFE60C125A6000 W=72
+  dump 0x04FD98 RVA 0x00C4FD98 val 0xFFFFC3020EC37000 W=241
+  dump 0x0503A0 RVA 0x00C503A0 val 0xFFFFE60C14334000 W=63
+  dump 0x050678 RVA 0x00C50678 val 0xFFFFF80653940000 W=18
+  dump 0x050810 RVA 0x00C50810 val 0xFFFFF7B080000000 W=58
+  dump 0x050818 RVA 0x00C50818 val 0xFFFF8C00C42B1000 W=428
+  dump 0x050950 RVA 0x00C50950 val 0xFFFFF7B080000000 W=58
+  dump 0x050AA8 RVA 0x00C50AA8 val 0xFFFFC3020DE8D000 W=381
+  dump 0x051640 RVA 0x00C51640 val 0xFFFFFC8000000000 W=5
+  dump 0x051E30 RVA 0x00C51E30 val 0xFFFFFC8000006000 W=4
+  dump 0x052168 RVA 0x00C52168 val 0xFFFFC3020DED2000 W=325
+  dump 0x052190 RVA 0x00C52190 val 0xFFFF8C00C3D32000 W=437
+  dump 0x0521A0 RVA 0x00C521A0 val 0xFFFF9BFDBFC00000 W=423
+  dump 0x0521C0 RVA 0x00C521C0 val 0xFFFF8C00C3D80000 W=436
+  dump 0x0521C8 RVA 0x00C521C8 val 0xFFFF8C00C3F00000 W=435
+  dump 0x054808 RVA 0x00C54808 val 0xFFFF800000000000 W=441
+  dump 0x054818 RVA 0x00C54818 val 0xFFFFC3010B200000 W=407
+  dump 0x054860 RVA 0x00C54860 val 0xFFFF800000000000 W=441
+  dump 0x058110 RVA 0x00C58110 val 0xFFFFE60C0CC00000 W=154
+  dump 0x0DB108 RVA 0x00CDB108 val 0xFFFFC3020D815000 W=406
+  dump 0x0DB118 RVA 0x00CDB118 val 0xFFFFE60C0D200000 W=153
+  dump 0x0ECF88 RVA 0x00CECF88 val 0xFFFFB23550000000 W=414
+
+R4/R5 poison residue check (should NOT match the lattice):
+  R4 0xFFFFF8064D930000 residue 0x10  (different)
+  R5 0xFFFFF98000000000 residue 0x20  !!! MATCHES lattice
+
+top candidate pdb=0xFFFF8C00C3D09000:
+  slot: dump 0x04EDC8 RVA 0x00C4EDC8
+  chain-B-style probe for System pfn 0x1AD: pdb + 0x1AD*0x30 + 8 = 0xFFFF8C00C3D0E078
+  example witness links: ['0xffffc3020ed931c0', '0xffffc3020ed931c0', '0xfffff80653707240', '0xfffff80653576c80', '0xfffff806534edd90']
