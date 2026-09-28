@@ -1,0 +1,4 @@
+INFDIAG FOUND at offset 0x18ec
+  magic          = 0x494e4644
+  stage          = 1  -> driver loaded OK (pool + handler + EBS hook installed)
+  flags          = 0x9  (loaded, EARLY_hooks(v7))

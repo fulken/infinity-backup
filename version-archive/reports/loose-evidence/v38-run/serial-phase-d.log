@@ -1,0 +1,2099 @@
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "UEFI QEMU QEMU USB HARDDRIVE 1-0000:00:1d.7-1" from PciRoot(0x0)/Pci(0x1D,0x7)/USB(0x0,0x0)
+BdsDxe: starting Boot0001 "UEFI QEMU QEMU USB HARDDRIVE 1-0000:00:1d.7-1" from PciRoot(0x0)/Pci(0x1D,0x7)/USB(0x0,0x0)
+[2J[01;01H[01;01HUEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 (Debian distribution of EDK II, 0x00010000)
+[1m[33m[40mMapping table[0m[37m[40m
+[1m[33m[40m      FS0:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40mHD0a0b:;BLK1:
+          PciRoot(0x0)/Pci(0x1D,0x7)/USB(0x0,0x0)/HD(1,MBR,0xBE1AFDFA)
+[1m[33m[40m      FS1:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40mHD1a65535a1:;BLK3:
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)/HD(1,GPT,D5FF07FD-5AC0-418F-BBE0-0CD9A168A1AF)
+[1m[33m[40m     BLK0:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1D,0x7)/USB(0x0,0x0)
+[1m[33m[40m     BLK2:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)
+[1m[33m[40m     BLK4:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)/HD(2,GPT,07E29E09-5C75-4A85-AC88-34310174C11C)
+[1m[33m[40m     BLK5:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)/HD(3,GPT,8F316DE1-4C4F-481A-B719-CE0FB2FA24AF)
+[1m[33m[40m     BLK6:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1F,0x2)/Sata(0x0,0xFFFF,0x0)/HD(4,GPT,11DDFF9D-BF37-4667-A20A-89B0E806080C)
+[23;01HPress [1m[37m[40mESC[0m[37m[40m in 5 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[23;01HPress [1m[37m[40mESC[0m[37m[40m in 4 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[23;01HPress [1m[37m[40mESC[0m[37m[40m in 3 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[23;01HPress [1m[37m[40mESC[0m[37m[40m in 2 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[23;01HPress [1m[37m[40mESC[0m[37m[40m in 1 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.
+[1m[33m[40mShell> [0m[37m[40mecho === INFINITY phase C: load driver then boot Windows ===
+=== INFINITY phase C: load driver then boot Windows ===
+[1m[33m[40mShell> [0m[37m[40mif exist FS0:\memory.efi then
+[1m[33m[40mShell> [0m[37m[40m  echo Loading driver from FS0
+Loading driver from FS0
+[1m[33m[40mShell> [0m[37m[40m  load FS0:\memory.efi
+
+[INF][MAIN] efi_main v26 boot
+[INF][MAIN] variant: RT (EARLY gRT hooks - v26)[2J[01;01H[1m[37m[44m                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+[1m[37m[40m[11;01H  INFINITY UEFI BRIDGE LOADED                              
+  Made by: fulken                                          
+  Build: v26 RT - anchors + exports + process walk (F4)   
+  Driver has been loaded. You can now boot to the OS.       
+
+
+[INF][MAIN] UEFI CR3 =0x000000007FC01000
+[INF][IMG] ImageBase =0x000000007FAA0000
+[INF][IMG] ImageCodeType =5
+[INF][IMG] ImageDataType =6
+[INF][MMAP] descriptors =120
+[INF][MMAP] type=6 attr=0x800000000000000F phys=0x000000007ED3F000-0x000000007EE00000 npages=193
+[INF][MMAP] type=6 attr=0x800000000000000F phys=0x000000007F8ED000-0x000000007F9ED000 npages=256
+[INF][MMAP] type=5 attr=0x800000000000000F phys=0x000000007F9ED000-0x000000007FAED000 npages=256 <OUR_IMAGE>
+[INF][MMAP] type=6 attr=0x800000000000000F phys=0x000000007FEEC000-0x000000007FF70000 npages=132
+[INF][MAIN] shared pool OK (4MB, EfiRuntimeServicesData)
+[INF][MAIN] request handler started (1ms timer)
+[INF][RT-EARLY] orig GetTime        =0x000000007FACCC1A
+[INF][RT-EARLY] orig GetVariable    =0x000000007FAD5BB7
+[INF][RT-EARLY] orig SetVariable    =0x000000007FAD7FA8
+[INF][RT-EARLY] hook GetTime        =0x000000007FAB59C0
+[INF][RT-EARLY] hook GetVariable    =0x000000007FAB4F50
+[INF][RT-EARLY] hook SetVariable    =0x000000007FAB4650
+[INF][RT-EARLY] memory.efi v26 RT (kernel data path: direct reads + export resolution + process walk + page tables)
+[INF][RT-EARLY] gRT hooks INSTALLED at load time (pre-snapshot; Windows-visible)
+[INF][MAIN] VA graph populated
+[INF][EBS] hook installed, orig ExitBootServices =0x000000007FE8F1F0
+[INF][MAIN] VA event registration st=0x00000000
+[INF][DIAG] write stage=1 flags=0x00000009 prev_st=0x00000000 st=0x00000000  SUCCESS: Bridge ready. Returning to boot menu.
+  When you boot to Windows, Infinity.exe will detect
+  the bridge and use it automatically.
+
+[INF][MAIN] efi_main returning to shell
+[INF][HOOK] G BOOT-CTX call#1
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G BOOT-CTX call#2
+[INF][HOOK] G chained st=0x00000000Image 'FS0:\memory.efi' loaded at 7FAA0000 - Success
+
+[INF][HOOK] G BOOT-CTX call#3
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G BOOT-CTX call#4
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S BOOT-CTX call#5
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G BOOT-CTX call#6
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G BOOT-CTX call#7
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S BOOT-CTX call#8
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] S BOOT-CTX call#64
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mendif
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mif exist FS1:\memory.efi then
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mif exist FS2:\memory.efi then
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mif exist FS3:\memory.efi then
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mif exist FS4:\memory.efi then
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mecho === driver stage done ===
+=== driver stage done ===
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mif exist FS0:\EFI\Microsoft\Boot\bootmgfw.efi then
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40mif exist FS1:\EFI\Microsoft\Boot\bootmgfw.efi then
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40m  echo Booting Windows from FS1
+Booting Windows from FS1
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000[1m[33m[40mShell> [1m[37m[40m  FS1:\EFI\Microsoft\Boot\bootmgfw.efi
+
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] S chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] T BOOT-CTX call#128
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] G chained st=0x00000005
+[INF][HOOK] G chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] G chained st=0x0000000E
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][HOOK] T chained st=0x00000000
+[INF][EBS] ExitBootServices hook FIRED
+[INF][EBS] calling original ExitBootServices
+[INF][EBS] original ExitBootServices returned st=0x00000000
+[INF][EBS] os_cr3 =0x000000007FC01000
+[INF][EBS] windows build (EBS-time; 0 is normal - live probe fills)=0
+[INF][DIAG] write stage=2 flags=0x0000000B prev_st=0x00000000 st=0x00000000
+[INF][EBS] handoff complete, returning to OS loader
+[INF][VA] SetVirtualAddressMap event FIRED
+[INF][RT-VA] hooks already installed at load (v26 early) - keeping slots
+[INF][DIAG] write stage=3 flags=0x0000000B prev_st=0x00000000 st=0x00000000
+[INF][VA] ConvertPointers: begin
+[INF][CVT] RT.handler_ 0x000000007FAC0D80 -> 0xFFFFF80761294D80 st=0x00000000
+[INF][CVT] RT.orig_get_time_ 0x000000007FACCC1A -> 0xFFFFF807612A0C1A st=0x00000000
+[INF][CVT] RT.orig_get_variable_ 0x000000007FAD5BB7 -> 0xFFFFF807612A9BB7 st=0x00000000
+[INF][CVT] RT.orig_set_variable_ 0x000000007FAD7FA8 -> 0xFFFFF807612ABFA8 st=0x00000000
+[INF][CVT] RT.orig_get_next_ 0x000000007FAD65E2 -> 0xFFFFF807612AA5E2 st=0x00000000
+[INF][CVT] RT.orig_set_wakeup_ 0x000000007FACCC7E -> 0xFFFFF807612A0C7E st=0x00000000
+[INF][CVT] RH.pool_ 0x000000007FAC0E50 -> 0xFFFFF80761294E50 st=0x00000000
+[INF][CVT] RH.mem_ 0x000000007FAC0E40 -> 0xFFFFF80761294E40 st=0x00000000
+[INF][CVT] RH.finder_ 0x000000007FAC0E00 -> 0xFFFFF80761294E00 st=0x00000000
+[INF][CVT] PF.phys_ 0x000000007FAC0E70 -> 0xFFFFF80761294E70 st=0x00000000
+[INF][CVT] PM.phys_ 0x000000007FAC0E70 -> 0xFFFFF80761294E70 st=0x00000000
+[INF][CVT] SMP.header_ 0x000000007D816000 -> 0xFFFFF80760C00000 st=0x00000000
+[INF][CVT] SMP.base_addr_ 0x000000007D816000 -> 0xFFFFF80760C00000 st=0x00000000
+[INF][CVT] RuntimeHook::instance_ 0x000000007FABFCE0 -> 0xFFFFF80761293CE0 st=0x00000000
+[INF][CVT] RT 0x000000007F9ECB98 -> 0xFFFFF807611C0B98 st=0x00000000
+[INF][CVT] ST 0x000000007F9EC018 -> 0xFFFFF807611C0018 st=0x00000000
+[INF][VA] ConvertPointers: done
+[INF][VA] virtual mode armed - OS runtime hook calls now count (stage 4)
+[INF][VA] SetVirtualAddressMap event handler done
+[INF][HOOK] G call#192 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][BLD] kusd raw 0x260=0x0000000000004A65
+[INF][BLD] kusd raw 0x308=0x0000000000000000
+[INF][BLD] live windows build (ofs 0x260)=19045
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] G INFDIAG live
+[INF][HOOK] G INFDIAG live
+[INF][HOOK] G INFDIAG live
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] G INFDIAG live
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] G INFDIAG live
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] G INFDIAG live
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G INFCNT live
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][AN] sidt base=0xFFFF9781A9198000
+[INF][AN] idt pf=0xFFFFF8075BE0DF00
+[INF][AN] idt bp=0xFFFFF8075BE0B540
+[INF][AN] lstar=0xFFFFF8075BE11C00
+[INF][AN] walk v1=0xFFFFF8075BA00000
+[INF][AN] walk v2=0xFFFFF8075BA00000
+[INF][AN] walk v3=0xFFFFF8075BA00000
+[INF][AN] walk v1 skipped=1
+[INF][AN] walk v1 lastskip=0xFFFFF8075BB60000
+[INF][AN] walk v2 skipped=1
+[INF][AN] walk v2 lastskip=0xFFFFF8075BB60000
+[INF][AN] walk v3 skipped=1
+[INF][AN] walk v3 lastskip=0xFFFFF8075BB60000
+[INF][AN] CONVERGED base=0xFFFFF8075BA00000
+[INF][AN] CONVERGED size=0x0000000001046000
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA00000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA0003C
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA00118
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C390010
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S call#256 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075B9FF000
+[INF][RD] mapped read ok=0
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075CA46000
+[INF][RD] mapped read ok=0
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0x000000007FFE0260
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF78000000260
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0x000000007FFE0308
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF78000000308
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0x000000007FFE0260
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] G call#320 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0x0000800000000000
+[INF][RD] mapped read ok=0
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][KPCR] gs base=0xFFFF9781A918B000
+[INF][KPCR] idt match=1
+[INF][XS] resolve rc=0
+[INF][XS] resolved va=0xFFFFF8075C6FC420
+[INF][XS] name index=1855
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][KPCR] gs base=0xFFFFF80758B37000
+[INF][KPCR] idt match=0
+[INF][XS] resolve rc=0
+[INF][XS] resolved va=0xFFFFF8075C612130
+[INF][XS] name index=1508
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C612130
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][KPCR] gs base=0xFFFF9781A918B000
+[INF][KPCR] idt match=1
+[INF][XS] resolve rc=0
+[INF][XS] resolved va=0xFFFFF8075BDFE1C0
+[INF][XS] name index=1095
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BDFE1C0
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#384 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][KPCR] gs base=0xFFFFF80758B37000
+[INF][KPCR] idt match=0
+[INF][XS] resolve rc=0
+[INF][XS] resolved va=0x0000000000000000
+[INF][XS] name index=0
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][PW] sys=0xFFFFF8075C6FC420
+[INF][PW] eproc=0xFFFFBA8FA405A040
+[INF][PW] walk=64
+[INF][PW] closed=0
+[INF][PW] name slot=1448
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][PW] walk=0
+[INF][PW] closed=0
+[INF][PW] name slot=0
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][PW] walk=0
+[INF][PW] closed=0
+[INF][PW] name slot=0
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][PW] sys=0xFFFFF8075C6FC420
+[INF][PW] eproc=0xFFFFBA8FA405A040
+[INF][PW] walk=64
+[INF][PW] closed=0
+[INF][PW] name slot=1448
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FB358
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FA358
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC508
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC500
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#448 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC510
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FB500
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FB508
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4C0
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4C8
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4D0
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4D8
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4E0
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4E8
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#512 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4F0
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC4F8
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC500
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC508
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC510
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC518
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC520
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC528
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC530
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC538
+[INF][RD] mapped read ok=1
+[INF][HOOK] G call#576 VIRT
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA00000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA0011C
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA00220
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075BA00620
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FB000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FB400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FB800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FBC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G call#640 VIRT
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FC800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FCC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FD000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FD400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FD800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FDC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FE000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FE400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FE800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FEC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#704 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FF000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FF400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FF800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C6FFC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C700000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C700400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C700800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C700C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C701000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C701400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C701800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#768 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C701C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C702000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C702400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C702800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C702C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C703000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C703400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C703800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C703C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C704000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C704400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G call#832 VIRT
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C704800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C704C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C705000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C705400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C705800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C705C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C706000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C706400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C706800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C706C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#896 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C707000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C707400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C707800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C707C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C708000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C708400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C708800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C708C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C709000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C709400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C709800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#960 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C709C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70A000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70A400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70A800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70AC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70B000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70B400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70B800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70BC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70C000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70C400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G call#1024 VIRT
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70C800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70CC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70D000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70D400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70D800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70DC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70E000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70E400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70E800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70EC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#1088 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70F000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70F400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70F800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C70FC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C710000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C710400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C710800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C710C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C711000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C711400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C711800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#1152 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C711C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C712000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C712400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C712800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C712C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C713000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C713400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C713800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C713C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C714000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C714400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G call#1216 VIRT
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C714800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C714C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C715000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C715400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C715800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C715C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C716000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C716400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C716800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C716C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#1280 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C717000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C717400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C717800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C717C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C718000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C718400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C718800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C718C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C719000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C719400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C719800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#1344 VIRT
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C719C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71A000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71A400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71A800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71AC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71B000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71B400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71B800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71BC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71C000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#1408 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71C400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71C800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71CC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71D000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71D400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71D800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71DC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71E000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71E400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71E800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71EC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G call#1472 VIRT
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71F000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71F400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71F800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C71FC00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C720000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C720400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C720800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C720C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C721000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C721400
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S call#1536 VIRT
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C721800
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C721C00
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR write
+[INF][RD] mapped va=0xFFFFF8075C722000
+[INF][RD] mapped read ok=1
+[INF][HOOK] G OURVAR read
+[INF][HOOK] G OURVAR read
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] S OURVAR delete
+[INF][HOOK] G INFCNT live

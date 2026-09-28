@@ -1,0 +1,135 @@
+==============================================================================
+PART A - INTEGRITY: size + the 157-chunk transcript echo verify + live echoes
+==============================================================================
+[OK] dump size 160480 == section VS 0x272E0 (byte-exact section)
+[OK] transcript echo verify: 157/157 dump chunks found, 0 mismatches, 0 missing
+       (the 2 section-table chunks + 42 other [DT] reads also present: 201 echoes total)
+[OK] R1 MmPteBase slot      @0xCFB358: dump=0xFFFFE20000000000 live=0xFFFFE20000000000
+[OK] PsInitialSystemProcess @0xCFC420: dump=0xFFFFBA8FA405A040 live=0xFFFFBA8FA405A040
+[OK] R4 poison slot         @0xCFC500: dump=0xFFFFF807597B0000 live=0xFFFFF807597B0000
+[OK] R5 pte-space slot      @0xCFC510: dump=0xFFFFE60000000000 live=0xFFFFE60000000000
+[OK] R9 window 16 qwords @0xCFC4C0-0xCFC538: dump == live (same boot)
+
+==============================================================================
+PART B - QWORD CENSUS (all 8-aligned slots) + kernel-pointer region buckets
+==============================================================================
+  zero                           19181  (95.6%)
+  mid/pseudo-phys                  273  (1.4%)
+  low32/data                       230  (1.1%)
+  image-self                       177  (0.9%)
+  canonical-kernel-nonimage        170  (0.8%)
+  noncanonical                      29  (0.1%)
+
+  kernel non-image pointer regions (by bits 63:40, >= 3 members):
+    0xFFFFBAxxxxxxxxxx : 130 ptrs, span 0xFFFFBA8FA403F2C0 .. 0xFFFFBA8FA97E8210 (delta 0x57A8F50 = 89763 KB)  first rva=0xCFB008
+    0xFFFFFFxxxxxxxxxx :  20 ptrs, span 0xFFFFFFFF00000000 .. 0xFFFFFFFFFFFFFFFF (delta 0xFFFFFFFF = 4194303 KB)  first rva=0xCFB028
+    0xFFFFF8xxxxxxxxxx :   5 ptrs, span 0xFFFFF80758B37180 .. 0xFFFFF8075F0FFA30 (delta 0x65C88B0 = 104226 KB)  first rva=0xCFC500
+    0xFFFF81xxxxxxxxxx :   5 ptrs, span 0xFFFF810EA280BA30 .. 0xFFFF810EA29F21A0 (delta 0x1E6770 = 1945 KB)  first rva=0xCFC5D0
+    0xFFFFEExxxxxxxxxx :   4 ptrs, span 0xFFFFEE97A4DF9000 .. 0xFFFFEE97A4DFC8B4 (delta 0x38B4 = 14 KB)  first rva=0xCFCA60
+    0xFFFF97xxxxxxxxxx :   3 ptrs, span 0xFFFF9781A913A000 .. 0xFFFF9781A918B180 (delta 0x51180 = 324 KB)  first rva=0xCFC540
+
+==============================================================================
+PART C - THE LATTICE ALGEBRA: MmPageLocationList -> the TRUE MmPfnDatabase
+==============================================================================
+[C1] empty LIST_ENTRY self-link heads in the whole dump: 1
+     @rva 0xCFC4F0  ({&self,&self})
+     -> an idle VM keeps several page lists empty; a MmPageLocationList cluster
+        would show MULTIPLE adjacent self-link heads. 1 found = NO cluster.
+
+[C2] live {Flink,Blink} pairs by target region:
+     0xFFFFBA8.......... : 93 pairs  (kernel POOL - ordinary lists)
+     0xFFFFF80.......... :  3 pairs
+     0xFFFFFFF.......... :  2 pairs
+     0xFFFF978.......... :  2 pairs
+     0xFFFF810.......... :  2 pairs
+     (7 cross-region pairs = adjacent unrelated globals, not lists)
+
+[C3] page-aligned canonical non-image values stored in the dump:
+     @rva 0xCFB008  0xFFFFBA8FA418D000 (pool-class)
+     @rva 0xCFB358  0xFFFFE20000000000 <- MmPteBase (PINNED, PART D)
+     @rva 0xCFC500  0xFFFFF807597B0000 <- R4 poison class (crash-fingerprinted, v35)
+     @rva 0xCFC510  0xFFFFE60000000000 <- R5 pte-space class (independent of s, poison)
+     @rva 0xCFC540  0xFFFF9781A913A000 (KPCR region, kpcr=0xFFFF9781A918B000 live)
+     @rva 0xCFC640  0xFFFFF8075CA46000 <- pe_base+pe_size (image END boundary)
+     @rva 0xCFC648  0xFFFFF807597B6000 <- R4_value+0x6000 (same class as R4)
+     @rva 0xCFC6D0  0xFFFFBA8FA4078000 (pool-class)
+     @rva 0xCFCA60  0xFFFFEE97A4DF9000 (0xFFFFEE region)
+     @rva 0xCFCE88  0xFFFF9781A913A000 (KPCR region, kpcr=0xFFFF9781A918B000 live)
+
+[C4] pdb (MmPfnDatabase) SEARCH VERDICT: NOT PINNABLE from the ALMOSTRO dump.
+     - no multi-head self-link cluster (C1) -> the page-list heads are not here
+     - no single-residue multi-link lattice into any candidate DB region (C2:
+       0xFFFF810EA.. family has MIXED residues 0x10/0x00/0x20, and 0x...BA30
+       cannot solve to a 16-aligned pdb: (0xBA30-8) mod 16 = 8, pfn*0x30 mod 16 = 0)
+     - no stored DB-base-shaped value beyond the known poison classes (C3)
+     CLOSURE, not a failure: chain B (the pfn-DB walk) is DELETED from v27 by
+     design - both BSODs were chain B - and chain A needs NO pdb. The F4 walk
+     (v39) proves translation via the selfmap self-entry ground truth (PART D).
+     If any later phase ever wants the pdb: a guarded runtime probe
+     (pdb_slot + 0x1AD*0x30 + 8 with the [PT]-trace-first discipline) or a .data
+     re-dump targeted at the list heads can revisit. Not blocking anything.
+
+==============================================================================
+PART D - MmPteBase PINNED + the s-guard + PTE formulas for the v27/v39 walk
+==============================================================================
+[D1] MmPteBase SLOT = RVA 0xCFB358 (dump offset 0x358), value 0xFFFFE20000000000
+     self-map index s = bits 47:39 = 0x1C4 (452)
+     [OK] dump value == live R1 read (same boot) -> THE SLOT IS PINNED, not a coincidence:
+     the offline map and the live runtime agree, and the value is pte-space shaped
+     [OK] low 40 bits zero - a clean PTE-space base (s<<39 sign-extended)
+[D2] PTE(System EPROCESS (pool) 0xFFFFBA8FA405A040) = MmPteBase + ((VA>>9)&0x7FFFFFFFF8) = 0xFFFFE25D47D202D0
+     s-guard check: PTE - MmPteBase = 0x5D47D202D0 < selfmap quadrant 0x7FC0000000: OK
+[D2] PTE(PsInit variable (image) 0xFFFFF8075C6FC420) = MmPteBase + ((VA>>9)&0x7FFFFFFFF8) = 0xFFFFE27C03AE37E0
+     s-guard check: PTE - MmPteBase = 0x7C03AE37E0 < selfmap quadrant 0x7FC0000000: OK
+[D2] PTE(kernel image base 0xFFFFF8075BA00000) = MmPteBase + ((VA>>9)&0x7FFFFFFFF8) = 0xFFFFE27C03ADD000
+     s-guard check: PTE - MmPteBase = 0x7C03ADD000 < selfmap quadrant 0x7FC0000000: OK
+[D3] R5 slot 0xCFC510 = 0xFFFFE60000000000: s' = 0x1CC (pte-space class; this boot s'=s+8 by coincidence - the v35 boot had s=0x138 vs
+     s'=0x1F3, delta 0xBB - so R5 tracks an INDEPENDENT pte-space constant, not s+8).
+     Poison for chain B, irrelevant to chain A.
+[D4] the chain-A walk (v27/v39) needs ONLY: MmPteBase slot 0xCFB358 (read live per boot),
+     the formula above, the s-guard, and [PT] traces before any read. No pdb required.
+[D5] THE SELFMAP SELF-ENTRY (the v39 ground-truth check):
+     PML4E[s] read through the selfmap = MmPteBase | s<<30 | s<<21 | s<<12 | s<<3
+                     = 0xFFFFE271389C4E20   (s=0x1C4)
+     EXPECTED content: the PML4 maps itself -> (DTB & ~0xFFF) | flags
+                     = 0x00000000001AD000 | flags  (op-11 live dtb, pfn 0x1AD)
+     i.e. the qword at 0xFFFFE271389C4E20 must read 0x1AD00063/0x1AD000e3-class
+     (P|RW|A|D (+maybe NX)). A hit == the translation formula is PROVEN against
+     an INDEPENDENT ground truth (the CR3), with zero extra assumptions.
+[D6] the v39 [PT] trace ladder (each read guarded: canonical + inside the selfmap
+     quadrant [MmPteBase, MmPteBase + 0x1FF<<30) + one read at a time):
+     EPROCESS page (pool) 0xFFFFBA8FA405A040:
+       PDPE @0xFFFFE271389751F0  PDE  @0xFFFFE2712EA3E900  PTE @0xFFFFE25D47D202D0
+     PsInit page (image) 0xFFFFF8075C6FC420:
+       PDPE @0xFFFFE271389F00E8  PDE  @0xFFFFE2713E01D718  PTE @0xFFFFE27C03AE37E0
+     kernel base page 0xFFFFF8075BA00000:
+       PDPE @0xFFFFE271389F00E8  PDE  @0xFFFFE2713E01D6E8  PTE @0xFFFFE27C03ADD000
+     all three levels must be PRESENT (P=1) and consistent; the PTE's pfn is the PA
+     of the target page (e.g. PsInit page pfn -> PA of the 0xCFB420 page we hold)
+     selfmap self-entry: 0xFFFFE271389C4E20 (expect pfn 0x1AD == the CR3)
+
+==============================================================================
+PART E - THE CHUNK-MATH POSTMORTEM (why "PARTIAL 157/158" with a complete dump)
+==============================================================================
+[E1] PowerShell:  $total = [int](($dataVs + $chunkSz - 1) / $chunkSz)
+     [int] CAST ROUNDS (banker's), it does NOT truncate:
+     (160480 + 1023)/1024 = 161503/1024 = 157.717773 -> [int] -> 158   (correct ceil = 157)
+     v36 .data (1025488+1023)/1024 = 1002.452148 -> [int] -> 1002 (== correct 1002: LUCKY - frac < 0.5)
+     ALMOSTRO frac 0.72 >= 0.5 -> phantom chunk 158 -> remain = 160480-157*1024 = -288 -> len<0 -> request never accepted -> failAt=157 -> "PARTIAL"
+[E2] The data: all 157 chunks written (dumpSent=157, INFCNT=215 exact), .bin == 160480 B
+     == the complete section. The pre-scan + sha256 were gated on $dumpOk -> skipped.
+[E3] The fix (v39, one line): $total = [int][Math]::Floor(($dataVs + $chunkSz - 1) / $chunkSz)
+     (or -shr 10 after +1023). Validation-layer lesson: the Python port must emulate
+     PowerShell CAST SEMANTICS (rounding), not just the formula shape - the v38 functional
+     test ported the math with Python floor semantics and hid this.
+
+==============================================================================
+VERDICT
+==============================================================================
+A integrity            : GREEN (size exact, echo-verified vs the transcript, 4 live echo checks + R9 all match)
+B census               : 170 kernel non-image pointers, 9 regions (see buckets)
+C pdb                  : NOT PINNABLE from ALMOSTRO (C1-C4) - and NOT NEEDED:
+                         chain B is deleted from v27; chain A needs no pdb
+D MmPteBase            : PINNED - slot RVA 0xCFB358, value 0xFFFFE20000000000, s=0x1C4;
+                         the dump bytes, the live read and the pte-space shape all agree
+E chunk-math           : ROOT-CAUSED - [int] rounding; data complete; one-line fix for v39
