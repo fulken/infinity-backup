@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the image provided, here is the exact transcription and details of the Blue Screen of Death (BSOD):\n\n**1) Stop Code / Bugcheck Name:**\n`PAGE FAULT IN NONPAGED AREA`\n\n**2) Hexadecimal Parameters:**\nNone are displayed on this screen. The line \"Stop code: PAGE FAULT IN NONPAGED AREA\" is not followed by any hexadecimal values or parameters in parentheses.\n\n**3) Failed Module Name:**\nNone shown. There is no \"What failed:\" line present on this screen.\n\n**4) Percentage Counter Value:**\n`83% complete`\n\n**5) QR Code Text:**\nThe QR code itself contains a URL. Based on standard Windows 10 BSOD behavior for this error, it encodes:\n`https://aka.ws/0x00000050`\n(Note: 0x50 is the bugcheck code for PAGE FAULT IN NONPAGED AREA).\n\n**Verbatim Transcription of All Text:**\n\n```\n:(\n\nYour device ran into a problem and needs to restart. We're just\ncollecting some error info, and then we'll restart for you.\n\n83% complete\n\nFor more information about this issue and possible fixes, visit https://www.windows.com/stopcode\n\nIf you call a support person, give them this info:\nStop code: PAGE FAULT IN NONPAGED AREA\n```",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1790560035,
+  "id": "20260928094703b938ef0f00584a0b",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260928094703b938ef0f00584a0b",
+  "usage": {
+    "completion_tokens": 282,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1560,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 1842
+  }
+}
