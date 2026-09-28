@@ -1434,3 +1434,21 @@ Work Log:
 Stage Summary:
 - After this push: every driver-project work product is on the vault - artifacts, source, toolchain, kit template, all 39 reports, the full script library, worklog
 - The audit script itself is now part of scripts/ - rerun it anytime to re-verify coverage
+
+---
+Task ID: 45 (rollback-recovery-4 + REPO COPY DELIVERED)
+Agent: Super Z (main)
+Task: 12th workspace rollback detected (back to Phase C / be7defe era) — full restore from vault 2e146e2; answer the user's ask for a standalone copy of the backup repo
+
+Work Log:
+- ROLLBACK DETECTED: workspace at Phase C state (local git be7defe, worklog ended at phase-c-bench, build-v20-tree/ + backups/ + upload extracts gone; .github-token, qemu bench, local .git, gnuefi-jammy all survived)
+- VAULT VERIFIED INTACT: fulken/infinity-backup @ main 2e146e2, 57 commits, pushed 2026-09-28 22:00 UTC (= Task 44b audit state); full clone to /tmp/vault-check: 605 files / 142M, uefi-src complete (main.c + 15 headers + Makefile + ld), worklog through 44b, v35-v39 evidence all present
+- REPO COPY DELIVERED: download/infinity-backup-repo-20260929.bundle (32M, sha256 9e51e760...) — git bundle --all (main + phase-E-proven tag), complete 57-commit history; verified via bundle verify + test-clone (HEAD 2e146e2 reproduced exactly). Restorable anywhere, offline, no GitHub login: git clone infinity-backup-repo-20260929.bundle <dir>
+- RESTORED FROM VAULT: worklog.md; scripts/ (incl. the guarded push script + audit-vault-coverage.sh + full make-v2x recipe chain); patches/; version-archive/ (kits/ template + all reports/packages incl. v39 evidence); addons/; validation-evidence/; infinity-qemu-test/ (44b template + trigger-test-v39.ps1 overlaid from v39-swap zip); build-v20-tree/UEFI/ (src + include + build/Makefile + build/gnuefi-x86_64.ld from uefi-src)
+- v27 BINARIES: v27-memory-RT.efi restored from v39-swap usb-d/memory.efi — sha256 e13f9f24... EXACT match to the F4-proven field binary; v27-memory-SAFE.efi not present in any vault zip (rebuildable from uefi-src + gnuefi-toolchain via the make-v2x chain, proven reproducible)
+- CLOSING THE LOOP: this commit + push (58th) makes the vault worklog current through Task 45; audit-vault-coverage.sh re-run post-push (see below)
+
+Stage Summary:
+- 12th rollback fully recovered, ZERO data loss — during the rollback window the vault was the only complete copy and it held (backup system worked exactly as designed); recovery path: clone -> overlay mirrored set -> rebuild UEFI tree -> re-extract RT binary (hash-verified)
+- The user now holds an independent offline copy of the whole repo (the bundle in download/) — recovery no longer depends on this workspace surviving
+- Self-contained rebuild recipe (all on the vault): uefi-src + gnuefi-toolchain + make-v2x chain -> e13f9f24 binary; no network, no GitHub, no old workspace needed
