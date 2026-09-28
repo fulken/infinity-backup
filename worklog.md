@@ -1452,3 +1452,20 @@ Stage Summary:
 - 12th rollback fully recovered, ZERO data loss — during the rollback window the vault was the only complete copy and it held (backup system worked exactly as designed); recovery path: clone -> overlay mirrored set -> rebuild UEFI tree -> re-extract RT binary (hash-verified)
 - The user now holds an independent offline copy of the whole repo (the bundle in download/) — recovery no longer depends on this workspace surviving
 - Self-contained rebuild recipe (all on the vault): uefi-src + gnuefi-toolchain + make-v2x chain -> e13f9f24 binary; no network, no GitHub, no old workspace needed
+
+---
+Task ID: 45b (audit truthfulness fix + kit template refresh + final push)
+Agent: Super Z (main)
+Task: Close the loop on rollback-recovery-4 — make audit-vault-coverage.sh truthful, refresh the kit template snapshot, final vault push
+
+Work Log:
+- BUG FOUND+FIXED in scripts/audit-vault-coverage.sh section 5 (my own new code, minutes old): `unzip -l | grep -q` under `set -o pipefail` is RACY — grep -q exits at first match, SIGPIPEs unzip, pipeline returns 141 and a PRESENT file reads as missing (observed as random README-V11/15/17/18/19/20/24 false alarms that vanished on re-test). Fix: precompute the zip listing once into a variable and grep the in-memory string — also 1 unzip instead of 51
+- Section 5 now checks the kit template zip too (the 44b-era section predates the Gap-3 fix and only compared loose kit files vs patches/, printing NOT-IN-VAULT for files that ARE on the vault inside the template zip)
+- KIT TEMPLATE REFRESHED: version-archive/kits/infinity-qemu-test-template.zip rebuilt from the current kit dir (93 entries, 4052800 B, now includes trigger-test-v39.ps1 — the 44b snapshot predated it by ~50 min); the old template remains in git history
+- v39 coverage clarified: patches/ holds the whole v28-v39 script series + README-V39-FA.md + phase-d-v39.bat; kit root's trigger-test-v10.ps1 + trigger-test-v39.ps1 are the "2 by patches/"
+- FINAL AUDIT STATE (all green): [1] vault areas OK (version-archive 232 files, patches 83, scripts 199, uefi-src 18, validation-evidence 4, worklog/edk2_Runtime.c/README) [2] 39/39 upload zips covered [3] 10/10 download packages covered [4] uefi-src byte-identical to the local tree [5] 51/51 kit root files covered (2 patches/ + 49 template zip) [6] remaining workspace areas informational-only and by-design (gnuefi-jammy==gnuefi-toolchain, backups/ staging disposable, upload/ zips all vaulted + extract dirs disposable, .git local history, build-v20-tree == uefi-src + RT binary in v39-swap)
+
+Stage Summary:
+- The audit is now fully truthful and fully green: every irreplaceable driver-project artifact is on fulken/infinity-backup — and the user holds an independent offline copy (the bundle in download/)
+- Kit template snapshot current through v39; audit script pipefail-safe and zip-aware
+- This push vaults: patched audit script + refreshed kit template + worklog through 45b

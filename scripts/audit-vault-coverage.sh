@@ -56,14 +56,26 @@ done <<< "$srclist"
 [ $diffs -eq 0 ] && echo "  ALL source files byte-identical with the vault snapshot"
 
 echo
-echo "== [5] infinity-qemu-test/ (kit dir) vs patches/ (vaulted):"
-miss=0; tot=0
+echo "== [5] infinity-qemu-test/ (kit dir) vs patches/ + kits template zip (vaulted):"
+KITZIP="$STAGE/version-archive/kits/infinity-qemu-test-template.zip"
+# NOTE: precompute the listing ONCE. A per-file `unzip -l | grep -q` pipeline is
+# racy under `set -o pipefail`: grep -q exits at first match -> SIGPIPE to unzip
+# -> pipeline status 141 -> a PRESENT file reads as missing.
+ziplist=""
+[ -f "$KITZIP" ] && ziplist="$(unzip -l "$KITZIP" 2>/dev/null || true)"
+miss=0; tot=0; viapt=0; viazip=0
 for f in "$BASE"/infinity-qemu-test/*; do
   [ -f "$f" ] || continue
   tot=$((tot+1)); b=$(basename "$f")
-  [ -f "$STAGE/patches/$b" ] || { echo "  NOT-IN-VAULT: $b"; miss=$((miss+1)); }
+  if [ -f "$STAGE/patches/$b" ]; then
+    viapt=$((viapt+1))
+  elif printf '%s\n' "$ziplist" | grep -q "infinity-qemu-test/$b\$"; then
+    viazip=$((viazip+1))
+  else
+    echo "  NOT-IN-VAULT: $b"; miss=$((miss+1))
+  fi
 done
-echo "  -> $((tot-miss))/$tot covered by patches/"
+echo "  -> $viapt by patches/, $viazip by kit template zip, $miss truly missing (of $tot)"
 
 echo
 echo "== [6] Workspace areas NOT on the vault (informational):"
