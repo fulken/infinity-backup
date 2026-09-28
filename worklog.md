@@ -1281,3 +1281,20 @@ Stage Summary:
 - v37 = the ALMOSTRO dump: the SAME crash-proof machinery (op-12 zero-send, image-gated chunks) pointed at the section that ACTUALLY holds the Mm constants + R9 live neighborhood + the in-script pre-scan + the F4-brace fix
 - 2 real pre-ship bugs caught by the new validation layers (the lattice double-offset + the audit's own paren check on the bat) - the layers work
 - NEXT SESSION: the v37 report -> the offline ALMOSTRO analysis (the MmPageLocationList lattice + the PsInit-adjacent neighborhood pin the TRUE pdb slot + value) -> the v27 driver (chain B DELETED + the s-guards + [PT] traces BEFORE any read + the walk validated against the PINNED constant) -> the v38 walk kit = F4 PROVEN (attempt 5, the walk itself)
+
+---
+Task ID: 39
+Agent: Super Z (main)
+Task: User noticed GitHub vault was not updated ("گیت هاب آپدیت نیست فکنم"); audit gap and push the missing delta
+
+Work Log:
+- Audited both stores: GitHub vault fulken/infinity-backup HEAD was 740f2fb @ 03:11 UTC (covers workspace e82f01c = v35-analysis + v36-kit era), while local workspace was at 235db8d — TWO commits ahead (3ba0ab8 v36-report analysis, 235db8d v37 kit). User was right: the v36/v37 delta was missing from GitHub
+- Delta inventory (27 files, ~20.9k insertions): v36 report zip + loose-evidence/v36-run (the 1,002,488-B ground-truth ntoskrnl-data.bin + manifest + marker + serial log 8,792 lines + trigger output 6,621 lines + boot PNG + VLM json + dotadata-analysis.txt), v37 packages (infinity-v37-swap.zip 106,889 B + infinity-qemu-test-v26d.zip 3,427,733 B), patches (trigger-test-v37.ps1 2,408 lines + phase-d-v37.bat 627), scripts (analyze-v36-dump.py, make-v37.py, make-v37-bat.py, audit-v37-ps1.py, ps-structcheck.py, test-v37-prescan.py, build-v37-package.sh), worklog +53 lines
+- Token re-verified (HTTP 200, repo private:True); ran scripts/push-infinity-backup.sh: clone-history → mirror 456 files/124M → leak checks green (staged content + .git/config) → ephemeral-header push 740f2fb..a7620cf → post-push verification clean
+- Spot-verified 7 key delta files via contents API: ALL HTTP 200 on GitHub (v36 report zip, both v37 packages, the 1MB ground-truth dump, v37 ps1, make-v37.py, analyze-v36-dump.py)
+- Second sync push (this worklog entry) so the record of the fix itself survives total loss
+
+Stage Summary:
+- GitHub vault fulken/infinity-backup now FULLY caught up through workspace 235db8d (v37 kit / F4 attempt 4 era): 50 backup commits, dual storage GREEN again
+- Standing reminder recorded: every session that ends with a shipped kit or an analyzed report MUST close with a vault push — the v37 session skipped it and the user caught the gap
+- Next: await the v37 field report → offline ALMOSTRO analysis (MmPageLocationList lattice + PsInit-adjacent neighborhood pin the TRUE pdb slot) → v27 driver + v38 walk kit = F4 PROVEN
