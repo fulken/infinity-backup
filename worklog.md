@@ -1418,3 +1418,19 @@ Work Log:
 Stage Summary:
 - The driver source now lives on the vault as a DIRECT snapshot, independent of the recipe/base/repo chain - the last single-point-of-failure for the source is closed
 - No code was written or modified; this is a backup-coverage change only
+---
+Task ID: 44b
+Agent: Super Z (main)
+Task: Full vault-coverage audit + close every remaining gap
+
+Work Log:
+- AUDIT (scripts/audit-vault-coverage.sh, new): compared the live workspace against the fresh staging clone (= exact remote state): all 39 upload zips covered in version-archive; uefi-src byte-identical; version-archive 229 + patches 83 + scripts 198 files present; THREE real gaps found
+- GAP 1 CLOSED: download/infinity-clipboard-addon.zip (the SPICE clipboard kit, Sep 21) -> version-archive/packages/
+- GAP 2 CLOSED: download/infinity-qemu-test-v8.zip (the v8-era kit) -> version-archive/packages/
+- GAP 3 CLOSED: infinity-qemu-test/ (the kit template dir, 50 files: trigger scripts v11-v27 + README-FA v11-v28 + the infra bats phase-a/b/c/refresh + VERSION) -> version-archive/kits/infinity-qemu-test-template.zip (4004497 B)
+- BONUS: gnuefi-jammy (840K toolchain) now mirrored as vault gnuefi-toolchain/ (monotonic guard, same as uefi-src) - the vault rebuild recipe is now fully self-contained: uefi-src + gnuefi-toolchain + make = the e13f9f24 binary, no network needed
+- NOT on the vault BY DESIGN (unchanged): infinity-repo/ + backups/ (645M+897M, hold the client-era repo; the driver-relevant content is superseded by uefi-src), .git local history, upload extract dirs + tool-results (disposable), test-v7 bench env (evidence/ IS vaulted; kernel images re-downloadable; bench rebuildable via scripts), .github-token (leak-check rule - never vaulted), client project files (their home is fulken/Infinity)
+
+Stage Summary:
+- After this push: every driver-project work product is on the vault - artifacts, source, toolchain, kit template, all 39 reports, the full script library, worklog
+- The audit script itself is now part of scripts/ - rerun it anytime to re-verify coverage

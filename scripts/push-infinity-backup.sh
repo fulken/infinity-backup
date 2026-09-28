@@ -86,6 +86,14 @@ if [ -d "$BASE/build-v20-tree/UEFI/src" ]; then
 else
   echo "  WARN: build-v20-tree/UEFI absent — uefi-src preserved from vault history"
 fi
+# --- gnu-efi toolchain (840K headers+libs; makes the uefi-src rebuild self-contained) ---
+if [ -d "$BASE/gnuefi-jammy/usr" ]; then
+  rm -rf gnuefi-toolchain
+  cp -r "$BASE/gnuefi-jammy" gnuefi-toolchain
+  echo "  gnuefi-toolchain: refreshed"
+else
+  echo "  WARN: gnuefi-jammy absent — gnuefi-toolchain preserved from vault history"
+fi
 mkdir -p validation-evidence/test-v7
 cp -r "$BASE/test-v7/artifacts" validation-evidence/test-v7/
 cp    "$BASE/scripts/infinity-backup-README.md" README.md
