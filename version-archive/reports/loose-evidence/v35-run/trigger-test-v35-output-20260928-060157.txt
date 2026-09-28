@@ -1,0 +1,573 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260928060159
+Username: DESKTOP-23EQNHP\Administrator
+RunAs User: DESKTOP-23EQNHP\Administrator
+Configuration Name: 
+Machine: DESKTOP-23EQNHP (Microsoft Windows NT 10.0.19045.0)
+Host Application: PowerShell.exe -noexit -command Set-Location -literalPath 'C:\Users\Administrator\Desktop'
+Process ID: 3296
+PSVersion: 5.1.19041.7663
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.19041.7663
+BuildVersion: 10.0.19041.7663
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+[LOG] writable spot found - auto-saving all output to:
+[LOG] C:\Users\Administrator\Desktop\trigger-test-v35-output-20260928-060157.txt
+[LOG] (the folder beside the script is READ-ONLY - the boot
+[LOG]  stick is read-only by design - so the transcript lands
+[LOG]  on a writable drive instead. Get it out of the VM with
+[LOG]  the transfer stick + refresh-files.bat - see the end.)
+
+==== INFINITY trigger test v35 (v26 driver UNCHANGED: F4 RECON + THE .data DUMP - after the SECOND 0x50, fingerprint-named: chain B derefs a garbage MmPfnDatabase at pdb+pfn*0x30+8; op-12 RETIRED this run; full K/L/M/J/W regression + the cap-aware W2 + RECON + the ground-truth dump) ====
+[ENV] PowerShell 5.1.19041.7663  Windows build 10.0.19045.0
+
+--- step 0: previous-boot post-mortem (Event Log) ---
+      BUGCHECK 9/28/2026 5:00:32 AM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x00000050 (0xfffff80551725078, 0x0000000000000000, 0xfffff80559287286, 0x0000000000000000). A dump was saved in: C:\Windows\MEMORY.DMP. Report Id: 9c49b3b7-4042-4454-a87f-0e8284e5533c.
+      ARGS: 0x00000050 (0xfffff80551725078, 0x0000000000000000, 0xfffff80559287286, 0x0000000000000000)  <- v35: if this is a 0x50 from the v34 run,
+      compare arg1 - (a page-aligned kernel ptr): is the remainder pfn*0x30+8? = chain B
+      BUGCHECK 9/28/2026 1:29:52 AM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x00000050 (0xfffff807154e5078, 0x0000000000000000, 0xfffff8071d08707c, 0x0000000000000000). A dump was saved in: C:\Windows\MEMORY.DMP. Report Id: 403f8471-1886-45c3-bec8-c01283597822.
+      ARGS: 0x00000050 (0xfffff807154e5078, 0x0000000000000000, 0xfffff8071d08707c, 0x0000000000000000)  <- v35: if this is a 0x50 from the v34 run,
+      compare arg1 - (a page-aligned kernel ptr): is the remainder pfn*0x30+8? = chain B
+      BUGCHECK 9/21/2026 4:10:48 PM: The computer has rebooted from a bugcheck.  The bugcheck was: 0x0000001e (0xffffffffc0000005, 0xfffff80185689ab9, 0x0000000000000000, 0x000000007fab841f). A dump was saved in: C:\Windows\MEMORY.DMP. Report Id: f2821182-a656-4fc7-a529-6a37a1403678.
+      ARGS: 0x0000001e (0xffffffffc0000005, 0xfffff80185689ab9, 0x0000000000000000, 0x000000007fab841f)  <- v35: if this is a 0x50 from the v34 run,
+      compare arg1 - (a page-aligned kernel ptr): is the remainder pfn*0x30+8? = chain B
+      KERNEL-POWER 41 9/28/2026 4:52:20 AM (unexpected stop - the instant-death class leaves ONLY this)
+      KERNEL-POWER 41 9/28/2026 1:21:33 AM (unexpected stop - the instant-death class leaves ONLY this)
+      KERNEL-POWER 41 9/26/2026 8:20:29 AM (unexpected stop - the instant-death class leaves ONLY this)
+      -> a BUGCHECK line at an OLD run time names THAT era killer;
+         41-only = instant death with no chance to log (the long-dead v19/v20 class).
+      -> v35: C:\Windows\Minidump\*.dmp (if any) holds the same evidence in
+         full - a screenshot/list of that folder is welcome but NOT required.
+[SELFTEST] U32/U64/HexLe4/New-Req all passed - parsers verified before touching the driver
+[OK] SeSystemEnvironmentPrivilege enabled (rc=0)
+[CLR] stale probe variables cleaned (best effort)
+[CANARY] pre-A (baseline INFDIAG reads next - the script-v21 death spot, class-killed long ago)  (serial: 'S OURVAR delete' = we got this far)
+
+--- step A/B: baseline INFDIAG double read (read path via hook?) ---
+       v15+: reads are answered LIVE from RAM by the hook (the
+       bridge is field-proven since v15), so B must be A+1 or
+       more if the read path works.
+[A] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 B7 00 00 00 00 00 00 00
+[A] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=183 last_status=0x0
+[B] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 B8 00 00 00 00 00 00 00
+[B] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=184 last_status=0x0
+
+--- step C: INFPROBE write (neutral name; raw NVRAM write path) ---
+[OK] INFPROBE write accepted (Win32=0)
+[C] raw: 44 46 4E 49 04 00 00 00 0F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 BB 00 00 00 00 00 00 00
+[C] STAGE=4 flags=0xF(loaded,EBS,virt,early-hooks) win_build=19045 os_cr3=0x7FC01000 hook_calls=187 last_status=0x0
+[OK] INFPROBE read-back: 1 bytes: 42
+
+--- step D: INFTRIGGER write (trigger flag 0x20 + INFCNT +1) ---
+[OK] INFTRIGGER write accepted (Win32=0)
+[D] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 BF 00 00 00 00 00 00 00
+[D] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=191 last_status=0x0
+
+[CANARY] pre-E (the PING request transport next)  (serial: 'S OURVAR delete' = we got this far)
+--- step E: InfinityReq PING (48 bytes, op=0xDEADBEEF) ---
+       req bytes[0..7]: 37 13 00 00 EF BE AD DE  (37 13 00 00 EF BE AD DE expected)
+[OK] InfinityReq write accepted (Win32=0)
+[E] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 C3 00 00 00 00 00 00 00
+[E] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=195 last_status=0x0
+
+--- step E2: reading InfinityResp (FULL BRIDGE check) ---
+[OK] InfinityResp 32 bytes: 37 13 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     sequence=0x1337  status=1(Success)  bytes_transferred=0  out_address=0x0
+
+--- step F: final INFDIAG + InfinityReq read-back ---
+[F] raw: 44 46 4E 49 04 00 00 00 2F 00 00 00 65 4A 00 00 00 10 C0 7F 00 00 00 00 C6 00 00 00 00 00 00 00
+[F] STAGE=4 flags=0x2F(loaded,EBS,virt,early-hooks,TRIGGER-SEEN) win_build=19045 os_cr3=0x7FC01000 hook_calls=198 last_status=0x0
+[--] InfinityReq read-back: ABSENT (Win32=203)
+
+--- step G: INFCNT read (live RAM count: 0 = writes bypassed, 2 = both reached) ---
+[OK] INFCNT read-back: 4 bytes: 02 00 00 00
+
+--- step H: InfinityData write+read round trip (the payload transport) ---
+[OK] InfinityData write accepted (Win32=0)
+[OK] InfinityData read-back: 32 bytes: 47 14 00 00 27 2E 35 3C 43 4A 51 58 5F 66 6D 74 7B 82 89 90 97 9E A5 AC B3 BA C1 C8 CF D6 DD E4
+     32-byte pattern echoed back byte-exact: YES - payload transport WORKS
+
+--- step I: ReqOp_Attach -- SKIPPED (v19 crashed the VM here; op=7 walks the ---
+    process list for emulator EXEs that do not exist in this VM -
+    disassembly-proven fatal, and NOT needed for kernel reads)
+
+--- step K: ReqOp_Anchors (op=9) - F1 anchor discovery (v20..v26 containing-walk) ---
+      status=1(Success) => CONVERGED (EXPECTED with v20/v21): the containing-walk skips
+            nested PEs and the TRUE image range unlocks (L1..L3).
+      status=4(ErrAccess) => FAIL-CLOSED (valid, documented): gate stays KUSD-only
+      (L1..L3 skip; L4/L5 still run). Serial [AN] skip lines name the refusal.
+[CANARY] pre-K  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 17 00 00 01 00 00 00 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1701  status=1(Success)  bytes_transferred=32  out_address=0x0
+     resp dwords: @0=5889  @4=1  @8=32  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 32 bytes: 01 00 00 00 00 00 00 00 00 00 60 51 06 F8 FF FF 00 60 04 01 00 00 00 00 00 80 19 C4 00 8C FF FF
+     data dwords: @0=1  @4=0  @8=1365245952  @12=4294965254  @16=17063936  @20=0  @24=3290005504  @28=4294937600
+     [K] payload: state=1 reason=0 pe_base=0xFFFFF80651600000 pe_size=0x1046000 idt_base=0xFFFF8C00C4198000
+     [K] >>> ANCHORS CONVERGED - validated range [0xFFFFF80651600000, 0xFFFFF80652646000) UNLOCKED <<<
+
+--- step L1: read @pe_base len=4 - the MZ signature ---
+[CANARY] pre-L1  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 02 17 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1702  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5890  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 4D 5A 90 00
+     data dwords: @0=9460301
+     [L1] PASS: 4D 5A = MZ - the validated image header came back through the gate
+
+--- step L2a: read @pe_base+0x3C len=4 - e_lfanew ---
+[CANARY] pre-L2a  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 03 17 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1703  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5891  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 18 01 00 00
+     data dwords: @0=280
+     [L2a] PASS: e_lfanew=0x118 (in range)
+
+--- step L2b: read @pe_base+e_lfanew len=0x58 - the PE header block ---
+[CANARY] pre-L2b  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 04 17 00 00 01 00 00 00 58 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1704  status=1(Success)  bytes_transferred=88  out_address=0x0
+     resp dwords: @0=5892  @4=1  @8=88  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 88 bytes: 50 45 00 00 64 86 21 00 51 15 03 7C 00 00 00 00 00 00 00 00 F0 00 22 00 0B 02 0E 14 00 BA 8B 00 00 8A 1B 00 00 B0 48 00 10 00 99 00 00 10 00 00 00 00 60 51 06 F8 FF FF 00 10 00 00 00 02 00 00 0A 00 00 00 0A 00 00 00 0A 00 00 00 00 00 00 00 00 60 04 01 00 08 00 00
+     data dwords: @0=17744  @4=2197092  @8=2080576849  @12=0  @16=0  @20=2228464  @24=336462347  @28=9157120  @32=1804800  @36=4763648  @40=10027024  @44=4096  @48=1365245952  @52=4294965254  @56=4096  @60=512  @64=10  @68=10  @72=10  @76=0  @80=17063936  @84=2048
+     [L2b] sig PE\0\0=True  machine AMD64=True  entry RVA=0x990010  SizeOfImage=0x1046000
+     [L2b] PASS + SizeOfImage == the anchor payload pe_size (transport double-validates the range)
+
+--- step L3: read @pe_base+entryRVA len=8 - real kernel code bytes ---
+[CANARY] pre-L3  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 05 17 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1705  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=5893  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 48 83 EC 38 4C 89 7C 24
+     data dwords: @0=955024200  @4=612141388
+     [L3] PASS: 8 entry-point bytes back: 48 83 EC 38 4C 89 7C 24
+
+--- steps L4/L5: gate negatives (below and above the validated range) ---
+[CANARY] pre-L4  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 06 17 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1706  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5894  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+     [L4] PASS: pe_base-0x1000 (below the range) rejected ErrAccess(4) - gate closed below
+[CANARY] pre-L5  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 07 17 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1707  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5895  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+     [L5] PASS: pe_base+pe_size (above the range) rejected ErrAccess(4) - gate closed above
+
+LADDER DECISION TABLE (for reading the video if the VM dies):
+ dies at J1     -> the driver is NOT v18+ (a v17 would walk+CR3-switch = instant death).
+ dies at W1/W4/W5 -> the F3 walk path (v24; v23 = 134330 B and its MISSING DEREF refuses W with payload status=4 +
+  not-System walk=0 - the v31 field signature; v22 = also refuses every M). Never a crash by construction.
+                  Sizes now differ: v24-RT = 134842 bytes (sha256 f8a01814...dbcf5846); v23/v22 = 134330. +
+  phase-d.bat checks size + hash before every run.
+ dies at J2..J5 -> a window read is fatal DESPITE the direct path - the serial
+                  [RD] mapped va / mapped read ok pair tells exactly how far it got
+ dies at J6/J7  -> unexpected (gate-rejected / no-attach paths) - send everything
+ J1 answers ErrAccess(4) -> the gate rejected a VALID KUSD address: driver not v18+.
+                  Do NOT rerun until memory.efi is replaced (size 131709).
+ survives all 7 -> full matrix ran; verdict printed at the end
+
+--- step J1: kernel READ  pid=FFFFFFFF  len=4  addr=USER alias 0x7FFE0260 ---
+      why: THE DATA PATH PROOF: v18 direct read, user window - the same page [BLD] reads
+[CANARY] pre-J1  (serial: 'S OURVAR delete' = we got this far)
+[J1] >>> SENDING op=1(READ) seq=0x1601 pid=FFFFFFFF len=4 addr=0x000000007FFE0260
+[J1]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=USER alias 0x7FFE0260 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1601  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5633  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 65 4A 00 00
+     data dwords: @0=19045
+      *** KERNEL DATA PATH ANSWER: 19045 (0x4A65) came back at InfinityData offset 0 ***
+      [J1] result: ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+
+--- step J2: kernel READ  pid=FFFFFFFF  len=4  addr=KERNEL alias 0xFFFFF78000000260 ---
+      why: kernel-space VA via requests - first kernel-alias data ever (v20 died here; v18 reads it directly)
+[CANARY] pre-J2  (serial: 'S OURVAR delete' = we got this far)
+[J2] >>> SENDING op=1(READ) seq=0x1602 pid=FFFFFFFF len=4 addr=0xFFFFF78000000260
+[J2]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=KERNEL alias 0xFFFFF78000000260 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 02 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1602  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5634  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 65 4A 00 00
+     data dwords: @0=19045
+      [J2] result: ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+
+--- step J3: kernel READ  pid=FFFFFFFF  len=4  addr=USER alias 0x7FFE0308 ---
+      why: second KUSD field, known value 0 (v15/v16 field truth)
+[CANARY] pre-J3  (serial: 'S OURVAR delete' = we got this far)
+[J3] >>> SENDING op=1(READ) seq=0x1603 pid=FFFFFFFF len=4 addr=0x000000007FFE0308
+[J3]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=USER alias 0x7FFE0308 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 03 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1603  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5635  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 00 00 00 00
+     data dwords: @0=0
+      [J3] result: ANSWERED status=1(Success) seq_ok=True | J3 dword@0 = 0 (expected 0)
+
+--- step J4: kernel READ  pid=FFFFFFFF  len=4  addr=KERNEL alias 0xFFFFF78000000308 ---
+      why: second field via the kernel alias - cross-check of J3
+[CANARY] pre-J4  (serial: 'S OURVAR delete' = we got this far)
+[J4] >>> SENDING op=1(READ) seq=0x1604 pid=FFFFFFFF len=4 addr=0xFFFFF78000000308
+[J4]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=KERNEL alias 0xFFFFF78000000308 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 04 16 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1604  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=5636  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 00 00 00 00
+     data dwords: @0=0
+      [J4] result: ANSWERED status=1(Success) seq_ok=True | J4 dword@0 = 0 (expected 0)
+
+--- step J5: kernel READ  pid=FFFFFFFF  len=8  addr=USER alias 0x7FFE0260 ---
+      why: x8 chunk test (dword[0] must equal J1; stays inside the window)
+[CANARY] pre-J5  (serial: 'S OURVAR delete' = we got this far)
+[J5] >>> SENDING op=1(READ) seq=0x1605 pid=FFFFFFFF len=8 addr=0x000000007FFE0260
+[J5]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=USER alias 0x7FFE0260 + len=8
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 05 16 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1605  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=5637  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 65 4A 00 00 01 00 00 00
+     data dwords: @0=19045  @4=1
+      [J5] result: ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0 | J5 dword[0]=19045 dword[1]=1 (dword[0] must be 19045)
+
+--- step J6: kernel READ  pid=FFFFFFFF  len=4  addr=NON-CANONICAL VA ---
+      why: negative: the gate must reject BEFORE any access - expect ErrAccess(4), no crash
+[CANARY] pre-J6  (serial: 'S OURVAR delete' = we got this far)
+[J6] >>> SENDING op=1(READ) seq=0x1606 pid=FFFFFFFF len=4 addr=0x0000800000000000
+[J6]     if the VM dies NOW, the killer is: pid=FFFFFFFF + addr=NON-CANONICAL VA + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 06 16 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1606  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5638  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+      [J6] result: ANSWERED status=4(ErrAccess) seq_ok=True
+
+--- step J7: kernel READ  pid=3296  len=4  addr=USER alias 0x7FFE0260 ---
+      why: per-pid read WITHOUT attach, VALID window address: expect clean ErrAccess(4) pre-read, NO [RD] on serial - isolates the pid check; honest negative
+[CANARY] pre-J7  (serial: 'S OURVAR delete' = we got this far)
+[J7] >>> SENDING op=1(READ) seq=0x1607 pid=3296 len=4 addr=0x000000007FFE0260
+[J7]     if the VM dies NOW, the killer is: pid=3296 + addr=USER alias 0x7FFE0260 + len=4
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 07 16 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1607  status=4(ErrAccess)  bytes_transferred=0  out_address=0x0
+     resp dwords: @0=5639  @4=4  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData absent (Win32=203)
+      [J7] result: ANSWERED status=4(ErrAccess) seq_ok=True
+[CANARY] post-ladder (all J-steps done)  (serial: 'S OURVAR delete' = we got this far)
+
+--- step M: ReqOp_ResolveSymbol (op=10) - F2 export resolution (v21 driver) ---
+
+--- step M1: resolve PsInitialSystemProcess (the F3 EPROCESS-walk entry) ---
+[CANARY] pre-M1  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityData write accepted (Win32=0)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 18 00 00 01 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1801  status=1(Success)  bytes_transferred=64  out_address=0x0
+     resp dwords: @0=6145  @4=1  @8=64  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 64 bytes: 01 00 00 00 3F 07 00 00 20 C4 2F 52 06 F8 FF FF 00 00 60 51 06 F8 FF FF 00 60 04 01 00 00 00 00 00 B0 18 C4 00 8C FF FF 00 80 19 C4 00 8C FF FF 16 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00
+     data dwords: @0=1  @4=1855  @8=1378862112  @12=4294965254  @16=1365245952  @20=4294965254  @24=17063936  @28=0  @32=3289952256  @36=4294937600  @40=3290005504  @44=4294937600  @48=22  @52=0  @56=1  @60=0
+     [M1] payload: found=1 idx=1855 va=0xFFFFF806522FC420 pe_base=0xFFFFF80651600000 pe_size=0x1046000
+     [M1] kpcr_base=0xFFFF8C00C418B000 (IA32_GS_BASE)  idt echo=0xFFFF8C00C4198000  V5 kpcr-idt match=1
+     [M1] PASS: resolved IN-IMAGE at 0xFFFFF806522FC420 (echoes exact) - the F3 walk entry is located
+
+--- step M2: resolve NtBuildNumber, then read it (must equal the KUSD 19045) ---
+[CANARY] pre-M2  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityData write accepted (Win32=0)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 02 18 00 00 01 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1802  status=1(Success)  bytes_transferred=64  out_address=0x0
+     resp dwords: @0=6146  @4=1  @8=64  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 64 bytes: 01 00 00 00 E4 05 00 00 30 21 21 52 06 F8 FF FF 00 00 60 51 06 F8 FF FF 00 60 04 01 00 00 00 00 00 F0 CA 4C 06 F8 FF FF 00 80 19 C4 00 8C FF FF 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     data dwords: @0=1  @4=1508  @8=1377902896  @12=4294965254  @16=1365245952  @20=4294965254  @24=17063936  @28=0  @32=1288368128  @36=4294965254  @40=3290005504  @44=4294937600  @48=13  @52=0  @56=0  @60=0
+     [M2] PASS: NtBuildNumber resolved in-image at 0xFFFFF80652212130
+[CANARY] pre-M2r  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 03 18 00 00 01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1803  status=1(Success)  bytes_transferred=4  out_address=0x0
+     resp dwords: @0=6147  @4=1  @8=4  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 4 bytes: 65 4A 00 F0
+     data dwords: @0=4026550885
+     [M2r] raw dword = 0xF0004A65 (4026550885)  build(low word) = 19045  canonical = True
+     [M2r] PASS: NtBuildNumber build field == 19045 == the KUSD J1 ground truth (double-proven; the bits above the low word are the QFE marker)
+
+--- step M3: resolve KeBugCheckEx, then read 8 bytes (real code via exports) ---
+[CANARY] pre-M3  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityData write accepted (Win32=0)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 04 18 00 00 01 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1804  status=1(Success)  bytes_transferred=64  out_address=0x0
+     resp dwords: @0=6148  @4=1  @8=64  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 64 bytes: 01 00 00 00 47 04 00 00 C0 E1 9F 51 06 F8 FF FF 00 00 60 51 06 F8 FF FF 00 60 04 01 00 00 00 00 00 F0 CA 4C 06 F8 FF FF 00 80 19 C4 00 8C FF FF 0C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     data dwords: @0=1  @4=1095  @8=1369432512  @12=4294965254  @16=1365245952  @20=4294965254  @24=17063936  @28=0  @32=1288368128  @36=4294965254  @40=3290005504  @44=4294937600  @48=12  @52=0  @56=0  @60=0
+     [M3] PASS: KeBugCheckEx resolved in-image at 0xFFFFF806519FE1C0
+[CANARY] pre-M3r  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 05 18 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1805  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6149  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 48 89 4C 24 08 48 89 54
+     data dwords: @0=608995656  @4=1418283016
+     [M3r] code bytes: 48 89 4C 24 08 48 89 54
+     [M3r] PASS: non-zero kernel code bytes read via an export-resolved symbol
+
+--- step M4: resolve NoSuchSymbolV28 (the honest negative: ErrNotFound) ---
+[CANARY] pre-M4  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityData write accepted (Win32=0)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 06 18 00 00 07 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1806  status=7(ErrNotFound)  bytes_transferred=64  out_address=0x0
+     resp dwords: @0=6150  @4=7  @8=64  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 64 bytes: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 60 51 06 F8 FF FF 00 60 04 01 00 00 00 00 00 F0 CA 4C 06 F8 FF FF 00 80 19 C4 00 8C FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     data dwords: @0=0  @4=0  @8=0  @12=0  @16=1365245952  @20=4294965254  @24=17063936  @28=0  @32=1288368128  @36=4294965254  @40=3290005504  @44=4294937600  @48=0  @52=0  @56=0  @60=0
+     [M4] PASS: status=7(ErrNotFound) as designed - the parser refuses cleanly, VM alive
+
+--- step W: ReqOp_ProcessWalk (op=11, pid ignored, outN=32) - THE F3 WALK ---
+      resp status=1(Success) + payload.status=0(Ok) => the walk ran
+      payload.status: 0 Ok / 1 bad-args / 2 no-entry / 3 bad-S1 / 4 not-System /
+                     5 broken-link / 6 window-refused / 7 budget (refuse = VM alive)
+[CANARY] pre-W1  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 19 00 00 01 00 00 00 28 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1901  status=1(Success)  bytes_transferred=1064  out_address=0x0
+     resp dwords: @0=6401  @4=1  @8=1064  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 1064 bytes: 04 00 00 00 01 00 00 00 40 80 E7 0D 02 C3 FF FF 53 79 73 74 65 6D 00 00 00 00 00 00 00 00 00 00 5C 00 00 00 01 00 00 00 80 30 EE 0D 02 C3 FF FF 52 65 67 69 73 74 72 79 00 00 00 00 00 00 00 00 4C 01 00 00 01 00 00 00 80 E0 8C 0E 02 C3 FF FF 73 6D 73 73 2E 65 78 65 00 00 00 00 00 00 00 00 B4 01 00 00 01 00 00 00 80 50 71 0E 02 C3 FF FF 63 73 72 73 73 2E 65 78 00 00 00 00 00 00 00 00 04 02 00 00 01 00 00 00 C0 80 E5 0E 02 C3 FF FF 77 69 6E 69 6E 69 74 2E 00 00 00 00 00 00 00 00 8C 02 00 00 01 00 00 00 80 00 E5 0E 02 C3 FF FF 73 65 72 76 69 63 65 73 00 00 00 00 00 00 00 00 94 02 00 00 01 00 00 00 C0 A0 EA 0E 02 C3 FF FF 57 65 72 46 61 75 6C 74 00 00 00 00 00 00 00 00 B0 02 00 00 01 00 00 00 80 F0 EC 0E 02 C3 FF FF 6C 73 61 73 73 2E 65 78 00 00 00 00 00 00 00 00 04 03 00 00 01 00 00 00 40 71 42 0F 02 C3 FF FF 66 6F 6E 74 64 72 76 68 00 00 00 00 00 00 00 00 54 03 00 00 01 00 00 00 40 42 43 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 84 03 00 00 01 00 00 00 C0 82 4D 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 B8 03 00 00 01 00 00 00 40 F2 60 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 6C 01 00 00 01 00 00 00 40 52 69 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 68 02 00 00 01 00 00 00 40 D2 6B 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 48 04 00 00 01 00 00 00 00 33 94 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 94 04 00 00 01 00 00 00 C0 82 94 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 B8 04 00 00 01 00 00 00 40 62 37 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 CC 04 00 00 01 00 00 00 00 93 37 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 E0 04 00 00 01 00 00 00 40 42 96 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 54 05 00 00 01 00 00 00 C0 02 B4 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 7C 05 00 00 01 00 00 00 00 83 BA 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 A4 05 00 00 01 00 00 00 C0 62 BA 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 E8 05 00 00 01 00 00 00 40 12 BB 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 24 06 00 00 01 00 00 00 00 53 71 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 D8 06 00 00 01 00 00 00 C0 82 76 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 E0 06 00 00 01 00 00 00 80 90 76 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 EC 06 00 00 01 00 00 00 40 82 79 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 28 07 00 00 01 00 00 00 C0 32 7C 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 38 07 00 00 01 00 00 00 80 A0 7E 0F 02 C3 FF FF 57 55 44 46 48 6F 73 74 00 00 00 00 00 00 00 00 64 07 00 00 01 00 00 00 40 D2 7E 0F 02 C3 FF FF 74 61 73 6B 68 6F 73 74 00 00 00 00 00 00 00 00 88 07 00 00 01 00 00 00 40 20 7F 0F 02 C3 FF FF 4D 65 6D 43 6F 6D 70 72 00 00 00 00 00 00 00 00 B4 07 00 00 01 00 00 00 00 83 52 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 00 40 80 E7 0D 02 C3 FF FF A8 05 00 00 00 00 00 00 EC 00 00 00 20 00 00 00 00 D0 1A 00 00 00 00 00
+     data dwords: @0=4  @4=1  @8=233275456  @12=4294951682  @16=1953724755  @20=28005  @24=0  @28=0  @32=92  @36=1  @40=233713792  @44=4294951682  @48=1768383826  @52=2037544051  @56=0  @60=0  @64=332  @68=1  @72=244113536  @76=4294951682  @80=1936944499  @84=1702389038  @88=0  @92=0  @96=436  @100=1  @104=242307200  @108=4294951682  @112=1936880483  @116=2019896947  @120=0  @124=0  @128=516  @132=1  @136=249921728  @140=4294951682  @144=1768843639  @148=779381102  @152=0  @156=0  @160=652  @164=1  @168=249888896  @172=4294951682  @176=1987208563  @180=1936024425  @184=0  @188=0  @192=660  @196=1  @200=250257600  @204=4294951682  @208=1181902167  @212=1953264993  @216=0  @220=0  @224=688  @228=1  @232=250409088  @236=4294951682  @240=1935766380  @244=2019896947  @248=0  @252=0  @256=772  @260=1  @264=256012608  @268=4294951682  @272=1953394534  @276=1752592996  @280=0  @284=0  @288=852  @292=1  @296=256066112  @300=4294951682  @304=1751348851  @308=779383663  @312=0  @316=0  @320=900  @324=1  @328=256737984  @332=4294951682  @336=1751348851  @340=779383663  @344=0  @348=0  @352=952  @356=1  @360=258011712  @364=4294951682  @368=1751348851  @372=779383663  @376=0  @380=0  @384=364  @388=1  @392=258560576  @396=4294951682  @400=1751348851  @404=779383663  @408=0  @412=0  @416=616  @420=1  @424=258724416  @428=4294951682  @432=1751348851  @436=779383663  @440=0  @444=0  @448=1096  @452=1  @456=261370624  @460=4294951682  @464=1751348851  @468=779383663  @472=0  @476=0  @480=1172  @484=1  @488=261391040  @492=4294951682  @496=1751348851  @500=779383663  @504=0  @508=0  @512=1208  @516=1  @520=255287872  @524=4294951682  @528=1751348851  @532=779383663  @536=0  @540=0  @544=1228  @548=1  @552=255300352  @556=4294951682  @560=1751348851  @564=779383663  @568=0  @572=0  @576=1248  @580=1  @584=261505600  @588=4294951682  @592=1751348851  @596=779383663  @600=0  @604=0  @608=1364  @612=1  @616=246678208  @620=4294951682  @624=1751348851  @628=779383663  @632=0  @636=0  @640=1404  @644=1  @648=247104256  @652=4294951682  @656=1751348851  @660=779383663  @664=0  @668=0  @672=1444  @676=1  @680=247096000  @684=4294951682  @688=1751348851  @692=779383663  @696=0  @700=0  @704=1512  @708=1  @712=247140928  @716=4294951682  @720=1751348851  @724=779383663  @728=0  @732=0  @736=1572  @740=1  @744=259085056  @748=4294951682  @752=1751348851  @756=779383663  @760=0  @764=0  @768=1752  @772=1  @776=259424960  @780=4294951682  @784=1751348851  @788=779383663  @792=0  @796=0  @800=1760  @804=1  @808=259428480  @812=4294951682  @816=1751348851  @820=779383663  @824=0  @828=0  @832=1772  @836=1  @840=259621440  @844=4294951682  @848=1751348851  @852=779383663  @856=0  @860=0  @864=1832  @868=1  @872=259797696  @876=4294951682  @880=1751348851  @884=779383663  @888=0  @892=0  @896=1848  @900=1  @904=259956864  @908=4294951682  @912=1178883415  @916=1953722184  @920=0  @924=0  @928=1892  @932=1  @936=259969600  @940=4294951682  @944=1802723700  @948=1953722216  @952=0  @956=0  @960=1928  @964=1  @968=259989568  @972=4294951682  @976=1131242829  @980=1919970671  @984=0  @988=0  @992=1972  @996=1  @1000=257065728  @1004=4294951682  @1008=1751348851  @1012=779383663  @1016=0  @1020=0  @1024=0  @1028=64  @1032=233275456  @1036=4294951682  @1040=1448  @1044=0  @1048=236  @1052=32  @1056=1757184  @1060=0
+     [W1] payload: status=0 count=64 closed=0 stored=32 name_ofs=0x5A8 pages=236 eproc=0xFFFFC3020DE78040 dtb=0x1AD000
+     [W1] eproc=0xFFFFC3020DE78040 (canonical=True outside-image=True) - serial [PW] sys= must equal the M1 va 0xFFFFF806522FC420
+     [W1] entries[0]: pid=4 eproc=0xFFFFC3020DE78040 flags=1 name='System  '
+     [W1] PASS: entries[0] = System pid 4 AT THE EPROCESS - and the EPROCESS sits OUTSIDE [pe_base, pe_base+pe_size)
+     [W1] PASS: PROCESS DATA OUTSIDE THE IMAGE - the F3 claim itself, reached via the deref chain
+     [W1] PASS: name slot discovered live at +0x5A8 - names echoed (derive, never trust)
+
+--- step W2: live cross-check (Get-Process) ---
+     [W2] walked=64 live=107 (cap-aware expected=64) delta=0 checked=12 missing=0
+     [W2] NOTE: live > the driver's 64-entry cap (by design, not a bug) - count checked against the cap
+     [W2] PASS: the walked list matches the live process list (cap-aware; exit races <=1 tolerated)
+
+--- step W3: is THIS PowerShell (pid $myPid) in the walked list? ---
+     [W3] NOTE: not within the first 32 stored entries (list has 64; late-started processes sit at the tail) - not a failure
+
+--- step W4: negatives - outN=0 and outN=33 must both refuse ErrInvalid(5), VM alive ---
+[CANARY] pre-W4  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 02 19 00 00 05 00 00 00 28 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1902  status=5(ErrInvalid)  bytes_transferred=1064  out_address=0x0
+     resp dwords: @0=6402  @4=5  @8=1064  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 1064 bytes: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     data dwords: @0=0  @4=0  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0  @32=0  @36=0  @40=0  @44=0  @48=0  @52=0  @56=0  @60=0  @64=0  @68=0  @72=0  @76=0  @80=0  @84=0  @88=0  @92=0  @96=0  @100=0  @104=0  @108=0  @112=0  @116=0  @120=0  @124=0  @128=0  @132=0  @136=0  @140=0  @144=0  @148=0  @152=0  @156=0  @160=0  @164=0  @168=0  @172=0  @176=0  @180=0  @184=0  @188=0  @192=0  @196=0  @200=0  @204=0  @208=0  @212=0  @216=0  @220=0  @224=0  @228=0  @232=0  @236=0  @240=0  @244=0  @248=0  @252=0  @256=0  @260=0  @264=0  @268=0  @272=0  @276=0  @280=0  @284=0  @288=0  @292=0  @296=0  @300=0  @304=0  @308=0  @312=0  @316=0  @320=0  @324=0  @328=0  @332=0  @336=0  @340=0  @344=0  @348=0  @352=0  @356=0  @360=0  @364=0  @368=0  @372=0  @376=0  @380=0  @384=0  @388=0  @392=0  @396=0  @400=0  @404=0  @408=0  @412=0  @416=0  @420=0  @424=0  @428=0  @432=0  @436=0  @440=0  @444=0  @448=0  @452=0  @456=0  @460=0  @464=0  @468=0  @472=0  @476=0  @480=0  @484=0  @488=0  @492=0  @496=0  @500=0  @504=0  @508=0  @512=0  @516=0  @520=0  @524=0  @528=0  @532=0  @536=0  @540=0  @544=0  @548=0  @552=0  @556=0  @560=0  @564=0  @568=0  @572=0  @576=0  @580=0  @584=0  @588=0  @592=0  @596=0  @600=0  @604=0  @608=0  @612=0  @616=0  @620=0  @624=0  @628=0  @632=0  @636=0  @640=0  @644=0  @648=0  @652=0  @656=0  @660=0  @664=0  @668=0  @672=0  @676=0  @680=0  @684=0  @688=0  @692=0  @696=0  @700=0  @704=0  @708=0  @712=0  @716=0  @720=0  @724=0  @728=0  @732=0  @736=0  @740=0  @744=0  @748=0  @752=0  @756=0  @760=0  @764=0  @768=0  @772=0  @776=0  @780=0  @784=0  @788=0  @792=0  @796=0  @800=0  @804=0  @808=0  @812=0  @816=0  @820=0  @824=0  @828=0  @832=0  @836=0  @840=0  @844=0  @848=0  @852=0  @856=0  @860=0  @864=0  @868=0  @872=0  @876=0  @880=0  @884=0  @888=0  @892=0  @896=0  @900=0  @904=0  @908=0  @912=0  @916=0  @920=0  @924=0  @928=0  @932=0  @936=0  @940=0  @944=0  @948=0  @952=0  @956=0  @960=0  @964=0  @968=0  @972=0  @976=0  @980=0  @984=0  @988=0  @992=0  @996=0  @1000=0  @1004=0  @1008=0  @1012=0  @1016=0  @1020=0  @1024=1  @1028=0  @1032=0  @1036=0  @1040=0  @1044=0  @1048=0  @1052=0  @1056=0  @1060=0
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 03 19 00 00 05 00 00 00 28 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1903  status=5(ErrInvalid)  bytes_transferred=1064  out_address=0x0
+     resp dwords: @0=6403  @4=5  @8=1064  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 1064 bytes: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     data dwords: @0=0  @4=0  @8=0  @12=0  @16=0  @20=0  @24=0  @28=0  @32=0  @36=0  @40=0  @44=0  @48=0  @52=0  @56=0  @60=0  @64=0  @68=0  @72=0  @76=0  @80=0  @84=0  @88=0  @92=0  @96=0  @100=0  @104=0  @108=0  @112=0  @116=0  @120=0  @124=0  @128=0  @132=0  @136=0  @140=0  @144=0  @148=0  @152=0  @156=0  @160=0  @164=0  @168=0  @172=0  @176=0  @180=0  @184=0  @188=0  @192=0  @196=0  @200=0  @204=0  @208=0  @212=0  @216=0  @220=0  @224=0  @228=0  @232=0  @236=0  @240=0  @244=0  @248=0  @252=0  @256=0  @260=0  @264=0  @268=0  @272=0  @276=0  @280=0  @284=0  @288=0  @292=0  @296=0  @300=0  @304=0  @308=0  @312=0  @316=0  @320=0  @324=0  @328=0  @332=0  @336=0  @340=0  @344=0  @348=0  @352=0  @356=0  @360=0  @364=0  @368=0  @372=0  @376=0  @380=0  @384=0  @388=0  @392=0  @396=0  @400=0  @404=0  @408=0  @412=0  @416=0  @420=0  @424=0  @428=0  @432=0  @436=0  @440=0  @444=0  @448=0  @452=0  @456=0  @460=0  @464=0  @468=0  @472=0  @476=0  @480=0  @484=0  @488=0  @492=0  @496=0  @500=0  @504=0  @508=0  @512=0  @516=0  @520=0  @524=0  @528=0  @532=0  @536=0  @540=0  @544=0  @548=0  @552=0  @556=0  @560=0  @564=0  @568=0  @572=0  @576=0  @580=0  @584=0  @588=0  @592=0  @596=0  @600=0  @604=0  @608=0  @612=0  @616=0  @620=0  @624=0  @628=0  @632=0  @636=0  @640=0  @644=0  @648=0  @652=0  @656=0  @660=0  @664=0  @668=0  @672=0  @676=0  @680=0  @684=0  @688=0  @692=0  @696=0  @700=0  @704=0  @708=0  @712=0  @716=0  @720=0  @724=0  @728=0  @732=0  @736=0  @740=0  @744=0  @748=0  @752=0  @756=0  @760=0  @764=0  @768=0  @772=0  @776=0  @780=0  @784=0  @788=0  @792=0  @796=0  @800=0  @804=0  @808=0  @812=0  @816=0  @820=0  @824=0  @828=0  @832=0  @836=0  @840=0  @844=0  @848=0  @852=0  @856=0  @860=0  @864=0  @868=0  @872=0  @876=0  @880=0  @884=0  @888=0  @892=0  @896=0  @900=0  @904=0  @908=0  @912=0  @916=0  @920=0  @924=0  @928=0  @932=0  @936=0  @940=0  @944=0  @948=0  @952=0  @956=0  @960=0  @964=0  @968=0  @972=0  @976=0  @980=0  @984=0  @988=0  @992=0  @996=0  @1000=0  @1004=0  @1008=0  @1012=0  @1016=0  @1020=0  @1024=1  @1028=0  @1032=0  @1036=0  @1040=0  @1044=0  @1048=0  @1052=0  @1056=0  @1060=0
+     [W4a] PASS: outN=0 -> ErrInvalid(5) clean
+     [W4b] PASS: outN=33 -> ErrInvalid(5) clean
+
+--- step W5: op-11 with a REAL pid must answer the same (kernel-list reads have no pid gate) ---
+[CANARY] pre-W5  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 04 19 00 00 01 00 00 00 28 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1904  status=1(Success)  bytes_transferred=1064  out_address=0x0
+     resp dwords: @0=6404  @4=1  @8=1064  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 1064 bytes: 04 00 00 00 01 00 00 00 40 80 E7 0D 02 C3 FF FF 53 79 73 74 65 6D 00 00 00 00 00 00 00 00 00 00 5C 00 00 00 01 00 00 00 80 30 EE 0D 02 C3 FF FF 52 65 67 69 73 74 72 79 00 00 00 00 00 00 00 00 4C 01 00 00 01 00 00 00 80 E0 8C 0E 02 C3 FF FF 73 6D 73 73 2E 65 78 65 00 00 00 00 00 00 00 00 B4 01 00 00 01 00 00 00 80 50 71 0E 02 C3 FF FF 63 73 72 73 73 2E 65 78 00 00 00 00 00 00 00 00 04 02 00 00 01 00 00 00 C0 80 E5 0E 02 C3 FF FF 77 69 6E 69 6E 69 74 2E 00 00 00 00 00 00 00 00 8C 02 00 00 01 00 00 00 80 00 E5 0E 02 C3 FF FF 73 65 72 76 69 63 65 73 00 00 00 00 00 00 00 00 94 02 00 00 01 00 00 00 C0 A0 EA 0E 02 C3 FF FF 57 65 72 46 61 75 6C 74 00 00 00 00 00 00 00 00 B0 02 00 00 01 00 00 00 80 F0 EC 0E 02 C3 FF FF 6C 73 61 73 73 2E 65 78 00 00 00 00 00 00 00 00 04 03 00 00 01 00 00 00 40 71 42 0F 02 C3 FF FF 66 6F 6E 74 64 72 76 68 00 00 00 00 00 00 00 00 54 03 00 00 01 00 00 00 40 42 43 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 84 03 00 00 01 00 00 00 C0 82 4D 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 B8 03 00 00 01 00 00 00 40 F2 60 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 6C 01 00 00 01 00 00 00 40 52 69 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 68 02 00 00 01 00 00 00 40 D2 6B 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 48 04 00 00 01 00 00 00 00 33 94 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 94 04 00 00 01 00 00 00 C0 82 94 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 B8 04 00 00 01 00 00 00 40 62 37 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 CC 04 00 00 01 00 00 00 00 93 37 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 E0 04 00 00 01 00 00 00 40 42 96 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 54 05 00 00 01 00 00 00 C0 02 B4 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 7C 05 00 00 01 00 00 00 00 83 BA 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 A4 05 00 00 01 00 00 00 C0 62 BA 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 E8 05 00 00 01 00 00 00 40 12 BB 0E 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 24 06 00 00 01 00 00 00 00 53 71 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 D8 06 00 00 01 00 00 00 C0 82 76 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 E0 06 00 00 01 00 00 00 80 90 76 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 EC 06 00 00 01 00 00 00 40 82 79 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 28 07 00 00 01 00 00 00 C0 32 7C 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 38 07 00 00 01 00 00 00 80 A0 7E 0F 02 C3 FF FF 57 55 44 46 48 6F 73 74 00 00 00 00 00 00 00 00 64 07 00 00 01 00 00 00 40 D2 7E 0F 02 C3 FF FF 74 61 73 6B 68 6F 73 74 00 00 00 00 00 00 00 00 88 07 00 00 01 00 00 00 40 20 7F 0F 02 C3 FF FF 4D 65 6D 43 6F 6D 70 72 00 00 00 00 00 00 00 00 B4 07 00 00 01 00 00 00 00 83 52 0F 02 C3 FF FF 73 76 63 68 6F 73 74 2E 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 00 40 80 E7 0D 02 C3 FF FF A8 05 00 00 00 00 00 00 EC 00 00 00 20 00 00 00 00 D0 1A 00 00 00 00 00
+     data dwords: @0=4  @4=1  @8=233275456  @12=4294951682  @16=1953724755  @20=28005  @24=0  @28=0  @32=92  @36=1  @40=233713792  @44=4294951682  @48=1768383826  @52=2037544051  @56=0  @60=0  @64=332  @68=1  @72=244113536  @76=4294951682  @80=1936944499  @84=1702389038  @88=0  @92=0  @96=436  @100=1  @104=242307200  @108=4294951682  @112=1936880483  @116=2019896947  @120=0  @124=0  @128=516  @132=1  @136=249921728  @140=4294951682  @144=1768843639  @148=779381102  @152=0  @156=0  @160=652  @164=1  @168=249888896  @172=4294951682  @176=1987208563  @180=1936024425  @184=0  @188=0  @192=660  @196=1  @200=250257600  @204=4294951682  @208=1181902167  @212=1953264993  @216=0  @220=0  @224=688  @228=1  @232=250409088  @236=4294951682  @240=1935766380  @244=2019896947  @248=0  @252=0  @256=772  @260=1  @264=256012608  @268=4294951682  @272=1953394534  @276=1752592996  @280=0  @284=0  @288=852  @292=1  @296=256066112  @300=4294951682  @304=1751348851  @308=779383663  @312=0  @316=0  @320=900  @324=1  @328=256737984  @332=4294951682  @336=1751348851  @340=779383663  @344=0  @348=0  @352=952  @356=1  @360=258011712  @364=4294951682  @368=1751348851  @372=779383663  @376=0  @380=0  @384=364  @388=1  @392=258560576  @396=4294951682  @400=1751348851  @404=779383663  @408=0  @412=0  @416=616  @420=1  @424=258724416  @428=4294951682  @432=1751348851  @436=779383663  @440=0  @444=0  @448=1096  @452=1  @456=261370624  @460=4294951682  @464=1751348851  @468=779383663  @472=0  @476=0  @480=1172  @484=1  @488=261391040  @492=4294951682  @496=1751348851  @500=779383663  @504=0  @508=0  @512=1208  @516=1  @520=255287872  @524=4294951682  @528=1751348851  @532=779383663  @536=0  @540=0  @544=1228  @548=1  @552=255300352  @556=4294951682  @560=1751348851  @564=779383663  @568=0  @572=0  @576=1248  @580=1  @584=261505600  @588=4294951682  @592=1751348851  @596=779383663  @600=0  @604=0  @608=1364  @612=1  @616=246678208  @620=4294951682  @624=1751348851  @628=779383663  @632=0  @636=0  @640=1404  @644=1  @648=247104256  @652=4294951682  @656=1751348851  @660=779383663  @664=0  @668=0  @672=1444  @676=1  @680=247096000  @684=4294951682  @688=1751348851  @692=779383663  @696=0  @700=0  @704=1512  @708=1  @712=247140928  @716=4294951682  @720=1751348851  @724=779383663  @728=0  @732=0  @736=1572  @740=1  @744=259085056  @748=4294951682  @752=1751348851  @756=779383663  @760=0  @764=0  @768=1752  @772=1  @776=259424960  @780=4294951682  @784=1751348851  @788=779383663  @792=0  @796=0  @800=1760  @804=1  @808=259428480  @812=4294951682  @816=1751348851  @820=779383663  @824=0  @828=0  @832=1772  @836=1  @840=259621440  @844=4294951682  @848=1751348851  @852=779383663  @856=0  @860=0  @864=1832  @868=1  @872=259797696  @876=4294951682  @880=1751348851  @884=779383663  @888=0  @892=0  @896=1848  @900=1  @904=259956864  @908=4294951682  @912=1178883415  @916=1953722184  @920=0  @924=0  @928=1892  @932=1  @936=259969600  @940=4294951682  @944=1802723700  @948=1953722216  @952=0  @956=0  @960=1928  @964=1  @968=259989568  @972=4294951682  @976=1131242829  @980=1919970671  @984=0  @988=0  @992=1972  @996=1  @1000=257065728  @1004=4294951682  @1008=1751348851  @1012=779383663  @1016=0  @1020=0  @1024=0  @1028=64  @1032=233275456  @1036=4294951682  @1040=1448  @1044=0  @1048=236  @1052=32  @1056=1757184  @1060=0
+     [W5] PASS: real pid answered Success - the walk is kernel data, not per-process (contrast: op-1 J7 ErrAccess)
+
+--- step R: the constant RECON (op-1 image-gated 8B reads; op-12 RETIRED this run) ---
+     (both BSODs died at chain B dereferencing a garbage MmPfnDatabase;
+      v35 reads the candidate slots through the PROVEN image gate instead -
+      the same bytes, zero out-of-image reads, the VM cannot die here)
+
+--- step R1: qword @ pe_base+0xCFB358 - MmPteBase cand#1 (17/19 PDBs) ---
+[CANARY] pre-R1  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A01  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6657  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 00 00 00 00 00 9C FF FF
+     data dwords: @0=0  @4=4294941696
+     [R1] qword = 0xFFFF9C0000000000
+     [R1] *** PTE-BASE SHAPED: s=0x138 - the live MmPteBase on this build ***
+      (randomized per boot - a static value here would mean a drifted RVA;
+       the offline dump analysis settles it; chain A would accept this
+
+--- step R2: qword @ pe_base+0xCFA358 - MmPteBase cand#2 (2/19 PDBs) ---
+[CANARY] pre-R2  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 02 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A02  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6658  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 00 00 00 00 00 00 00 00
+     data dwords: @0=0  @4=0
+     [R2] qword = 0x0000000000000000
+     [R2] NOT pte-base shaped (bits38:0=0x0000000000000000 hi=0x0) - this RVA is not MmPteBase here
+
+--- step R3: qword @ pe_base+0xCFC508 - MmPfnDatabase cand#1 (11/19) ---
+[CANARY] pre-R3  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 03 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A03  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6659  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 00 00 00 00 00 00 00 00
+     data dwords: @0=0  @4=0
+     [R3] qword = 0x0000000000000000
+     [R3] not a kernel pointer (0/low/user value) - chain B would skip it
+
+--- step R4: qword @ pe_base+0xCFC500 - MmPfnDatabase cand#2 (3/19) ---
+[CANARY] pre-R4  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 04 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A04  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6660  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 00 00 93 4D 06 F8 FF FF
+     data dwords: @0=1301479424  @4=4294965254
+     [R4] qword = 0xFFFFF8064D930000
+     [R4] a PAGE-ALIGNED KERNEL POINTER - chain B's weak check PASSES this
+      its deref would be 0xFFFFF8064D935078 (pdb + 429*0x30 + 8) - compare the v34
+      crash args in step 0 above: THE FINGERPRINT CLASS (unmapped => 0x50)
+
+--- step R5: qword @ pe_base+0xCFC510 - MmPfnDatabase cand#3 (3/19) ---
+[CANARY] pre-R5  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 05 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A05  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6661  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 00 00 00 00 80 F9 FF FF
+     data dwords: @0=0  @4=4294965632
+     [R5] qword = 0xFFFFF98000000000
+     [R5] a PAGE-ALIGNED KERNEL POINTER - chain B's weak check PASSES this
+      its deref would be 0xFFFFF98000005078 (pdb + 429*0x30 + 8) - compare the v34
+      crash args in step 0 above: THE FINGERPRINT CLASS (unmapped => 0x50)
+
+--- step R6: qword @ pe_base+0xCFB500 - MmPfnDatabase cand#4 (1/19) ---
+[CANARY] pre-R6  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 06 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A06  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6662  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 00 00 00 00 14 00 00 00
+     data dwords: @0=0  @4=20
+     [R6] qword = 0x0000001400000000
+     [R6] not a kernel pointer (0/low/user value) - chain B would skip it
+
+--- step R7: qword @ pe_base+0xCFB508 - MmPfnDatabase cand#5 (1/19) ---
+[CANARY] pre-R7  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 07 1A 00 00 01 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1A07  status=1(Success)  bytes_transferred=8  out_address=0x0
+     resp dwords: @0=6663  @4=1  @8=8  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 8 bytes: 28 00 00 00 00 00 00 00
+     data dwords: @0=40  @4=0
+     [R7] qword = 0x0000000000000028
+     [R7] not a kernel pointer (0/low/user value) - chain B would skip it
+
+--- step R8: the System DTB (op-11 dtb@1056 echo) - the fingerprint pfn ----
+     [R8] dtb=0x1AD000  pfn=0x1AD  (the v33 fingerprint: pdb + 0x1AD*0x30 + 8 = pdb + 0x5078)
+
+--- step D: the .data dump (op-1 image-gated 1024B chunks; minutes; resumable) ---
+[CANARY] pre-D0  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 00 1B 00 00 01 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1B00  status=1(Success)  bytes_transferred=1024  out_address=0x0
+     resp dwords: @0=6912  @4=1  @8=1024  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 1024 bytes: 4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00 B8 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 18 01 00 00 0E 1F BA 0E 00 B4 09 CD 21 B8 01 4C CD 21 54 68 69 73 20 70 72 6F 67 72 61 6D 20 63 61 6E 6E 6F 74 20 62 65 20 72 75 6E 20 69 6E 20 44 4F 53 20 6D 6F 64 65 2E 0D 0D 0A 24 00 00 00 00 00 00 00 9D D5 89 E0 D9 B4 E7 B3 D9 B4 E7 B3 D9 B4 E7 B3 CD DF E1 B2 D0 B4 E7 B3 CD DF E6 B2 D5 B4 E7 B3 D9 B4 E6 B3 EF B4 E7 B3 82 DC E3 B2 D8 B4 E7 B3 82 DC E4 B2 D7 B4 E7 B3 D9 B4 E7 B3 58 B4 E7 B3 D0 CC 74 B3 CE B4 E7 B3 CD DF EA B2 2D B1 E7 B3 CD DF E2 B2 C2 B4 E7 B3 CD DF E3 B2 A3 B4 E7 B3 CD DF E4 B2 E4 B4 E7 B3 CD DF E7 B2 D8 B4 E7 B3 CD DF 18 B3 D8 B4 E7 B3 CD DF E5 B2 D8 B4 E7 B3 52 69 63 68 D9 B4 E7 B3 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 50 45 00 00 64 86 21 00 51 15 03 7C 00 00 00 00 00 00 00 00 F0 00 22 00 0B 02 0E 14 00 BA 8B 00 00 8A 1B 00 00 B0 48 00 10 00 99 00 00 10 00 00 00 00 60 51 06 F8 FF FF 00 10 00 00 00 02 00 00 0A 00 00 00 0A 00 00 00 0A 00 00 00 00 00 00 00 00 60 04 01 00 08 00 00 5E 91 A6 00 01 00 60 41 00 00 08 00 00 00 00 00 00 20 00 00 00 00 00 00 00 00 10 00 00 00 00 00 00 10 00 00 00 00 00 00 00 00 00 00 10 00 00 00 00 50 13 00 7E 8D 01 00 30 26 13 00 68 01 00 00 00 00 00 01 0C B0 03 00 00 A0 0C 00 74 79 06 00 00 96 A5 00 F0 25 00 00 00 C0 03 01 F8 52 00 00 80 15 01 00 54 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 5B 00 00 18 01 00 00 00 00 00 00 00 00 00 00 00 20 13 00 20 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 2E 72 64 61 74 61 00 00 B0 80 0C 00 00 10 00 00 00 82 0C 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 48 2E 70 64 61 74 61 00 00 74 79 06 00 00 A0 0C 00 00 7A 06 00 00 8A 0C 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 48 2E 69 64 61 74 61 00 00 C2 20 00 00 00 20 13 00 00 22 00 00 00 04 13 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 48 2E 65 64 61 74 61 00 00 7E 8D 01 00 00 50 13 00 00 8E 01 00 00 26 13 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 40 50 52 4F 54 44 41 54 41 01 00 00 00 00 E0 14 00 00 02 00 00 00 B4 14 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 48 47 46 49 44 53 00 00 00 48 8C 00 00 00 F0 14 00 00 8E 00 00 00 B6 14 00 00 00 00 00 00 00 00 00 00 00 00 00 40 00 00 42 50 61 64 31 00 00 00 00 00 80 0A 00 00 80 15 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 00 00 42 2E 74 65 78 74 00 00 00 B9 BE 3C 00 00 00 20 00 00 C0 3C 00 00 44 15 00 00 00 00 00 00 00 00 00 00 00 00 00 20 00 00 68 50 41 47 45 00 00 00 00 46 31 3C 00 00 C0 5C 00 00 32 3C 00 00 04 52 00 00 00 00 00 00 00 00 00 00 00 00 00 20 00 00 60 50 41 47 45 4C 4B 00 00 34 4C 02 00 00 00 99 00 00 4E 02 00 00 36 8E 00 00 00 00 00 00 00 00 00 00 00 00 00 20 00 00 60 50 4F 4F 4C 43 4F 44 45 BB 03 00 00 00 50 9B 00 00 04 00 00 00 84 90 00 00 00 00 00 00 00 00 00 00 00 00 00 20 00 00 68 50 41 47 45 4B 44 00 00 92 5B 00 00 00 60 9B 00 00 5C 00 00 00 88 90 00 00 00 00 00 00 00 00 00 00 00 00 00 20 00 00 60
+     data dwords: @0=9460301  @4=3  @8=4  @12=65535  @16=184  @20=0  @24=64  @28=0  @32=0  @36=0  @40=0  @44=0  @48=0  @52=0  @56=0  @60=280  @64=247078670  @68=3439965184  @72=1275181089  @76=1750344141  @80=1881174889  @84=1919381362  @88=1663069537  @92=1869508193  @96=1700929652  @100=1853190688  @104=544106784  @108=542330692  @112=1701080941  @116=168627502  @120=36  @124=0  @128=3767129501  @132=3018306777  @136=3018306777  @140=3018306777  @144=3001147341  @148=3018306768  @152=3001475021  @156=3018306773  @160=3018241241  @164=3018306799  @168=3001277570  @172=3018306776  @176=3001343106  @180=3018306775  @184=3018306777  @188=3018306648  @192=3010776272  @196=3018306766  @200=3001737165  @204=3018305837  @208=3001212877  @212=3018306754  @216=3001278413  @220=3018306723  @224=3001343949  @228=3018306788  @232=3001540557  @236=3018306776  @240=3004751821  @244=3018306776  @248=3001409485  @252=3018306776  @256=1751345490  @260=3018306777  @264=0  @268=0  @272=0  @276=0  @280=17744  @284=2197092  @288=2080576849  @292=0  @296=0  @300=2228464  @304=336462347  @308=9157120  @312=1804800  @316=4763648  @320=10027024  @324=4096  @328=1365245952  @332=4294965254  @336=4096  @340=512  @344=10  @348=10  @352=10  @356=0  @360=17063936  @364=2048  @368=10916190  @372=1096810497  @376=524288  @380=0  @384=8192  @388=0  @392=1048576  @396=0  @400=4096  @404=0  @408=0  @412=16  @416=1265664  @420=101758  @424=1254960  @428=360  @432=16777216  @436=241676  @440=827392  @444=424308  @448=10851840  @452=9712  @456=17022976  @460=21240  @464=71040  @468=84  @472=0  @476=0  @480=0  @484=0  @488=0  @492=0  @496=23328  @500=280  @504=0  @508=0  @512=1253376  @516=1568  @520=0  @524=0  @528=0  @532=0  @536=0  @540=0  @544=1633972782  @548=24948  @552=819376  @556=4096  @560=819712  @564=2048  @568=0  @572=0  @576=0  @580=1207959616  @584=1633972270  @588=24948  @592=424308  @596=827392  @600=424448  @604=821760  @608=0  @612=0  @616=0  @620=1207959616  @624=1633970478  @628=24948  @632=8386  @636=1253376  @640=8704  @644=1246208  @648=0  @652=0  @656=0  @660=1207959616  @664=1633969454  @668=24948  @672=101758  @676=1265664  @680=101888  @684=1254912  @688=0  @692=0  @696=0  @700=1073741888  @704=1414484560  @708=1096040772  @712=1  @716=1368064  @720=512  @724=1356800  @728=0  @732=0  @736=0  @740=1207959616  @744=1145652807  @748=83  @752=35912  @756=1372160  @760=36352  @764=1357312  @768=0  @772=0  @776=0  @780=1107296320  @784=828662096  @788=0  @792=688128  @796=1409024  @800=0  @804=0  @808=0  @812=0  @816=0  @820=1107296384  @824=2019914798  @828=116  @832=3980985  @836=2097152  @840=3981312  @844=1393664  @848=0  @852=0  @856=0  @860=1744830496  @864=1162297680  @868=0  @872=3944774  @876=6078464  @880=3944960  @884=5374976  @888=0  @892=0  @896=0  @900=1610612768  @904=1162297680  @908=19276  @912=150580  @916=10027008  @920=151040  @924=9319936  @928=0  @932=0  @936=0  @940=1610612768  @944=1280266064  @948=1162104643  @952=955  @956=10178560  @960=1024  @964=9470976  @968=0  @972=0  @976=0  @980=1744830496  @984=1162297680  @988=17483  @992=23442  @996=10182656  @1000=23552  @1004=9472000  @1008=0  @1012=0  @1016=0  @1020=1610612768
+     [D0] PASS: the 1024B read path echoes MZ + e_lfanew == L1/L2a - big-chunk reads proven live
+[CANARY] pre-D1  (serial: 'S OURVAR delete' = we got this far)
+[OK] InfinityReq write accepted (Win32=0)
+[OK] InfinityResp 32 bytes: 01 1B 00 00 01 00 00 00 14 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     header: sequence=0x1B01  status=1(Success)  bytes_transferred=20  out_address=0x0
+     resp dwords: @0=6913  @4=1  @8=20  @12=0  @16=0  @20=0  @24=0  @28=0
+[DT] InfinityData 20 bytes: 64 86 21 00 51 15 03 7C 00 00 00 00 00 00 00 00 F0 00 22 00
+     data dwords: @0=2197092  @4=2080576849  @8=0  @12=0  @16=2228464
+     [D1] sections=33 SizeOfOptionalHeader=0xF0
+     [D1] FAIL: implausible section-table header - dump SKIPPED (report it)
+
+--- step N: final INFCNT read (live RAM count; expect G+8+name-writes+requests: H +1, J1..J7 +7, K/L + M requests + M name-writes + W walk requests) ---
+[OK] INFCNT read-back: 4 bytes: 28 00 00 00
+
+==== SUMMARY (auto-saved to the output .txt) ====
+hook_calls  A=183 B=0 C=187 D=191 E=195 F=198
+stage F=4  flags F=0x2F  trigger_seen(0x20)=SET
+win_build  driver-live=19045  script-side=19045   (equal = build detection works)
+INFCNT live RAM count (our-var writes that reached the hook) = 2   (0 = bypassed, 2 = both)
+[1] GetVariable path via hook : BYPASSED (counts frozen - kernel reads NVRAM directly)
+[2] SetVariable path via hook : PROVEN (INFCNT=2, flag 0x20)
+[3] INFPROBE landed in NVRAM  : YES (raw firmware write path works)
+[4] InfinityReq consumed (RAM) : YES (PONG proves it)
+    NVRAM read-back: absent - ABSENT is EXPECTED (v13+ consumes it in RAM)
+[5] InfinityResp PING         : ANSWERED seq=0x1337 status=1(Success) - PONG PERFECT
+[6] InfinityData buffer round trip : BYTE-EXACT (payload transport works)
+[7] Attach step (I)                : SKIPPED (v19-proven fatal in this VM)
+     ladder detail (each line = one variant, in send order):
+    [J1] pid=FFFFFFFF   addr=USER alias 0x7FFE0260  -> ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+    [J2] pid=FFFFFFFF   addr=KERNEL alias 0xFFFFF78000000260 -> ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0
+    [J3] pid=FFFFFFFF   addr=USER alias 0x7FFE0308  -> ANSWERED status=1(Success) seq_ok=True | J3 dword@0 = 0 (expected 0)
+    [J4] pid=FFFFFFFF   addr=KERNEL alias 0xFFFFF78000000308 -> ANSWERED status=1(Success) seq_ok=True | J4 dword@0 = 0 (expected 0)
+    [J5] pid=FFFFFFFF   addr=USER alias 0x7FFE0260  -> ANSWERED status=1(Success) seq_ok=True + 19045 FOUND at InfinityData offset 0 | J5 dword[0]=19045 dword[1]=1 (dword[0] must be 19045)
+    [J6] pid=FFFFFFFF   addr=NON-CANONICAL VA       -> ANSWERED status=4(ErrAccess) seq_ok=True
+    [J7] pid=3296       addr=USER alias 0x7FFE0260  -> ANSWERED status=4(ErrAccess) seq_ok=True
+[8] Kernel read via ladder (J1..J7) : PROVEN - 19045 via J1 InfinityData offset 0
+[9] Negatives (J6 gate, J7 no-attach) : OK - J7 status=4(ErrAccess) as designed; script still alive = no crash
+[10] F1 anchors (K) : CONVERGED - pe_base=0xFFFFF80651600000 pe_size=0x1046000 idt_base=0xFFFF8C00C4198000
+[11] Validated-image reads (L1..L3) : MZ=True PE-sig+machine=True size-match=True entry-bytes=True
+[12] Range negatives (L4 below, L5 above) : OK - both outside-range reads rejected ErrAccess(4), no crash
+    INFCNT final = 40   (expect G+8+13+4+4+9+0 = 40: H's InfinityData write (+1),
+     the 7 ladder InfinityReq writes (+7), the K/L + M export requests (+anSent), the M symbol-NAME InfinityData writes (+mNameWrites), the W walk requests (+wSent), the R recon requests (+rSent) and the D dump chunks (+dumpSent); requests are consumed in RAM and deletes never count)
+[13] F2 export resolution (M1..M4) : PROVEN - resolve + cross-validated reads + negative
+[14] F3 process walk (W1..W5)    : PROVEN - 64 processes walked, System at the pool EPROCESS + live-list cross-check green (v33: W2 is now cap-aware)
+[15] F4 constants recon (R1..R8) : RECON THIS RUN (op-12 retired after the 2nd 0x50): RECON COMPLETE (a pte-base-shaped MmPteBase candidate found; the pfnDb poison captured); dump: SKIPPED (implausible headers)
+     walked count=64 stored=32 closed(capped)=64-cap  self-pid: beyond the stored window (stored=32 count=64)
+
+VERDICT:
+>>> KERNEL DATA PATH VIA REQUESTS PROVEN - PHASE E COMPLETE <<<
+Windows -> InfinityReq -> our hook -> direct KUSD read -> InfinityResp (J1 InfinityData offset 0).
+
+>>> F1 PROVEN: ANCHORS CONVERGED + VALIDATED-IMAGE READS VIA REQUESTS <<<
+SIDT -> IDT/LSTAR -> walk-backs -> 4 validators -> gate opened [0xFFFFF80651600000, 0xFFFFF80652646000) ->
+real kernel bytes came back (MZ, PE header, entry code) and the gate
+stayed CLOSED one page below and one byte above. Fail-closed works.
+
+>>> F2 PROVEN: EXPORT-RESOLVED SYMBOLS + VALIDATED READS VIA REQUESTS <<<
+The image answers its own layout: export table -> PsInitialSystemProcess,
+NtBuildNumber (== the KUSD ground truth), KeBugCheckEx code bytes - all
+through the validated gate. No per-build offset tables ever again.
+
+>>> F3 PROVEN: THE EPROCESS WALK - PROCESS DATA OUTSIDE THE IMAGE <<<
+From the F2-resolved PsInitialSystemProcess: ActiveProcessLinks walked with
+double-link consistency + canonical/cluster gates + hard budgets.
+64 processes counted, System pid 4 at the DEREF-ed pool EPROCESS (serial [PW] sys= equals the M1 VA),
+names discovered live. The first arbitrary-kernel-VA reads are proven -
+fail-closed held the whole way (W4 negatives clean, VM alive).
+Next: F4 (PTE/page-table base for arbitrary-VA validation), then Infinity.exe.
+==== END v35 ====
+[LOG] output saved and VERIFIED: C:\Users\Administrator\Desktop\trigger-test-v35-output-20260928-060157.txt
+[LOG] HOW TO GET THE .TXT OUT of the VM (no photos needed):
+[LOG]   1. on YOUR machine: put any file for the VM into the
+[LOG]      transfer folder and double-click refresh-files.bat
+[LOG]      - a USB stick appears inside Windows
+[LOG]   2. inside Windows: copy the .txt onto that stick
+[LOG]   3. on YOUR machine: run refresh-files.bat again - the
+[LOG]      file lands in the transfer folder. Send that file.
+**********************
+Windows PowerShell transcript end
+End time: 20260928060317
+**********************

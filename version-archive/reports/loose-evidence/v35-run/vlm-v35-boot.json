@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Based on the screenshot provided, here is the exact text and details:\n\n**1) INFINITY Banner Text and Build/Variant Line**\n> **INFINITY UEFI BRIDGE LOADED**\n> **Made by: fulken**\n> **Build: v2b RT - anchors + exports + process walk (F4)**\n\n**2) Success/Error Status Lines**\n*   **SUCCESS: Bridge ready. Returning to boot menu.**\n*   **Image 'FS0:\\memory.efi' loaded at 7FAA0000 - Success**\n\n**3) OS/File Being Booted**\nThe system is booting **Windows** using the Microsoft EFI boot manager file:\n*   **File:** `FS1:\\EFI\\Microsoft\\Boot\\bootmgfw.efi`\n*   **Status Line:** `Booting Windows from FS1`\n\n**4) Other Notable Text**\n*   **Driver Status:** \"Driver has been loaded. You can now boot to the OS.\"\n*   **Instruction:** \"When you boot to Windows, Infinity.exe will detect the bridge and use it automatically.\"\n*   **Script Output:** The screen shows a sequence of UEFI Shell commands checking for the existence of `memory.efi` on drives FS0 through FS4, followed by `echo === driver stage done ===`.\n*   **Environment:** The window title indicates this is running inside **QEMU**.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1790564333,
+  "id": "20260928105849f44177991c454007",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20260928105849f44177991c454007",
+  "usage": {
+    "completion_tokens": 285,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1474,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 1759
+  }
+}
