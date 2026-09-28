@@ -74,6 +74,18 @@ cp -r "$BASE/patches" .
 cp -r "$BASE/scripts" .
 cp    "$BASE/worklog.md" .
 cp    "$BASE/edk2_Runtime.c" .
+# --- driver source tree (build-v20-tree/UEFI, src+include+Makefile+ld, NO build outputs) ---
+# Monotonic: only refreshed when the tree exists; a rollback can never delete it from the vault.
+if [ -d "$BASE/build-v20-tree/UEFI/src" ]; then
+  rm -rf uefi-src
+  mkdir -p uefi-src/build
+  cp -r "$BASE/build-v20-tree/UEFI/src" uefi-src/
+  cp -r "$BASE/build-v20-tree/UEFI/include" uefi-src/
+  cp "$BASE/build-v20-tree/UEFI/build/Makefile" "$BASE/build-v20-tree/UEFI/build/gnuefi-x86_64.ld" uefi-src/build/
+  echo "  uefi-src: refreshed (driver source snapshot)"
+else
+  echo "  WARN: build-v20-tree/UEFI absent — uefi-src preserved from vault history"
+fi
 mkdir -p validation-evidence/test-v7
 cp -r "$BASE/test-v7/artifacts" validation-evidence/test-v7/
 cp    "$BASE/scripts/infinity-backup-README.md" README.md
@@ -96,7 +108,7 @@ if git diff --cached --quiet; then
   echo "  no changes since last backup — nothing to push"
 else
   WS_SHA="$(git -C "$BASE" rev-parse --short HEAD)"
-  git commit -q -m "backup $(date -u '+%Y-%m-%d %H:%M') UTC — workspace ${WS_SHA}: packages v1-v9+v11, reports, binaries v4-v8, patches, scripts, worklog"
+  git commit -q -m "backup $(date -u '+%Y-%m-%d %H:%M') UTC — workspace ${WS_SHA}: driver source tree (UEFI v27), packages v1-v39, all field reports, scripts, worklog"
   git -c "http.https://github.com/.extraheader=$AUTH" push origin main 2>&1 | redact | grep -v "^$" | tail -3
 fi
 

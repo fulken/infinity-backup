@@ -1404,3 +1404,17 @@ Stage Summary:
 - THE BRIDGE IS PROVEN END-TO-END: Windows userspace -> InfinityReq -> hook -> validated image gate -> exports -> EPROCESS walk -> page tables - every arbitrary-kernel-VA read now has a translation proof
 - NEXT: Infinity.exe (the userspace client) - the F-ladder done, the next phase moves to the Windows-side client on top of the proven bridge
 - Standing rule honored: this session closes with a vault push
+---
+Task ID: 44
+Agent: Super Z (main)
+Task: Close the driver-source backup gap - build-v20-tree/UEFI snapshot onto the vault
+
+Work Log:
+- THE GAP (user-identified, correct): the vault mirrored the driver's ARTIFACTS (binaries in packages, the make-vXX.py recipe, reports, worklog) but never the source tree ITSELF as a snapshot - the recipe's base pin (a8e41b3) lived only on fulken/Infinity + local copies, so a bad rollback + that repo going away would orphan the v21..v27 chain's endpoint
+- FIX (data preservation only - no functional change to any project file): push-infinity-backup.sh now mirrors build-v20-tree/UEFI/ -> vault uefi-src/ (src/main.c + the 15 include/ headers + build/Makefile + gnuefi-x86_64.ld; the derived build outputs main.o/memory.efi/memory.so EXCLUDED), 524K -> ~240K of pure source
+- MONOTONIC GUARD: uefi-src is only refreshed when the tree exists locally; if a future rollback wipes build-v20-tree, the script KEEPS the vault's uefi-src from history (it can never push a deletion of the snapshot) - the backup is now rollback-proof by construction
+- Recovery note for the future: vault uefi-src/ = the v27 source state (the F4-proven endpoint); recovery = copy back -> make in UEFI/build with gnu-efi 3.0.13 -> e13f9f24 binary; the old recipe chain (repo pin + v7 diff + make-v21..v27.py) remains in the vault as the derivation record
+
+Stage Summary:
+- The driver source now lives on the vault as a DIRECT snapshot, independent of the recipe/base/repo chain - the last single-point-of-failure for the source is closed
+- No code was written or modified; this is a backup-coverage change only
