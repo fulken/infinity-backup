@@ -1378,3 +1378,29 @@ Stage Summary:
 - Validation stack: host 103/103 + both class-kills + bench RT 13/13 + SAFE + ~120-check audit + structcheck + PS-semantics functional test + the two pre-ship catches (the # prefix bug + the stray brace)
 - Next: the v39 field report -> if P1's identity PASSes: F4 PROVEN, THE F1..F4 LADDER COMPLETE -> Infinity.exe (the userspace client); if anything refuses, the [P]/[PT] lines + serial tell all
 - Standing rule honored: this session closes with a vault push
+---
+Task ID: 43
+Agent: Super Z (main)
+Task: Process the v27+trigger-v39 field report (F4 ATTEMPT 6 - the walk itself) - THE VERDICT
+
+Work Log:
+- NO ROLLBACK THIS TIME (the first clean session after 11 recoveries): HEAD intact at 4369b1d (the v27+v39 build), worklog 1380 lines + Task-42 entry present, all packages in place - zero recovery needed
+- REPORT FETCH: upload/ empty again (the 9th consecutive IM miss); downloaded from https://services.dworld.ir/Download/Reports/infinity-qemu-test-v27-with-trigger-v39-Report.zip (64950 B, sha256 75d52bb290b99339b26ce812b28ff751e676882b270eeb2adeaaec3fe6de21dd) -> upload/v39-extract/ (the .bin 160480 B + manifest + marker + transcript 969661 B + serial 71921 B + boot png)
+- THE RUN: 23:49:45 -> 23:55:58 (~6 min), ZERO crashes (the 6th consecutive crash-proof run); the user's single crash = the KNOWN benign host-side vvfat drive-attach class (QEMU closed once at file-refresh attach, retry fine - the user diagnosed it correctly again, unrelated to driver/script)
+- THE 14th GREEN REGRESSION: A..H + K/L/M/J/W/R/D all green; the SAME deterministic boot anchors (pe_base=0xFFFFF8075BA00000, pe_size=0x1046000, idt=0xFFFFF8076086C000, PsInit @M1 idx=1855 va=0xFFFFF8075C6FC420, System EPROC=0xFFFFBA8FA405A040, dtb=0x1AD000, W 64 processes / stored 32, J1 19045)
+- *** THE FLOOR FIX FIELD-PROVEN ***: manifest dump=COMPLETE: 157 chunks, 160480 bytes (the v38 phantom chunk 158 GONE) + sha256=5ADCA12A5AB94D5D76007C2603E5DE1F397F903E55B9082AA0D2E3861951D72A == the actual .bin hash EXACT; $dumpOk set -> the in-script [D+] pre-scan ran for the FIRST time (15 pdb value candidates, the lattice windows, both echo checks green: MmPteBase slot 0xFFFFE20000000000 + PsInit slot == the W1 EPROC)
+- *** F4 PROVEN - THE WALK ITSELF ***: verdict line 1762 '>>> F4 PROVEN: PAGE-TABLE TRANSLATION VIA THE SELFMAP - GROUND-TRUTHED BY THE LIVE-CR3 IDENTITY <<<' + summary [15] F4 the walk (P1..P8, op-12 v27): PROVEN
+- P1 THE LIVE-CR3 IDENTITY: PASS - selfEntry frame 0x7A528000 == the CR3 REGISTER frame 0x7A528000 (selfIdx=0x1C4, pteBase=0xFFFFE20000000000, selfOk=3, reads=6; PML4E->PDPT->PD->PT all present, frame sane); *** THE D5 CALLER-CONTEXT CORRECTION WAS NECESSARY, NOT JUST CORRECT ***: the PowerShell caller ran on ITS OWN PML4 (0x7A528000) while the System DTB is 0x1AD000 - the v26-era System-DTB expectation would have FALSED here; the live-register identity held exactly as designed
+- P2/P3/P4 RESIDENT: the EPROCESS page (frame 0x17B65A040 - the residency assumption REMOVED for F3 data), the KUSD window, the IDT page - all PTE-validated end to end; P5/P6 negatives ErrInvalid(5) clean; P7 the two-path System-dtb cross-check (op-11 echo == op-12 chain); P8 the honest two-PML4 EXPECTED line (v26 bit1 story documented in-script)
+- THE 96B PAYLOAD verified in every op-12 [DT] echo: the live tail liveCr3@80=0x7A528000 + selfEntry@88=0xA0000007A528863 present in P2/P3/P4/P5 responses - the additive layout exactly as built
+- SERIAL: 66 [PT] trace lines - the v27 before-read observability landed; *** the self-entry read at 0xFFFFE271389C4E20 = EXACTLY the address predicted offline in Task-41's D5 derivation (byte-exact offline->field agreement) ***; serial echoes ptebase/self=452(0x1C4)/mask/frame/selfok=3/cr3live/selfent all == transcript values
+- INFCNT final = 221 (read-back DD 00 00 00) == the expected G+8+13+4+4+27+157+6 EXACT (the +6 = the six un-retired op-12 P-ladder sends 0x1A01..0x1A06)
+- CROSS-BOOT DETERMINISM: the v39 .bin vs the v38 .bin differ in 15/160480 bytes (99.991% identical), in two qword-scale clusters @ dump 0x1D10-0x1D1C + 0x1D70-0x1D74 (RVA 0xCFCD10/0xCFCD70 - dynamic per-boot fields); everything else byte-identical across two independent boots of the same deterministic VM
+- ARCHIVED: the report zip in version-archive/reports/ + loose-evidence/v39-run/ (the bin + manifest + marker + transcript + serial + boot png)
+
+Stage Summary:
+- *** F4 PROVEN IN THE FIELD (attempt 6) - THE F1..F4 LADDER IS COMPLETE ***: F1 anchors + F2 exports + F3 EPROCESS walk + F4 selfmap page-table translation, all field-proven on one driver+script line, zero crashes the whole way
+- The v27 generation change fully validated: chain B deleted (the BSOD class has no code left), [PT] before-read traces (66 lines), the LIVE-CR3 identity - which was NECESSARY (caller context != System DTB in the field); the v39 script fully validated: Floor fix (COMPLETE + sha256 + pre-scan), the P-ladder un-retired (INFCNT exact)
+- THE BRIDGE IS PROVEN END-TO-END: Windows userspace -> InfinityReq -> hook -> validated image gate -> exports -> EPROCESS walk -> page tables - every arbitrary-kernel-VA read now has a translation proof
+- NEXT: Infinity.exe (the userspace client) - the F-ladder done, the next phase moves to the Windows-side client on top of the proven bridge
+- Standing rule honored: this session closes with a vault push
